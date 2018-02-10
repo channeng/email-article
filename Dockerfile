@@ -1,0 +1,43 @@
+# Pull base image.
+FROM ubuntu
+
+# Install Supervisor.
+RUN \
+  mkdir /var/log/flask && \
+  mkdir /home/ubuntu && \
+  mkdir /home/ubuntu/email-article && \
+  apt-get update && \
+  apt-get install -y supervisor python-pip wget vim git lsb-release curl && \
+  rm -rf /var/lib/apt/lists/* && \
+  sed -i 's/^\(\[supervisord\]\)$/\1\nnodaemon=true/' /etc/supervisor/supervisord.conf
+
+# expose port 5000 of the container (HTTP port, change to 443 for HTTPS)
+EXPOSE 5000
+
+# Create virtualenv.
+RUN \
+  pip install --upgrade pip && \
+  pip install --upgrade virtualenv && \
+  virtualenv -p /usr/bin/python2.7 /home/ubuntu/.virtualenvs/env
+
+# Setup for ssh onto github, clone and define working directory
+ADD credentials/ /home/ubuntu/.credentials/
+RUN \
+  chmod 600 /home/ubuntu/.credentials/repo-key && \
+  echo "IdentityFile /home/ubuntu/.credentials/repo-key" >> /etc/ssh/ssh_config && \
+  echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
+
+RUN date > last_updated.txt
+RUN git clone git@github.com:channeng/email-article.git /home/ubuntu/email-article
+
+WORKDIR /home/ubuntu/email-article
+
+# Install app requirements
+RUN \
+  . /home/ubuntu/.virtualenvs/env/bin/activate && \
+  pip install -r requirements.txt
+
+# Copy supervisor configs
+RUN \
+  cp configs/supervisord.conf /etc/supervisor/supervisord.conf && \
+  cp configs/conf.d/*.conf /etc/supervisor/conf.d/

@@ -1,0 +1,112 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <title>Article to email</title>
+    <style type="text/css">
+
+      html, body, div, h1, h2, p, a, ul, li, form, label {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font-size: 100%;
+        font: inherit;
+        vertical-align: baseline;
+      }
+      body {
+        line-height: 1;
+        background: #efefef;
+        font-family: FaktProSoft,Helvetica Neue,helvetica,arial,sans-serif;
+      }
+      #page {
+        background: #ffffff;
+        width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 40px;
+      }
+      #page h1 {
+        color: #ffffff;
+        background-color: #d2232a;
+        margin: -20px -20px 10px -20px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        padding: 10px;
+        font-size: 120%;
+      }
+      input, textarea {
+        width: 100%;
+        padding: 4px;
+        margin-bottom: 10px;
+        font-size: 100%;
+      }
+      ul {
+        list-style: none;
+      }
+      li {
+        line-height: 180%;
+        padding-left: 20px;
+        color: #333;
+        font-size: 80%;
+      }
+      p {
+        font-size: 70%;
+        margin-bottom: 5px;
+      }
+      a {
+        color: #680e12;
+      }
+      .extra_info {
+        visibility: hidden;
+        margin-left: 10px;
+        font-size: 90%;
+        color: #666;
+      }
+      li:hover .extra_info {
+        visibility: visible;
+      }
+      button {
+        padding: 10px;
+        border-radius: 10px;
+        -moz-border-radius: 10px;
+        -webkit-border-radius: 10px;
+        margin:10px;
+        width:70px;
+        float:right;
+    }
+    </style>
+  </head>
+  <body>
+    <div id="page">
+      <h1>News article to email</h1>
+      <form id="email_article" action="{{ url_for('get_listings') }}" method="post">
+        <h4>Email:</h4>
+        <input type="email" placeholder="Email" name="email" id="email" />
+        <br>
+        <h4>Link to article:</h4>
+        <input type="url" placeholder="Article URL" name="article_url" id="article_url" />
+      </form>
+      <button type="submit" form="email_article" onClick="return empty()" value="Submit">Submit</button>
+      <br><br><br><br>
+      <p>
+        <a href="https://github.com/channeng/email-article"
+           target="_blank" title="View code in github">
+          Link to github
+        </a>
+      </p>
+    </div>
+    <script type="text/javascript">
+      function empty() {
+          var x;
+          email = document.getElementById("email").value;
+          article = document.getElementById("article_url").value;
+          if (email == "" || article == "") {
+              alert("Email and link to article must be provided.");
+              return false;
+          };
+      }
+    </script>
+  </body>
+</html>
