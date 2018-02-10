@@ -20,7 +20,7 @@
       }
       #page {
         background: #ffffff;
-        width: 400px;
+        width: 350px;
         margin-left: auto;
         margin-right: auto;
         border-radius: 10px;
@@ -82,11 +82,11 @@
     <div id="page">
       <h1>News article to email</h1>
       <form id="email_article" action="{{ url_for('get_listings') }}" method="post">
-        <h4>Email:</h4>
-        <input type="email" placeholder="Email" name="email" id="email" />
-        <br>
         <h4>Link to article:</h4>
         <input type="url" placeholder="Article URL" name="article_url" id="article_url" />
+        <br>
+        <h4>Send to email:</h4>
+        <input type="email" placeholder="Email" name="email" id="email" />
       </form>
       <button type="submit" form="email_article" onClick="return empty()" value="Submit">Submit</button>
       <br><br><br><br>
