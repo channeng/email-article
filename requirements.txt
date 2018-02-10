@@ -39,7 +39,6 @@ scandir==1.6
 simplegeneric==0.8.1
 six==1.11.0
 tldextract==1.5.1
-trainer==0.1
 traitlets==4.3.2
 uritemplate==3.0.0
 wcwidth==0.1.7

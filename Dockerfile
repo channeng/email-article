@@ -27,7 +27,7 @@ RUN \
   echo "IdentityFile /home/ubuntu/.credentials/repo-key" >> /etc/ssh/ssh_config && \
   echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
 
-RUN date > last_updated.txt
+RUN date > last_updated_1.txt
 RUN git clone git@github.com:channeng/email-article.git /home/ubuntu/email-article
 
 WORKDIR /home/ubuntu/email-article
@@ -35,6 +35,7 @@ WORKDIR /home/ubuntu/email-article
 # Install app requirements
 RUN \
   . /home/ubuntu/.virtualenvs/env/bin/activate && \
+  pip install https://s3-us-west-2.amazonaws.com/jdimatteo-personal-public-readaccess/nltk-2.0.5-https-distribute.tar.gz && \
   pip install -r requirements.txt
 
 # Copy supervisor configs
