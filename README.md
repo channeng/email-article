@@ -1,11 +1,14 @@
-# Keyword Spam classifier
+# News Article to Email application
 
-A Docker implementation of keyword spam classifier running on Flask, managed with supervisord.
+Article-to-email takes a url link to any news article and sends the contents of the article to a given email in plain text.
+
+It is useful in cases where the recipient would like to forward relevant articles to themselves but only has access to email content.
 
 ## How does it work?
 
-See JIRA documentation here: https://carousell.atlassian.net/wiki/spaces/SEARCH/pages/41576506/Search+exp+-+Keyword+Spam
+This is a Docker implementation of article-to-email application running on Flask, managed with supervisord. 
 
+Given a link to the article and the email of the recipient, the app will scrape the contents of the article, pass the contents to an email server in plain text and dispatch the email to the given recipient email address.
 
 # Getting Started
 
@@ -13,35 +16,51 @@ See JIRA documentation here: https://carousell.atlassian.net/wiki/spaces/SEARCH/
 
 1. From server, run the following command:
 	```bash
-	cd ~ && mkdir credentials
+	cd ~
+	git clone git@github.com:channeng/email-article.git
+	cd email-article
 	```
 
-2. From local project dir, copy dockerfile, credentials and docker install script into server
+2. From local, copy credentials and config into server
 	```bash
-	scp Dockerfile $SERVER:/home/<user>/
-	scp credentials/* $SERVER:/home/<user>/credentials
-	scp scripts/debian_jessy_docker_setup.sh $SERVER:/home/<user>/
+	scp -r credentials $SERVER:/home/ubuntu/email-article/credentials
+	scp config.py $SERVER:/home/ubuntu/email-article/
 	```
 
-3. Install Docker
+3. In server, install Docker and build docker image
 	```bash
 	sudo bash scripts/debian_jessy_docker_setup.sh
 	```
 
 4. Build docker image
 	```bash
-	docker build -t kw-spam .
+	docker build -t email-article .
 	```
 	(Optional) Stop any containers running on existing docker image
 	```bash
-	docker stop $(docker ps -f ancestor=kw-spam --format "{{.ID}}")
+	docker stop $(docker ps -f ancestor=email-article --format "{{.ID}}")
 	```
+
 5. Run docker container
 	```bash
-	docker run -p 3020:3020 -d kw-spam /usr/bin/supervisord --nodaemon
+	docker run -p 3020:3020 -d email-article /usr/bin/supervisord --nodaemon
 	```
 
 6. Enter bash terminal
 	```bash
-	sudo docker exec -it $(sudo docker ps -f ancestor=data-workflows --format "{{.ID}}") /bin/bash
+	sudo docker exec -it $(sudo docker ps -f ancestor=email-article --format "{{.ID}}") /bin/bash
+	```
+
+7. Note: 
+	If memory error on installing lxml, run the following and try building docker image again.
+	```bash
+	sudo dd if=/dev/zero of=/swapfile bs=1024 count=524288
+	sudo chmod 600 /swapfile
+	sudo mkswap /swapfile
+	sudo swapon /swapfile
+	```
+
+	after you're done: 
+	```bash
+	sudo swapoff /swapfile
 	```
