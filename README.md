@@ -34,33 +34,33 @@ Given a link to the article and the email of the recipient, the app will scrape 
 
 4. Build docker image
 	```bash
-	docker build -t email-article .
+	sudo docker build -t email-article .
 	```
 	(Optional) Stop any containers running on existing docker image
 	```bash
-	docker stop $(docker ps -f ancestor=email-article --format "{{.ID}}")
+	sudo docker stop $(sudo docker ps -f ancestor=email-article --format "{{.ID}}")
 	```
 
 5. Run docker container
 	```bash
-	docker run -p 3020:3020 -d email-article /usr/bin/supervisord --nodaemon
+	sudo docker run -p 5000:5000 -d email-article /usr/bin/supervisord --nodaemon
 	```
 
-6. Enter bash terminal
-	```bash
-	sudo docker exec -it $(sudo docker ps -f ancestor=email-article --format "{{.ID}}") /bin/bash
-	```
-
-7. Note: 
-	If memory error on installing lxml, run the following and try building docker image again.
+	Note: If memory error on installing lxml, run the following and try building docker image again.
 	```bash
 	sudo dd if=/dev/zero of=/swapfile bs=1024 count=524288
 	sudo chmod 600 /swapfile
 	sudo mkswap /swapfile
 	sudo swapon /swapfile
+	sudo docker run -p 5000:5000 -d email-article /usr/bin/supervisord --nodaemon
 	```
 
 	after you're done: 
 	```bash
 	sudo swapoff /swapfile
+	```
+
+6. Enter bash terminal
+	```bash
+	sudo docker exec -it $(sudo docker ps -f ancestor=email-article --format "{{.ID}}") /bin/bash
 	```
