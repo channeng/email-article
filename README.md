@@ -32,18 +32,14 @@ Given a link to the article and the email of the recipient, the app will scrape 
 	sudo bash scripts/debian_jessy_docker_setup.sh
 	```
 
-4. Build docker image
-	```bash
-	sudo docker build -t email-article .
-	```
-	(Optional) Stop any containers running on existing docker image
+4. (Optional) Stop any containers running on existing docker image
 	```bash
 	sudo docker stop $(sudo docker ps -f ancestor=email-article --format "{{.ID}}")
 	```
 
-5. Run docker container
+5. Build docker image
 	```bash
-	sudo docker run -p 5000:5000 -d email-article /usr/bin/supervisord --nodaemon
+	sudo docker build -t email-article .
 	```
 
 	Note: If memory error on installing lxml, run the following and try building docker image again.
@@ -52,7 +48,8 @@ Given a link to the article and the email of the recipient, the app will scrape 
 	sudo chmod 600 /swapfile
 	sudo mkswap /swapfile
 	sudo swapon /swapfile
-	sudo docker run -p 5000:5000 -d email-article /usr/bin/supervisord --nodaemon
+
+	sudo docker build -t email-article .
 	```
 
 	after you're done: 
@@ -60,7 +57,12 @@ Given a link to the article and the email of the recipient, the app will scrape 
 	sudo swapoff /swapfile
 	```
 
-6. Enter bash terminal
+6. Run docker container
+	```bash
+	sudo docker run -p 5000:5000 -d email-article /usr/bin/supervisord --nodaemon
+	```
+
+7. Enter bash terminal
 	```bash
 	sudo docker exec -it $(sudo docker ps -f ancestor=email-article --format "{{.ID}}") /bin/bash
 	```
