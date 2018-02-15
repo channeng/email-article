@@ -108,7 +108,25 @@
               alert("Email and link to article must be provided.");
               return false;
           };
-      }
+        };
+      function get_url_params(param) {
+          var regex = /[?&]([^=#]+)=([^&#]*)/g,
+              url = window.location.href,
+              params = {},
+              match;
+          while(match = regex.exec(url)) {
+              params[match[1]] = match[2];
+          };
+          param_value = ""
+          if (params[param]) {
+            param_value = params[param];
+          }
+          return param_value
+        };
+
+      document.getElementById('article_url').value = get_url_params("article");
+      document.getElementById('email').value = get_url_params("email");
     </script>
+
   </body>
 </html>
