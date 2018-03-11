@@ -6,7 +6,10 @@ from apiclient import discovery
 from oauth2client import tools
 from oauth2client.file import Storage
 
-from config import CREDENTIAL_DIR, CREDENTIALS
+from config import Config
+
+_CREDENTIAL_DIR = Config.CREDENTIAL_DIR
+_CREDENTIALS = Config.CREDENTIALS
 
 try:
     import argparse
@@ -32,10 +35,10 @@ def get_credentials():
     Returns:
         Credentials, the obtained credential.
     """
-    if not os.path.exists(CREDENTIAL_DIR):
-        os.makedirs(CREDENTIAL_DIR)
+    if not os.path.exists(_CREDENTIAL_DIR):
+        os.makedirs(_CREDENTIAL_DIR)
 
-    store = Storage(CREDENTIALS)
+    store = Storage(_CREDENTIALS)
     credentials = store.get()
     return credentials
 

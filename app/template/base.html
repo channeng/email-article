@@ -1,5 +1,6 @@
 <!doctype html>
 
+<!-- Color combinations: https://coolors.co/f0a202-7d1128-3c0919-fbfffe-6d676e -->
 <html lang="en">
   <head>
     <title>Article to email</title>
@@ -29,14 +30,41 @@
         padding: 20px;
         margin-top: 40px;
       }
+      #page a {
+        color: #550000;
+        font: FaktProSoft,Helvetica Neue,helvetica,arial,sans-serif;
+        text-decoration: none;
+      }
+      #page a:hover {
+        color: #AA3939;
+      }
+      #page .right {
+          text-align: right;
+          float: right;
+          padding: 0px 10px;
+      }
       #page h1 {
         color: #ffffff;
-        background-color: #d2232a;
+        background-color: #7d1128;
         margin: -20px -20px 10px -20px;
         border-top-left-radius: 10px;
         border-top-right-radius: 10px;
         padding: 10px;
         font-size: 120%;
+      }
+      #page h2 {
+        color: #ffffff;
+        background-color: #FFDBDA;
+        margin: -10px -20px 10px -20px;
+        padding: 8px;
+        font-size: 90%;
+      }
+      #page h4 {
+        color: #000000;
+        font-size: 90%;
+      }
+      #page .notbold {
+        font-weight:normal;
       }
       input, textarea {
         width: 100%;
@@ -82,51 +110,21 @@
   </head>
   <body>
     <div id="page">
-      <h1>News article to email</h1>
-      <form id="email_article" action="{{ url_for('get_listings') }}" method="post">
-        <h4>Link to article:</h4>
-        <input type="url" placeholder="Article URL" name="article_url" id="article_url" />
-        <br>
-        <h4>Send to email:</h4>
-        <input type="email" placeholder="Email" name="email" id="email" />
-      </form>
-      <button type="submit" form="email_article" onClick="return empty()" value="Submit">Submit</button>
-      <br><br><br><br>
-      <p>
-        <a href="https://github.com/channeng/email-article"
-           target="_blank" title="View code in github">
-          Link to github
-        </a>
-      </p>
+      <h1>Pocket Internet</h1>
+      <h2>
+      <a href="{{ url_for('index') }}">Home</a>&nbsp; &nbsp;
+      {% if current_user.is_anonymous %}
+        {% if (title != "Register") %}
+        &nbsp; &nbsp;<a class="right" href="{{ url_for('register') }}">Register</a>
+        {% endif %}
+        {% if (title != "Sign In") %}
+        &nbsp; &nbsp;<a class="right" href="{{ url_for('login') }}">Login</a>
+        {% endif %}
+      {% else %}
+      &nbsp; &nbsp;<a class="right" href="{{ url_for('logout') }}">Logout</a>
+      {% endif %}
+      </h2>
+      {% block content %}{% endblock %}
     </div>
-    <script type="text/javascript">
-      function empty() {
-          var x;
-          email = document.getElementById("email").value;
-          article = document.getElementById("article_url").value;
-          if (email == "" || article == "") {
-              alert("Email and link to article must be provided.");
-              return false;
-          };
-        };
-      function get_url_params(param) {
-          var regex = /[?&]([^=#]+)=([^&#]*)/g,
-              url = window.location.href,
-              params = {},
-              match;
-          while(match = regex.exec(url)) {
-              params[match[1]] = match[2];
-          };
-          param_value = ""
-          if (params[param]) {
-            param_value = params[param];
-          }
-          return param_value
-        };
-
-      document.getElementById('article_url').value = get_url_params("article");
-      document.getElementById('email').value = get_url_params("email");
-    </script>
-
   </body>
 </html>

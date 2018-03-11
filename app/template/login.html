@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h3>Sign In</h3>
+  <hr>
+
+  <form action="" method="post">
+    {{ form.hidden_tag() }}
+    <h4 class="notbold">
+      {{ form.username.label }}<br><br>
+      {{ form.username(size=32) }}
+      {% for error in form.username.errors %}
+      <span style="color: red;">[{{ error }}]</span><br><br>
+      {% endfor %}
+    </h4>
+    <h4 class="notbold">
+      {{ form.password.label }}<br><br>
+      {{ form.password(size=32) }}
+      {% for error in form.password.errors %}
+      <span style="color: red;">[{{ error }}]</span><br><br>
+      {% endfor %}
+    </h4>
+    <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
+    <br>
+    <h4 class="notbold">{{ form.submit() }}</h4>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+    {% for message in messages %}
+    <li style="color: red;">- {{ message }}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+
+  </form>
+  
+  <br><hr>
+  <h4>New User? <a href="{{ url_for('register') }}">Click to Register!</a></h4>
+{% endblock %}
