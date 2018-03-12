@@ -2,20 +2,20 @@
 
 {% block content %}
   <h3>Register</h3>
-  <hr><br>
+  <hr>
 
   <form action="" method="post">
     {{ form.hidden_tag() }}
     <h4 class="notbold">
       {{ form.username.label }}<br><br>
-      {{ form.username(size=32) }}
+      {{ form.username(size=32, class_="lower_input") }}
       {% for error in form.username.errors %}
       <span style="color: red;">[{{ error }}]</span><br><br>
       {% endfor %}
     </h4>
     <h4 class="notbold">
       {{ form.email.label }}<br><br>
-      {{ form.email(size=64) }}
+      {{ form.email(size=64, class_="lower_input") }}
       {% for error in form.email.errors %}
       <span style="color: red;">[{{ error }}]</span><br><br>
       {% endfor %}

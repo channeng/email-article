@@ -8,7 +8,7 @@
     {{ form.hidden_tag() }}
     <h4 class="notbold">
       {{ form.username.label }}<br><br>
-      {{ form.username(size=32) }}
+      {{ form.username(size=32, class_="lower_input") }}
       {% for error in form.username.errors %}
       <span style="color: red;">[{{ error }}]</span><br><br>
       {% endfor %}

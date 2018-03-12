@@ -1,57 +1,72 @@
 {% extends "base.html" %}
 
 {% block content %}
-      <h3>News article to email</h3>
-      <hr><br>
-      <!-- <h4 class="notbold">Hi, {{ current_user.username }}!</h4><br> -->
-      <form id="email_article" action="{{ url_for('send_email_article') }}" method="post">
-        <h4 class="notbold">Link to article:</h4>
-        <input type="url" placeholder="Article URL" name="article_url" id="article_url" />
-        <br>
-        <h4 class="notbold">Send to email:</h4>
-        <input type="email" placeholder="Email" name="email" id="email" />
-      </form>
-      <button type="submit" form="email_article" onClick="return empty()" value="Submit">Submit</button>
-      <br><br><br><br>
-      <p>
-        <a href="https://github.com/channeng/email-article"
-           target="_blank" title="View code in github">
-          Link to github
-        </a>
-      </p>
-    </div>
-    <script type="text/javascript">
-      function empty() {
-          var x;
-          email = document.getElementById("email").value;
-          article = document.getElementById("article_url").value;
-          if (email == "" || article == "") {
-              alert("Email and link to article must be provided.");
-              return false;
-          };
-        };
-      function get_url_params(param) {
-          var regex = /[?&]([^=#]+)=([^&#]*)/g,
-              url = window.location.href,
-              params = {},
-              match;
-          while(match = regex.exec(url)) {
-              params[match[1]] = match[2];
-          };
-          param_value = ""
-          if (params[param]) {
-            param_value = params[param];
-          }
-          return param_value
-        };
+  <h3>News article to email</h3>
+  <hr>
 
-      document.getElementById('article_url').value = get_url_params("article");
-      var email_query_param = get_url_params("email")
-      if (email_query_param == "") {
-        document.getElementById('email').value = "{{ current_user.email }}";
-      } else {
-        document.getElementById('email').value = email_query_param;
+  <form id="email_article" action="{{ url_for('send_email_article') }}" method="post">
+
+    <h4 class="notbold">
+      Link to article:<br><br>
+      <input type="url" placeholder="Article URL" name="article_url" id="article_url" class="lower_input"/>
+    </h4>
+    <h4 class="notbold">
+      Send to email:<br><br>
+      <input type="email" placeholder="Email" name="email" id="email" class="lower_input" />
+    </h4>
+  </form>
+
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+  <ul>
+  {% for message in messages %}
+  <li style="color: red;">- {{ message }}</li>
+  {% endfor %}
+  </ul>
+  {% endif %}
+  {% endwith %}
+
+  <button type="submit" form="email_article" onClick="return empty()" value="Submit">Submit</button>
+  <br><br><br><br>
+  <p>
+    <a href="https://github.com/channeng/email-article"
+       target="_blank" title="View code in github">
+      Link to github
+    </a>
+  </p>
+</div>
+<script type="text/javascript">
+  function empty() {
+      var x;
+      email = document.getElementById("email").value;
+      article = document.getElementById("article_url").value;
+      if (email == "" || article == "") {
+          alert("Email and link to article must be provided.");
+          return false;
+      };
+    };
+  function get_url_params(param) {
+      var regex = /[?&]([^=#]+)=([^&#]*)/g,
+          url = window.location.href,
+          params = {},
+          match;
+      while(match = regex.exec(url)) {
+          params[match[1]] = match[2];
+      };
+      param_value = ""
+      if (params[param]) {
+        param_value = params[param];
       }
-    </script>
+      return param_value
+    };
+
+  document.getElementById('article_url').value = get_url_params("article");
+  var email_query_param = get_url_params("email")
+  if (email_query_param == "") {
+    document.getElementById('email').value = "{{ current_user.email }}";
+  } else {
+    document.getElementById('email').value = email_query_param;
+  }
+</script>
 
 {% endblock %}

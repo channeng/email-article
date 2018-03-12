@@ -57,6 +57,7 @@ SQLAlchemy==1.2.5
 tldextract==1.5.1
 traitlets==4.3.2
 uritemplate==3.0.0
+validators==0.12.1
 wcwidth==0.1.7
 Werkzeug==0.12.2
 WTForms==2.1

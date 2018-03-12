@@ -7,13 +7,15 @@ from flask import render_template, flash, redirect, url_for, request
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
+import validators
 
 from app import app
 from app.forms import LoginForm, RegistrationForm
 from app.models import User, List, ListItem
+from app.email_article import create_task
 
-from flask import (jsonify, make_response)
-from email_article import create_task
+from flask import jsonify, make_response
+
 # from flask_basicauth import BasicAuth
 
 
@@ -42,6 +44,11 @@ def email_article_page():
 @login_required
 def send_email_article():
     form_params = request.form.to_dict(flat=True)
+    if not (
+            validators.email(form_params["email"]) and
+            validators.url(form_params["article_url"])):
+        flash('Invalid url or email. Please try again.')
+        return redirect(url_for('send_email_article'))
     result = create_task(form_params)
     print(result)
     return render_template("email_article.html")
@@ -59,7 +66,8 @@ def login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
+        user = User.query.filter_by(
+            username=form.username.data.lower()).first()
         if user is None or not user.check_password(form.password.data):
             flash('Invalid username or password')
             return redirect(url_for('login'))
@@ -84,11 +92,15 @@ def register():
         return redirect(url_for('index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
+        user = User(
+            username=form.username.data.lower(),
+            email=form.email.data.lower())
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('Congratulations, you are now a registered user!')
+        flash(
+            'Congratulations, you are now a registered user!\n'
+            'Please sign in.')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 

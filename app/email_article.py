@@ -2,10 +2,11 @@ import base64
 from email.mime.text import MIMEText
 
 from flask import abort
-from connect.google_api import get_gmail_service
-from config import Config
 from googleapiclient import errors
 from newspaper import Article
+
+from connect.google_api import get_gmail_service
+from config import Config
 
 
 _SPECIAL_EMAIL = Config.SPECIAL_EMAIL
