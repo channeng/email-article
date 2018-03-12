@@ -42,9 +42,9 @@ ADD config.py /home/ubuntu/email-article
 
 ENV FLASK_APP=main.py
 RUN \
-  flask db init && \
-  flask db migrate && \
-  flask db upgrade
+  /home/ubuntu/.virtualenvs/env/bin/flask db init && \
+  /home/ubuntu/.virtualenvs/env/bin/flask db migrate && \
+  /home/ubuntu/.virtualenvs/env/bin/flask db upgrade
 
 # Copy supervisor configs
 RUN \

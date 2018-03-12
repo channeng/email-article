@@ -43,6 +43,12 @@
           float: right;
           padding: 0px 10px;
       }
+      #page .login_name {
+        color: #000000;
+        font-size: 100%;
+        font: FaktProSoft,Helvetica Neue,helvetica,arial,sans-serif;
+        text-decoration: none;
+      }
       #page h1 {
         color: #ffffff;
         background-color: #7d1128;
@@ -114,14 +120,19 @@
       <h2>
       <a href="{{ url_for('index') }}">Home</a>&nbsp; &nbsp;
       {% if current_user.is_anonymous %}
+
         {% if (title != "Register") %}
         &nbsp; &nbsp;<a class="right" href="{{ url_for('register') }}">Register</a>
         {% endif %}
+
         {% if (title != "Sign In") %}
         &nbsp; &nbsp;<a class="right" href="{{ url_for('login') }}">Login</a>
         {% endif %}
+
       {% else %}
-      &nbsp; &nbsp;<a class="right" href="{{ url_for('logout') }}">Logout</a>
+        &nbsp; &nbsp;<a class="right" href="{{ url_for('logout') }}">Logout</a>
+        &nbsp; &nbsp;<p class="login_name right">Hi, {{ current_user.username }}</p>
+
       {% endif %}
       </h2>
       {% block content %}{% endblock %}

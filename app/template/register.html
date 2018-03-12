@@ -6,34 +6,34 @@
 
   <form action="" method="post">
     {{ form.hidden_tag() }}
-    <p>
+    <h4 class="notbold">
       {{ form.username.label }}<br><br>
       {{ form.username(size=32) }}
       {% for error in form.username.errors %}
       <span style="color: red;">[{{ error }}]</span><br><br>
       {% endfor %}
-    </p>
-    <p>
+    </h4>
+    <h4 class="notbold">
       {{ form.email.label }}<br><br>
       {{ form.email(size=64) }}
       {% for error in form.email.errors %}
       <span style="color: red;">[{{ error }}]</span><br><br>
       {% endfor %}
-    </p>
-    <p>
+    </h4>
+    <h4 class="notbold">
       {{ form.password.label }}<br><br>
       {{ form.password(size=32) }}
       {% for error in form.password.errors %}
       <span style="color: red;">[{{ error }}]</span><br><br>
       {% endfor %}
-    </p>
-    <p>
+    </h4>
+    <h4 class="notbold">
       {{ form.password2.label }}<br><br>
       {{ form.password2(size=32) }}
       {% for error in form.password2.errors %}
       <span style="color: red;">[{{ error }}]</span><br><br>
       {% endfor %}
-    </p>
+    </h4>
     <br>
     <p>{{ form.submit() }}</p>
 
