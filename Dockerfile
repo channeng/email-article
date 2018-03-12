@@ -27,7 +27,7 @@ RUN \
   echo "IdentityFile /home/ubuntu/.credentials/repo-key" >> /etc/ssh/ssh_config && \
   echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
 
-RUN date > last_updated_2.txt
+RUN date > last_updated_3.txt
 RUN git clone git@github.com:channeng/email-article.git /home/ubuntu/email-article
 
 WORKDIR /home/ubuntu/email-article
@@ -39,6 +39,12 @@ RUN \
   pip install -r requirements.txt
 
 ADD config.py /home/ubuntu/email-article
+
+ENV FLASK_APP=main.py
+RUN \
+  flask db init && \
+  flask db migrate && \
+  flask db upgrade
 
 # Copy supervisor configs
 RUN \
