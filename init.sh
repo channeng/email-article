@@ -1,11 +1,12 @@
 #!/bin/bash
-# export FLASK_APP=/path/to/Personal/email-article/main.py
+if [ -e /home/ubuntu/email-article/database/app.db ]
+then
+    /home/ubuntu/.virtualenvs/env/bin/flask db migrate && \
+    /home/ubuntu/.virtualenvs/env/bin/flask db upgrade
+else
+	/home/ubuntu/.virtualenvs/env/bin/flask db init && \
+	/home/ubuntu/.virtualenvs/env/bin/flask db migrate && \
+    /home/ubuntu/.virtualenvs/env/bin/flask db upgrade
+fi
 
-# Generate migration script (or create new tables)
-flask db init
-
-# On the first migration
-flask db migrate
-
-# Apply changes from generated migration script to database
-flask db upgrade
+/home/ubuntu/.virtualenvs/env/bin/gunicorn --bind 0.0.0.0:5000 --workers 4 main:app
