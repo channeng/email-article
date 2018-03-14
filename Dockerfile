@@ -42,10 +42,6 @@ ADD config.py /home/ubuntu/email-article
 VOLUME ["/home/ubuntu/email-article/database"]
 
 ENV FLASK_APP=main.py
-RUN \
-  /home/ubuntu/.virtualenvs/env/bin/flask db init && \
-  /home/ubuntu/.virtualenvs/env/bin/flask db migrate && \
-  /home/ubuntu/.virtualenvs/env/bin/flask db upgrade
 
 # Copy supervisor configs
 RUN \
