@@ -39,7 +39,6 @@ RUN \
   pip install -r requirements.txt
 
 ADD config.py /home/ubuntu/email-article
-VOLUME ["/home/ubuntu/email-article/database"]
 
 ENV FLASK_APP=main.py
 
