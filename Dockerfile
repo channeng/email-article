@@ -27,7 +27,7 @@ RUN \
   echo "IdentityFile /home/ubuntu/.credentials/repo-key" >> /etc/ssh/ssh_config && \
   echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
 
-RUN date > last_updated_7.txt
+RUN date > last_updated_8.txt
 RUN git clone git@github.com:channeng/email-article.git /home/ubuntu/email-article
 
 WORKDIR /home/ubuntu/email-article
