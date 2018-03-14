@@ -1,10 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h3>Toolbox</h3>
-  <hr>
-
-  <h4><a href="{{ url_for('email_article_page') }}">Send news article to email</a></h4>
-  <h4><a>List generator</a></h4>
+  <h3>Apps</h3>
+  <hr><br>
+  <div>
+    <p>A set of simple & minimal applications.</p>
+    <p>Click on the links to find out more!</p>
+    <h4><a href="{{ url_for('email_article_page') }}">(1) News article to Email</a></h4>
+    <div class="subtext"><p>Send news articles to your email so you can read them later. You can also send forward the article to anyone else you like!</p></div>
+    <h4><a>(2) List generator  (available soon)</a></h4>
+    <div class="subtext"><p>Save your grocery list, to-do list, restaurants you want to visit, or activities you want to do. You can even generate random items off your list of places to go! </p></div>
+  </div>
 
 {% endblock %}

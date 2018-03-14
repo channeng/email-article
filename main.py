@@ -34,6 +34,11 @@ def index():
     return render_template("index.html")
 
 
+@app.route('/about')
+def about():
+    return render_template("about.html")
+
+
 @app.route('/email_article')
 @login_required
 def email_article_page():

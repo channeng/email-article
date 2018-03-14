@@ -3,7 +3,7 @@
 {% block content %}
   <h3>Sign In</h3>
   <hr>
-
+  <div>
   <form action="" method="post">
     {{ form.hidden_tag() }}
     <h4 class="notbold">
@@ -20,8 +20,7 @@
       <span style="color: red;">[{{ error }}]</span><br><br>
       {% endfor %}
     </h4>
-    <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
-    <br>
+    <p class="small">{{ form.remember_me() }} {{ form.remember_me.label }}</p>
     <h4 class="notbold">{{ form.submit() }}</h4>
 
     {% with messages = get_flashed_messages() %}
@@ -35,7 +34,7 @@
     {% endwith %}
 
   </form>
-  
+  </div>
   <br><hr>
   <h4>New User? <a href="{{ url_for('register') }}">Click to Register!</a></h4>
 {% endblock %}

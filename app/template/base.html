@@ -3,7 +3,7 @@
 <!-- Color combinations: https://coolors.co/f0a202-7d1128-3c0919-fbfffe-6d676e -->
 <html lang="en">
   <head>
-    <title>Article to email</title>
+    <title>My Pocket Internet</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style type="text/css">
 
@@ -11,6 +11,7 @@
         margin: 0;
         padding: 0;
         border: 0;
+        color: #424242;
         font-size: 100%;
         font: inherit;
         vertical-align: baseline;
@@ -21,7 +22,7 @@
         font-family: FaktProSoft,Helvetica Neue,helvetica,arial,sans-serif;
       }
       #page {
-        background: #ffffff;
+        background: #FCFCFC;
         max-width: 350px;
         width: 75%;
         margin-left: auto;
@@ -29,6 +30,21 @@
         border-radius: 10px;
         padding: 20px;
         margin-top: 40px;
+      }
+      #page p {
+        font-size: 90%;
+        line-height: 1.2;
+        font: FaktProSoft,Helvetica Neue,helvetica,arial,sans-serif;
+        text-decoration: none;
+      }
+      #page p.small {
+        font-size: 70%;
+      }
+      #page div {
+        padding: 0px 25px 0px 5px;
+      }
+      #page div.subtext {
+        padding: 0px 0px 0px 20px;
       }
       #page a {
         color: #550000;
@@ -119,9 +135,10 @@
   </head>
   <body>
     <div id="page">
-      <h1>Pocket Internet</h1>
+      <h1>My Pocket Internet</h1>
       <h2>
-      <a href="{{ url_for('index') }}">Home</a>&nbsp; &nbsp;
+      <a href="{{ url_for('index') }}">Apps</a>&nbsp; &nbsp;
+      <a href="{{ url_for('about') }}">About</a>&nbsp; &nbsp;
       {% if current_user.is_anonymous %}
 
         {% if (title != "Register") %}
