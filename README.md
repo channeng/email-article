@@ -57,14 +57,19 @@ Given a link to the article and the email of the recipient, the app will scrape 
 	sudo swapoff /swapfile
 	```
 
-6. Create docker volume for database
+6. (First-time) Create docker volume for database
 	```bash
 	sudo docker volume create email-article-db
 	```
 
+	Check that volume exists:
+	```bash
+	sudo docker volume ls | grep email-article-db
+	```
+
 7. Run docker container
 	```bash
-	sudo docker run -p 5000:5000 -d email-article /usr/bin/supervisord --nodaemon --mount source=email-article-db,target=/home/ubuntu/email-article/database
+	sudo docker run -v email-article-db:/home/ubuntu/email-article/database -p 5000:5000 -d email-article /usr/bin/supervisord --nodaemon
 	```
 
 8. Enter bash terminal
