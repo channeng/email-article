@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h3>My Lists</h3>
+  <hr><br>
+  <div>
+    <ul>
+    {% for list in lists %}
+      <li><a class="bold" href="{{ url_for('list_items_page', list_id=list.id) }}">{{ list.name }}</a></li>
+    {% endfor %}
+    </ul>
+  </div>
+  <br>
+  <h4>Create New List</h4>
+  <div>
+    <form action="" method="post">
+      {{ form.hidden_tag() }}
+      <h4 class="notbold">
+        {{ form.list_name.label }}<br><br>
+        {{ form.list_name(size=32, class_="lower_input") }}
+        {% for error in form.list_name.errors %}
+        <span style="color: red;">[{{ error }}]</span><br><br>
+        {% endfor %}
+      </h4>
+      <h4 class="notbold">{{ form.submit() }}</h4>
+
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      <ul>
+      {% for message in messages %}
+      <li style="color: red;">- {{ message }}</li>
+      {% endfor %}
+      </ul>
+      {% endif %}
+      {% endwith %}
+
+    </form>
+  </div>
+
+
+{% endblock %}

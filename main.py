@@ -10,9 +10,13 @@ from werkzeug.urls import url_parse
 import validators
 
 from app import app
-from app.forms import LoginForm, RegistrationForm
+from app.forms import (
+    LoginForm, RegistrationForm, NewListForm, NewListItemForm)
 from app.models import User, List, ListItem
 from app.email_article import create_task
+from app.lists import (
+    get_lists, create_list, delete_list, get_list_name_items,
+    create_listitems, delete_listitems)
 
 from flask import jsonify, make_response
 
@@ -108,6 +112,45 @@ def register():
             'Please sign in.')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
+
+
+@app.route('/lists', methods=['GET', 'POST'])
+@login_required
+def lists_page():
+    form_params = request.form.to_dict(flat=True)
+    list_id_in_request = "list_id" in form_params.keys()
+    if list_id_in_request:
+        delete_list(db, int(form_params["list_id"]))
+
+    lists = get_lists(current_user.id)
+    form = NewListForm()
+    if not list_id_in_request:
+        if form.validate_on_submit():
+            create_list(db, form.list_name.data.title(), current_user.id)
+            lists = get_lists(current_user.id)
+    return render_template("lists.html", form=form, lists=lists)
+
+
+@app.route('/lists/<int:list_id>', methods=['GET', 'POST'])
+@login_required
+def list_items_page(list_id):
+    form_params = request.form.to_dict(flat=True)
+    item_id_in_request = "item_id" in form_params.keys()
+    if item_id_in_request:
+        delete_listitems(db, int(form_params["item_id"]))
+    list_name, items = get_list_name_items(list_id)
+    new_item_form = NewListItemForm()
+    if not item_id_in_request:
+        if new_item_form.validate_on_submit() and new_item_form.item_name.data:
+            print("New item form {}".format(new_item_form.item_name.data))
+            create_listitems(db, new_item_form.item_name.data.title(), list_id)
+            list_name, items = get_list_name_items(list_id)
+    return render_template(
+        "list_items.html",
+        list_name=list_name, list_id=list_id,
+        items=items,
+        new_item_form=new_item_form,
+    )
 
 
 if __name__ == '__main__':

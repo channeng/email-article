@@ -14,4 +14,3 @@ migrate = Migrate(app, db)
 # Flask-Login needs to know what is the view function that handles logins
 login = LoginManager(app)
 login.login_view = 'login'
-# from app import routes, models	# Noqa

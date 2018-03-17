@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import (
+    StringField, PasswordField, BooleanField, SubmitField)
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 from app.models import User
 
@@ -28,3 +29,13 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(email=email.data.lower()).first()
         if user is not None:
             raise ValidationError('Please use a different email address.')
+
+
+class NewListForm(FlaskForm):
+    list_name = StringField('List name', validators=[DataRequired()])
+    submit = SubmitField('Create List')
+
+
+class NewListItemForm(FlaskForm):
+    item_name = StringField('Item name', validators=[DataRequired()])
+    submit = SubmitField('Add Item')
