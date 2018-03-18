@@ -36,16 +36,17 @@ def create_listitems(db, item_name, list_id):
     new_listitems = ListItem(name=item_name, list_id=int(list_id))
     db.session.add(new_listitems)
     db.session.commit()
-    flash("Added new item: {}".format(item_name))
+    # flash("Added new item: {}".format(item_name))
 
 
-def update_listitems(db, item_id, status="Done"):
-    list_item = ListItem.query.filter_by(id=item_id).first()
-    list_item.status = status
-    db.session.merge(list_item)
+def update_listitems(db, item_ids, status="Done"):
+    item_ids = [int(item_id) for item_id in item_ids]
+    list_items = db.session.query(ListItem).filter(ListItem.id.in_(item_ids))
+    list_items.update({'status': status}, synchronize_session='fetch')
     db.session.commit()
-    flash("Item {} status updated: {}".format(
-        list_item.name, list_item.status))
+    # for item in list_items:
+    #     flash("Item {} status updated: {}".format(
+    #         item.name, item.status))
 
 
 def delete_listitems(db, item_id):
@@ -53,4 +54,4 @@ def delete_listitems(db, item_id):
     list_item.is_deleted = True
     db.session.merge(list_item)
     db.session.commit()
-    flash("Deleted item: {}".format(list_item.name))
+    # flash("Deleted item: {}".format(list_item.name))

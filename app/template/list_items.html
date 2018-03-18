@@ -13,21 +13,37 @@
   <div>
       </div>
   <div>
-    <ul>
-    {% for item in items %}
-      <li>
-        <label class="container">
-          <input type="checkbox">
-          <span class="checkmark"></span>
-          <a>{{ item.name }}</a>
-        </label>
-            <button class="delete" type="submit" form="delete_item_form_{{ item.id }}" onClick="return confirm('Are you sure you want to delete {{ item.name }} ?')">&nbsp;&#10007;&nbsp;</button>
-            <form type="hidden" id="delete_item_form_{{ item.id }}" action="{{ url_for('list_items_page', list_id=list_id) }}" method="post">
-              <input type="hidden" name="item_id" value="{{ item.id }}" id="{{ item.id }}" />
-            </form>
-      </li>
-    {% endfor %}
-    </ul>
+
+    <form id="save_checked_boxes" action="{{ url_for('list_items_page', list_id=list_id) }}" method="post">
+      <ul>
+      {% for item in items %}
+        <li>
+          <label class="container">
+            <input form="save_checked_boxes" id="check_item_form_{{ item.id }}" type='hidden' name='item_id_unchecked' value="{{ item.id }}">
+            {% if item.status == "Done" %}
+            <input form="save_checked_boxes" id="check_item_form_{{ item.id }}" type="checkbox" name="item_id_checked" value="{{ item.id }}" onclick="this.form.submit()" checked>
+            {% else %}
+            <input form="save_checked_boxes" id="check_item_form_{{ item.id }}" type="checkbox" name="item_id_checked" value="{{ item.id }}" onclick="this.form.submit()">
+            {% endif %}
+            <span class="checkmark"></span>
+
+            {% if item.status == "Done" %}
+            <a style="color:#cdd0cd;">{{ item.name }}</a>
+            {% else %}
+            <a>{{ item.name }}</a>
+            {% endif %}
+
+          </label>
+              <button class="delete" type="submit" value="{{ item.id }}" form="delete_item_form_{{ item.id }}" onClick="return confirm('Are you sure you want to delete {{ item.name }} ?')">&nbsp;&#10007;&nbsp;</button>
+              <form id="delete_item_form_{{ item.id }}" type="hidden" action="{{ url_for('list_items_page', list_id=list_id) }}" method="post">
+                <input form="delete_item_form_{{ item.id }}" id="delete_item_form_{{ item.id }}" type="hidden" name="item_id_delete" value="{{ item.id }}"/>
+              </form>
+        </li>
+      {% endfor %}
+      </ul>
+      <!-- <input type="hidden" form="save_checked_boxes" type="submit" value="submit"> -->
+    </form>
+
 
   </div>
   <br>

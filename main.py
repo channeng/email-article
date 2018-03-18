@@ -16,7 +16,7 @@ from app.models import User, List, ListItem
 from app.email_article import create_task
 from app.lists import (
     get_lists, create_list, delete_list, get_list_name_items,
-    create_listitems, delete_listitems)
+    create_listitems, delete_listitems, update_listitems)
 
 from flask import jsonify, make_response
 
@@ -131,20 +131,45 @@ def lists_page():
     return render_template("lists.html", form=form, lists=lists)
 
 
+def _list_items_delete(form_params):
+    delete_in_request = "item_id_delete" in form_params.keys()
+    if delete_in_request:
+        for item_id in form_params["item_id_delete"]:
+            delete_listitems(db, int(item_id))
+    return delete_in_request
+
+
+def _list_items_checked_unchecked(form_params):
+    check_in_request = "item_id_checked" in form_params.keys()
+    uncheck_in_request = "item_id_unchecked" in form_params.keys()
+    if check_in_request or uncheck_in_request:
+        if check_in_request:
+            item_ids_checked = form_params["item_id_checked"]
+            update_listitems(db, item_ids_checked, status="Done")
+        if uncheck_in_request:
+            item_ids_unchecked = form_params["item_id_unchecked"]
+            if check_in_request:
+                item_ids_unchecked = list(
+                    set(item_ids_unchecked) - set(item_ids_checked))
+            update_listitems(db, item_ids_unchecked, status="Active")
+    checked_unchecked_in_request = (check_in_request or uncheck_in_request)
+    return checked_unchecked_in_request
+
+
 @app.route('/lists/<int:list_id>', methods=['GET', 'POST'])
 @login_required
 def list_items_page(list_id):
-    form_params = request.form.to_dict(flat=True)
-    item_id_in_request = "item_id" in form_params.keys()
-    if item_id_in_request:
-        delete_listitems(db, int(form_params["item_id"]))
+    form_params = request.form.to_dict(flat=False)
+    delete_in_request = _list_items_delete(form_params)
+    checked_unchecked_in_request = _list_items_checked_unchecked(form_params)
     list_name, items = get_list_name_items(list_id)
     new_item_form = NewListItemForm()
-    if not item_id_in_request:
+    if not (delete_in_request or checked_unchecked_in_request):
         if new_item_form.validate_on_submit() and new_item_form.item_name.data:
             print("New item form {}".format(new_item_form.item_name.data))
             create_listitems(db, new_item_form.item_name.data.title(), list_id)
             list_name, items = get_list_name_items(list_id)
+
     return render_template(
         "list_items.html",
         list_name=list_name, list_id=list_id,
