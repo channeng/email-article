@@ -20,10 +20,7 @@ from app.lists import (
 
 from flask import jsonify, make_response
 
-# from flask_basicauth import BasicAuth
 
-
-# basic_auth = BasicAuth(app)
 db = SQLAlchemy(app)
 
 
@@ -127,7 +124,8 @@ def lists_page():
     if not list_id_in_request:
         if form.validate_on_submit():
             create_list(db, form.list_name.data.title(), current_user.id)
-            lists = get_lists(current_user.id)
+            return redirect(url_for('lists_page'))
+
     return render_template("lists.html", form=form, lists=lists)
 
 
@@ -173,7 +171,7 @@ def list_items_page(list_id):
                 new_item_form.item_desc.data,
                 new_item_form.item_url.data,
                 list_id)
-            list_name, items = get_list_name_items(list_id)
+            return redirect(url_for('list_items_page', list_id=list_id))
 
     return render_template(
         "list_items.html",

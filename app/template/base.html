@@ -154,7 +154,9 @@
         font-weight:normal;
         width:70px;
       }
-
+      #page form[type=hidden] {
+        display: none;
+      }
       /*For checkbox*/
       /* Customize the label (the container) */
       .container {
@@ -178,7 +180,9 @@
         opacity: 0;
         cursor: pointer;
       }
-
+      .container input[name=item_id_checked] {
+        display: none;
+      }
       /* Create a custom checkbox */
       .checkmark {
         position: absolute;
@@ -186,17 +190,17 @@
         left: 0;
         height: 15px;
         width: 15px;
-        background-color: #eee;
+        background-color: #f0e9eb;
       }
 
       /* On mouse-over, add a grey background color */
       .container:hover input ~ .checkmark {
-        background-color: #ccc;
+        background-color: #E6DBDE;
       }
 
       /* When the checkbox is checked, add a blue background */
       .container input:checked ~ .checkmark {
-        background-color: #2196F3;
+        background-color: #C1CDC1;
       }
 
       /* Create the checkmark/indicator (hidden when not checked) */

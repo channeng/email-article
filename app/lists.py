@@ -1,4 +1,4 @@
-from flask import flash
+# from flask import flash
 
 from app.models import List, ListItem
 
@@ -14,7 +14,7 @@ def create_list(db, list_name, user_id):
     new_list = List(name=list_name, user_id=int(user_id))
     db.session.add(new_list)
     db.session.commit()
-    flash("Created a new list: {}".format(list_name))
+    # flash("Created a new list: {}".format(list_name))
 
 
 def delete_list(db, list_id):
@@ -22,7 +22,7 @@ def delete_list(db, list_id):
     list_obj.is_deleted = True
     db.session.merge(list_obj)
     db.session.commit()
-    flash("Deleted list: {}".format(list_obj.name))
+    # flash("Deleted list: {}".format(list_obj.name))
 
 
 def get_list_name_items(list_id):
