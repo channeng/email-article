@@ -32,8 +32,9 @@ def get_list_name_items(list_id):
     return list_name, list_items
 
 
-def create_listitems(db, item_name, list_id):
-    new_listitems = ListItem(name=item_name, list_id=int(list_id))
+def create_listitems(db, item_name, desc, url, list_id):
+    new_listitems = ListItem(
+        name=item_name, body=desc, url=url, list_id=int(list_id))
     db.session.add(new_listitems)
     db.session.commit()
     # flash("Added new item: {}".format(item_name))

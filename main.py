@@ -167,7 +167,12 @@ def list_items_page(list_id):
     if not (delete_in_request or checked_unchecked_in_request):
         if new_item_form.validate_on_submit() and new_item_form.item_name.data:
             print("New item form {}".format(new_item_form.item_name.data))
-            create_listitems(db, new_item_form.item_name.data.title(), list_id)
+            create_listitems(
+                db,
+                new_item_form.item_name.data,
+                new_item_form.item_desc.data,
+                new_item_form.item_url.data,
+                list_id)
             list_name, items = get_list_name_items(list_id)
 
     return render_template(

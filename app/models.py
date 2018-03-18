@@ -48,8 +48,8 @@ class List(db.Model):
 class ListItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(140))
-    body = db.Column(db.String(140))
-    url = db.Column(db.String(140))
+    body = db.Column(db.String(1028))
+    url = db.Column(db.String(2083))
     timestamp = db.Column(
         db.DateTime, index=True, default=datetime.utcnow)
     list_id = db.Column(db.Integer, db.ForeignKey('list.id'))
@@ -63,7 +63,7 @@ class ListItem(db.Model):
 class EmailArticle(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(140))
-    url = db.Column(db.String(512))
+    url = db.Column(db.String(2083))
     timestamp = db.Column(
         db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))

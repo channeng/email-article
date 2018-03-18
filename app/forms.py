@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import (
     StringField, PasswordField, BooleanField, SubmitField)
-from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
+from wtforms.validators import (
+    ValidationError, DataRequired, Email, EqualTo, URL, Length, Optional)
 from app.models import User
 
 
@@ -37,5 +38,35 @@ class NewListForm(FlaskForm):
 
 
 class NewListItemForm(FlaskForm):
-    item_name = StringField('Item name', validators=[DataRequired()])
+    length_message = "{} cannot be more than {} characters."
+
+    item_name_fieldname = "Item name"
+    item_name_limit = 24
+    item_name = StringField(
+        item_name_fieldname,
+        render_kw={'maxlength': item_name_limit},
+        validators=[DataRequired(), Length(
+            max=item_name_limit,
+            message=length_message.format(
+                item_name_fieldname, item_name_limit))])
+
+    item_desc_fieldname = "Item description"
+    item_desc_limit = 1028
+    item_desc = StringField(
+        '{} (optional)'.format(item_desc_fieldname),
+        render_kw={'maxlength': item_desc_limit},
+        validators=[Optional(), Length(
+            max=item_desc_limit,
+            message=length_message.format(
+                item_desc_fieldname, item_desc_limit))])
+
+    item_url_fieldname = "Item URL"
+    item_url_limit = 2083
+    item_url = StringField(
+        '{} (optional)'.format(item_url_fieldname),
+        render_kw={'maxlength': item_url_limit},
+        validators=[Optional(), URL(), Length(
+            max=item_url_limit,
+            message=length_message.format(
+                item_url_fieldname, item_url_limit))])
     submit = SubmitField('Add Item')

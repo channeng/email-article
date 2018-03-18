@@ -1,75 +1,90 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h3>
-    <a href="{{ url_for('lists_page') }}">My Lists</a>
-    &nbsp; > &nbsp; {{ list_name }}
-    <button class="delete list_del" type="submit" form="delete_list_form" onClick="return confirm('Are you sure you want to delete this list: {{ list_name }} ?')">Delete list</button>
-  </h3>
-    <form type="hidden" id="delete_list_form" action="{{ url_for('lists_page') }}" method="post">
-      <input type="hidden" name="list_id" value="{{ list_id }}" id="{{ list_id }}" />
-    </form>
-  <hr>
-  <div>
-      </div>
-  <div>
 
-    <form id="save_checked_boxes" action="{{ url_for('list_items_page', list_id=list_id) }}" method="post">
-      <ul>
+<h3>
+  <a href="{{ url_for('lists_page') }}">My Lists</a>
+  &nbsp; > &nbsp; {{ list_name }}
+  <button class="delete list_del" type="submit" form="delete_list_form" onClick="return confirm('Are you sure you want to delete this list: {{ list_name }} ?')">Delete list</button>
+</h3>
+  <form type="hidden" id="delete_list_form" action="{{ url_for('lists_page') }}" method="post">
+    <input type="hidden" name="list_id" value="{{ list_id }}" id="{{ list_id }}" />
+  </form>
+<hr>
+
+<div>
+  <form id="save_checked_boxes" action="{{ url_for('list_items_page', list_id=list_id) }}" method="post">
+    <ul>
+
       {% for item in items %}
-        <li>
-          <label class="container">
-            <input form="save_checked_boxes" id="check_item_form_{{ item.id }}" type='hidden' name='item_id_unchecked' value="{{ item.id }}">
-            {% if item.status == "Done" %}
-            <input form="save_checked_boxes" id="check_item_form_{{ item.id }}" type="checkbox" name="item_id_checked" value="{{ item.id }}" onclick="this.form.submit()" checked>
-            {% else %}
-            <input form="save_checked_boxes" id="check_item_form_{{ item.id }}" type="checkbox" name="item_id_checked" value="{{ item.id }}" onclick="this.form.submit()">
-            {% endif %}
-            <span class="checkmark"></span>
+      <li>
 
-            {% if item.status == "Done" %}
-            <a style="color:#cdd0cd;">{{ item.name }}</a>
-            {% else %}
-            <a>{{ item.name }}</a>
-            {% endif %}
+        <label class="container">
+          <input form="save_checked_boxes" id="check_item_form_{{ item.id }}" type='hidden' name='item_id_unchecked' value="{{ item.id }}">
+          {% if item.status == "Done" %}
+          <input form="save_checked_boxes" id="check_item_form_{{ item.id }}" type="checkbox" name="item_id_checked" value="{{ item.id }}" onclick="this.form.submit()" checked>
+          {% else %}
+          <input form="save_checked_boxes" id="check_item_form_{{ item.id }}" type="checkbox" name="item_id_checked" value="{{ item.id }}" onclick="this.form.submit()">
+          {% endif %}
+          <span class="checkmark"></span>
+        </label>
 
-          </label>
-              <button class="delete" type="submit" value="{{ item.id }}" form="delete_item_form_{{ item.id }}" onClick="return confirm('Are you sure you want to delete {{ item.name }} ?')">&nbsp;&#10007;&nbsp;</button>
-              <form id="delete_item_form_{{ item.id }}" type="hidden" action="{{ url_for('list_items_page', list_id=list_id) }}" method="post">
-                <input form="delete_item_form_{{ item.id }}" id="delete_item_form_{{ item.id }}" type="hidden" name="item_id_delete" value="{{ item.id }}"/>
-              </form>
-        </li>
+        {% if item.status == "Done" %}
+        <a style="color:#cdd0cd;">{{ item.name }}</a>
+        {% else %}
+        <a>{{ item.name }}</a>
+        {% endif %}
+
+        {% if item.url != "" %}
+        <a target="_blank" href="{{ item.url }}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#128279;&nbsp;</a>
+        {% endif %}
+
+        <button class="delete" type="submit" value="{{ item.id }}" form="delete_item_form_{{ item.id }}" onClick="return confirm('Are you sure you want to delete {{ item.name }} ?')">&nbsp;&#10007;&nbsp;</button>
+        <form id="delete_item_form_{{ item.id }}" type="hidden" action="{{ url_for('list_items_page', list_id=list_id) }}" method="post">
+          <input form="delete_item_form_{{ item.id }}" id="delete_item_form_{{ item.id }}" type="hidden" name="item_id_delete" value="{{ item.id }}"/>
+        </form>
+
+      </li>
       {% endfor %}
-      </ul>
-    </form>
 
+    </ul>
+  </form>
+</div>
+<br>
 
-  </div>
-  <br>
-  <h4>Add item to list</h4>
-  <div>
-    <form action="" method="post">
-      {{ new_item_form.hidden_tag() }}
-      <h4 class="notbold">
-        {{ new_item_form.item_name.label }}<br><br>
-        {{ new_item_form.item_name(size=32, class_="lower_input") }}
-        {% for error in new_item_form.item_name.errors %}
-        <span style="color: red;">[{{ error }}]</span><br><br>
-        {% endfor %}
-      </h4>
-      <h4 class="notbold">{{ new_item_form.submit() }}</h4>
+<h4>Add item to list</h4>
+<div>
+  <form action="" method="post">
+    {{ new_item_form.hidden_tag() }}
+    <h4 class="notbold">
 
-      {% with messages = get_flashed_messages() %}
-      {% if messages %}
-      <ul>
-      {% for message in messages %}
-      <li style="color: red;">- {{ message }}</li>
+      {{ new_item_form.item_name.label }}<br><br>
+      {{ new_item_form.item_name(size=32) }}
+      {{ new_item_form.item_desc.label }}<br><br>
+      {{ new_item_form.item_desc(size=32) }}
+      {{ new_item_form.item_url.label }}<br><br>
+      {{ new_item_form.item_url(size=32, class_="lower_input") }}
+
+      {% for field in new_item_form.errors %}
+      {% for error in new_item_form.errors[field] %}
+      <span style="color: red;">[{{ error }}]</span><br><br>
       {% endfor %}
-      </ul>
-      {% endif %}
-      {% endwith %}
+      {% endfor %}
 
-    </form>
-  </div>
+    </h4>
+    <h4 class="notbold">{{ new_item_form.submit() }}</h4>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+    {% for message in messages %}
+    <li style="color: red;">- {{ message }}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+
+  </form>
+</div>
 
 {% endblock %}
