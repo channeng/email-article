@@ -3,6 +3,8 @@
 Usage:
     python app.py
 """
+import random
+
 from flask import render_template, flash, redirect, url_for, request
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask_login import current_user, login_user, logout_user, login_required
@@ -114,13 +116,23 @@ def register():
 @app.route('/lists', methods=['GET', 'POST'])
 @login_required
 def lists_page():
+    lists = get_lists(current_user.id)
+    form = NewListForm()
+
+    rand_list = request.args.get("rand", None)
+    if rand_list is not None:
+        list_name, items = get_list_name_items(rand_list, is_active_only=True)
+        if items:
+            rand_item = random.choice(items)
+            return render_template(
+                "lists.html",
+                form=form, lists=lists, rand_item=rand_item)
+
     form_params = request.form.to_dict(flat=True)
     list_id_in_request = "list_id" in form_params.keys()
     if list_id_in_request:
         delete_list(db, int(form_params["list_id"]))
 
-    lists = get_lists(current_user.id)
-    form = NewListForm()
     if not list_id_in_request:
         if form.validate_on_submit():
             create_list(db, form.list_name.data.title(), current_user.id)

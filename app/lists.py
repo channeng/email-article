@@ -25,10 +25,15 @@ def delete_list(db, list_id):
     # flash("Deleted list: {}".format(list_obj.name))
 
 
-def get_list_name_items(list_id):
+def get_list_name_items(list_id, is_active_only=False):
     list_obj = List.query.filter_by(id=list_id, is_deleted=False).first()
     list_name = list_obj.name
-    list_items = list_obj.items.filter_by(is_deleted=False).all()
+    if is_active_only:
+        list_items = list_obj.items.filter_by(
+            is_deleted=False, status="Active").all()
+    else:
+        list_items = list_obj.items.filter_by(
+            is_deleted=False).all()
     return list_name, list_items
 
 

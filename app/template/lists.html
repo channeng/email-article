@@ -6,7 +6,18 @@
   <div>
     <ul>
     {% for list in lists %}
-      <li><a class="bold" href="{{ url_for('list_items_page', list_id=list.id) }}">{{ list.name }}</a></li>
+      <li>
+        <a class="bold" href="{{ url_for('list_items_page', list_id=list.id) }}">{{ list.name }}</a>
+        <a style="font-size:200%; vertical-align: middle;" class="notbold right" href="{{ url_for('lists_page', rand=list.id) }}">&#9858;</a>
+        {% if rand_item is defined and rand_item.list_id == list.id %}
+        <ul><li>
+          {{ rand_item.name }}
+          {% if rand_item.url != "" %}
+            <a target="_blank" href="{{ rand_item.url }}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#128279;&nbsp;</a>
+          {% endif %}
+        </li></ul>
+        {% endif %}
+      </li>
     {% endfor %}
     </ul>
   </div>
