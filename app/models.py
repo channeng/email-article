@@ -71,3 +71,29 @@ class EmailArticle(db.Model):
     def __repr__(self):
         return '<EmailArticle {id}: {email} - {url}>'.format(
             id=self.id, email=self.email, url=self.url)
+
+
+class Chat(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(140), default="")
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    invited_user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    timestamp = db.Column(
+        db.DateTime, index=True, default=datetime.utcnow)
+    messages = db.relationship(
+        'ChatMessage', backref='chat', lazy='dynamic')
+    is_deleted = db.Column(db.Boolean, default=False)
+
+    def __repr__(self):
+        return '<Chat {}: {}>'.format(self.id, self.name)
+
+
+class ChatMessage(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    message = db.Column(db.String(1028))
+    timestamp = db.Column(
+        db.DateTime, index=True, default=datetime.utcnow)
+    chat_id = db.Column(db.Integer, db.ForeignKey('chat.id'))
+
+    def __repr__(self):
+        return '<ChatMessage {}: {}>'.format(self.id, self.message)

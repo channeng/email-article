@@ -70,3 +70,9 @@ class NewListItemForm(FlaskForm):
             message=length_message.format(
                 item_url_fieldname, item_url_limit))])
     submit = SubmitField('Add Item')
+
+
+class NewChatForm(FlaskForm):
+    chat_with_username = StringField('Username', validators=[DataRequired()])
+    # chat_name = StringField('Chat name', validators=[Optional()])
+    submit = SubmitField('Create Chat')

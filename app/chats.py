@@ -1,0 +1,60 @@
+from app.models import Chat, ChatMessage
+from app.models_items import ModelsItems
+
+
+class ChatItems(ModelsItems):
+    def get_models(self, user_id, num_results=100):
+        return self.model.query.filter(
+            (self.model.user_id == user_id) |
+            (self.model.invited_user_id == user_id)
+        ).filter_by(is_deleted=False).order_by(
+            self.model.id.desc()).limit(
+                num_results).all()
+
+    def create_model(self, db, model_name, user_id, invited_user_id):
+        new_list = self.model(
+            name=model_name,
+            user_id=int(user_id),
+            invited_user_id=int(invited_user_id))
+        db.session.add(new_list)
+        db.session.commit()
+
+    def create_modelitems(self, db, message, chat_id):
+        new_modelitems = self.model_item(
+            message=message,
+            chat_id=int(chat_id))
+        db.session.add(new_modelitems)
+        db.session.commit()
+        # flash("Added new item: {}".format(item_name))
+
+model_template = ChatItems(Chat, ChatMessage)
+
+
+def get_chats(user_id, num_results=100):
+    return model_template.get_models(user_id, num_results)
+
+
+def create_chat(db, user_id, invited_user_id, chat_name=""):
+    return model_template.create_model(
+        db, chat_name, user_id, invited_user_id)
+
+
+def delete_chat(db, chat_id):
+    return model_template.delete_model(db, chat_id)
+
+
+def get_chat_name_messages(chat_id, is_active_only=False):
+    return model_template.get_model_name_items(chat_id, is_active_only)
+
+
+def create_chatmessage(db, message, chat_id):
+    return model_template.create_modelitems(
+        db, message, chat_id)
+
+
+def update_chatmessage(db, item_ids, status="Done"):
+    return model_template.update_modelitems(db, item_ids, status)
+
+
+def delete_chatmessage(db, item_id):
+    return model_template.delete_modelitems(db, item_id)

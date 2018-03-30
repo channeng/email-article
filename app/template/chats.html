@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h3>My Chats</h3>
+  <hr><br>
+  <div>
+    <ul>
+    {% for chat in chats %}
+      <li>
+        <a class="bold" href="{{ url_for('chat_room_page', chat_id=chat.id, chat_name=chat_names[loop.index0]) }}">{{ chat_names[loop.index0] }}</a>
+      </li>
+    {% endfor %}
+    </ul>
+  </div>
+  <br>
+  <h4>Create New Chat</h4>
+  <div>
+    <form action="" method="post">
+      {{ form.hidden_tag() }}
+      <h4 class="notbold">
+        {{ form.chat_with_username.label }}<br><br>
+        {{ form.chat_with_username(size=32, class_="lower_input") }}
+        {% for error in form.chat_with_username.errors %}
+        <span style="color: red;">[{{ error }}]</span><br><br>
+        {% endfor %}
+      </h4>
+      <h4 class="notbold">{{ form.submit() }}</h4>
+
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      <ul>
+      {% for message in messages %}
+      <li style="color: red;">- {{ message }}</li>
+      {% endfor %}
+      </ul>
+      {% endif %}
+      {% endwith %}
+
+    </form>
+  </div>
+
+
+{% endblock %}
