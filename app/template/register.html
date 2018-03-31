@@ -8,34 +8,33 @@
     {{ form.hidden_tag() }}
     <h4 class="notbold">
       {{ form.username.label }}<br><br>
-      {{ form.username(size=32, class_="lower_input") }}
+      {{ form.username(size=32, class_="lower_input input_field") }}
       {% for error in form.username.errors %}
       <span style="color: red;">[{{ error }}]</span><br><br>
       {% endfor %}
     </h4>
     <h4 class="notbold">
       {{ form.email.label }}<br><br>
-      {{ form.email(size=64, class_="lower_input") }}
+      {{ form.email(size=64, class_="lower_input input_field") }}
       {% for error in form.email.errors %}
       <span style="color: red;">[{{ error }}]</span><br><br>
       {% endfor %}
     </h4>
     <h4 class="notbold">
       {{ form.password.label }}<br><br>
-      {{ form.password(size=32) }}
+      {{ form.password(size=32, class_="input_field") }}
       {% for error in form.password.errors %}
       <span style="color: red;">[{{ error }}]</span><br><br>
       {% endfor %}
     </h4>
     <h4 class="notbold">
       {{ form.password2.label }}<br><br>
-      {{ form.password2(size=32) }}
+      {{ form.password2(size=32, class_="input_field") }}
       {% for error in form.password2.errors %}
       <span style="color: red;">[{{ error }}]</span><br><br>
       {% endfor %}
     </h4>
-    <br>
-    <p>{{ form.submit() }}</p>
+    <h4 class="notbold button_h4">{{ form.submit(class_="form_button") }}</h4>
 
     {% with messages = get_flashed_messages() %}
     {% if messages %}

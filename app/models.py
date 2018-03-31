@@ -90,10 +90,13 @@ class Chat(db.Model):
 
 class ChatMessage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    username = db.Column(db.String(64), db.ForeignKey('user.username'))
     message = db.Column(db.String(1028))
     timestamp = db.Column(
         db.DateTime, index=True, default=datetime.utcnow)
     chat_id = db.Column(db.Integer, db.ForeignKey('chat.id'))
+    is_deleted = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return '<ChatMessage {}: {}>'.format(self.id, self.message)

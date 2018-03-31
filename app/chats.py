@@ -19,13 +19,27 @@ class ChatItems(ModelsItems):
         db.session.add(new_list)
         db.session.commit()
 
-    def create_modelitems(self, db, message, chat_id):
+    def create_modelitems(self, db, message, chat_id, user_id, username):
         new_modelitems = self.model_item(
             message=message,
-            chat_id=int(chat_id))
+            chat_id=int(chat_id),
+            user_id=int(user_id),
+            username=username)
         db.session.add(new_modelitems)
         db.session.commit()
         # flash("Added new item: {}".format(item_name))
+
+    def get_model_name_items(self, model_id, is_active_only=False):
+        model_obj = self.model.query.filter_by(
+            id=model_id, is_deleted=False).first()
+        model_name = model_obj.name
+        if is_active_only:
+            model_items = model_obj.messages.filter_by(
+                is_deleted=False, status="Active").all()
+        else:
+            model_items = model_obj.messages.filter_by(
+                is_deleted=False).all()
+        return model_name, model_items
 
 model_template = ChatItems(Chat, ChatMessage)
 
@@ -47,9 +61,9 @@ def get_chat_name_messages(chat_id, is_active_only=False):
     return model_template.get_model_name_items(chat_id, is_active_only)
 
 
-def create_chatmessage(db, message, chat_id):
+def create_chatmessage(db, message, chat_id, user_id, username):
     return model_template.create_modelitems(
-        db, message, chat_id)
+        db, message, chat_id, user_id, username)
 
 
 def update_chatmessage(db, item_ids, status="Done"):

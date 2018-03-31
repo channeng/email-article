@@ -4,6 +4,7 @@ Usage:
     python app.py
 """
 import random
+import json
 
 from flask import render_template, flash, redirect, url_for, request
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -11,7 +12,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from flask_socketio import SocketIO, send as send_message
 from werkzeug.urls import url_parse
 import validators
-
+from IPython import embed
 from app import app
 from app.forms import (
     LoginForm, RegistrationForm, NewListForm, NewListItemForm,
@@ -240,6 +241,18 @@ def _get_chat_names(chats):
     return chat_names
 
 
+def _has_chat_with_user(user_id, invited_user_id):
+    chat_id = db.session.query(Chat.id).filter_by(
+        user_id=user_id,
+        invited_user_id=invited_user_id,
+        is_deleted=False).scalar()
+    chat_id_inverse = db.session.query(Chat.id).filter_by(
+        user_id=invited_user_id,
+        invited_user_id=user_id,
+        is_deleted=False).scalar()
+    return chat_id is not None or chat_id_inverse is not None
+
+
 @app.route('/chats', methods=['GET', 'POST'])
 @login_required
 def chats_page():
@@ -260,11 +273,7 @@ def chats_page():
                 username=username).scalar()
             same_user = invited_user_id == current_user.id
             if invited_user_id is not None and not same_user:
-                chat_id = db.session.query(Chat.id).filter_by(
-                    user_id=current_user.id,
-                    invited_user_id=invited_user_id,
-                    is_deleted=False).scalar()
-                if chat_id is not None:
+                if _has_chat_with_user(current_user.id, invited_user_id):
                     flash('Chat already exists with user {}.'.format(username))
                 else:
                     create_chat(db, current_user.id, invited_user_id)
@@ -284,8 +293,7 @@ def chats_page():
 @login_required
 def chat_room_page(chat_id):
     chat_name = request.args.get('chat_name', "???")
-    chat_history = get_chat_name_messages(chat_id)
-    _, messages = [msg.message for msg in chat_history]
+    _, messages = get_chat_name_messages(chat_id)
     return render_template(
         "chatroom.html", messages=messages,
         chat_id=chat_id, chat_name=chat_name)
@@ -293,10 +301,13 @@ def chat_room_page(chat_id):
 
 @socketio.on('message')
 @login_required
-def send_chat_message(msg):
-    print("Message: " + msg)
-    create_chatmessage(db, msg, chat_id)
-    send_message(msg, broadcast=True)
+# message_event = u'{"msg":"hi","chat_id":"1","user_id":"2","username":"chan"}'
+def send_chat_message(event):
+    event["msg"] = event["msg"].encode("latin1").decode("utf-8")
+    create_chatmessage(
+        db, event["msg"], event["chat_id"],
+        event["user_id"], event["username"])
+    send_message(event, broadcast=True)
 
 
 if __name__ == '__main__':
