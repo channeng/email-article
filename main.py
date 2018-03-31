@@ -4,7 +4,6 @@ Usage:
     python app.py
 """
 import random
-import json
 
 from flask import render_template, flash, redirect, url_for, request
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -12,7 +11,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from flask_socketio import SocketIO, send as send_message
 from werkzeug.urls import url_parse
 import validators
-from IPython import embed
+
 from app import app
 from app.forms import (
     LoginForm, RegistrationForm, NewListForm, NewListItemForm,
