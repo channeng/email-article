@@ -101,12 +101,16 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 <script type="text/javascript" charset="utf-8">
+  function getBaseURL() {
+    baseURL = location.protocol + "//" + location.hostname + ":" + location.port;
+    console.log(baseURL);
+    return baseURL;
+  }
+
   $(document).ready(
     function() {
       var baseURL = getBaseURL(); // Call function to determine it
-      var socketIOPort = 5000;
-      var socketIOLocation = baseURL + socketIOPort;
-      var socket = io(socketIOLocation);
+      var socket = io(baseURL);
 
       // Listening on "connect", with a callback function to tell us that user has connected
       // socket.on("connect", function() {
