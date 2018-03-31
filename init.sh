@@ -10,4 +10,4 @@ else
     /home/ubuntu/.virtualenvs/env/bin/flask db upgrade
 fi
 
-/home/ubuntu/.virtualenvs/env/bin/gunicorn --bind 0.0.0.0:5000 --workers 4 main:app
+/home/ubuntu/.virtualenvs/env/bin/gunicorn --bind 0.0.0.0:5000 --worker-class eventlet --workers 1 main:app

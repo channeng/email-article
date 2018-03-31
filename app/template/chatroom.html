@@ -103,7 +103,10 @@
 <script type="text/javascript" charset="utf-8">
   $(document).ready(
     function() {
-      var socket = io.connect("http://13.251.20.49:5000");
+      var baseURL = getBaseURL(); // Call function to determine it
+      var socketIOPort = 5000;
+      var socketIOLocation = baseURL + socketIOPort;
+      var socket = io(socketIOLocation);
 
       // Listening on "connect", with a callback function to tell us that user has connected
       // socket.on("connect", function() {
@@ -112,7 +115,8 @@
 
       // Send input value to 'message' event on click
       $("#send_button").on("click", function() {
-        if ($("#chat_message").val().length > 0) {
+        console.log("Connection status: " + socket.connected);
+        if ($("#chat_message").val().length > 0 && socket.connected) {
           socket.emit(
             'message',
             {
