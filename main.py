@@ -8,7 +8,7 @@ import random
 from flask import render_template, flash, redirect, url_for, request
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask_login import current_user, login_user, logout_user, login_required
-from flask_socketio import SocketIO, send as send_message
+from flask_socketio import SocketIO, emit
 from werkzeug.urls import url_parse
 import validators
 
@@ -301,12 +301,12 @@ def chat_room_page(chat_id):
 @socketio.on('message')
 @login_required
 # message_event = u'{"msg":"hi","chat_id":"1","user_id":"2","username":"chan"}'
-def send_chat_message(event):
-    event["msg"] = event["msg"].encode("latin1").decode("utf-8")
+def broadcast_chat_message(event):
+    # event["msg"] = event["msg"].encode("latin1").decode("utf-8")
     create_chatmessage(
         db, event["msg"], event["chat_id"],
         event["user_id"], event["username"])
-    send_message(event, broadcast=True)
+    emit(event["chat_id"], event, broadcast=True)
 
 
 if __name__ == '__main__':
