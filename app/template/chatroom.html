@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
 <style type="text/css">
+  #page {
+    padding-bottom: 0px;
+  }
   #page .chat_line {
     float: none !important;
     padding: 0px;
@@ -93,9 +96,9 @@
 
 </div>
 <br><hr><br>
-<input id="send_button" type="submit" value="&#9658;" style="float: right; width: 17%; text-align: center;"/>
+<input id="send_button" type="submit" value="&#9658;" style="float: right; width: 17%; text-align: center; display: none;"/>
 <div style="overflow: hidden; padding-right: 7%;">
-   <textarea id="chat_message" style="width: 100%; font-size: 16px; max-width: 100%; min-width: 100%; height: 200%; resize: none;" type="text" placeholder="Message" name="message"></textarea>
+   <textarea id="chat_message" style="width: 100%; font-size: 16px; max-width: 100%; min-width: 100%; height: 200%; resize: none; display: none;" type="text" placeholder="Message" name="message"></textarea>
 </div>​
 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
@@ -119,7 +122,6 @@
 
       // Send input value to 'message' event on click
       $("#send_button").on("click", function() {
-        console.log("Connection status: " + socket.connected);
         if ($("#chat_message").val().length > 0 && socket.connected) {
           socket.emit(
             'message',
@@ -133,16 +135,40 @@
           // socket.send($("#chat_message").val());
           $("#chat_message").val("");
         }
-      })
+      });
+
+      socket.on('connect', function() {
+        console.log("{{ current_user.username }} connected to the server.");
+        socket.emit(
+          'message',
+          {
+            msg: "~~~ping~~~",
+            chat_id: "{{ chat_id }}",
+            user_id: "{{ current_user.id }}",
+            username: "{{ current_user.username }}"
+          });
+      });
+
+      socket.on("disconnect", function() {
+        console.log("{{ current_user.username }} disconnected from server.");
+      });
 
       // Read 'message' event and append as <li> to 'messages' element id
+      var connection_is_active = false;
+
       socket.on("{{ chat_id }}", function(event) {
         if (event["user_id"] == "{{ current_user.id }}") {
-          $("#messages").append(
-            "<div class='chat_line right'><li class='talk-bubble'><p class='talktext'>" + event["msg"] + "</p></li></div>"
-          );
+          if (event["msg"] == "~~~ping~~~") {
+            console.log("Ping received. Chat connection verified.");
+            connection_is_active = true;
+            $("#send_button").show();
+            $("#chat_message").show();
+          } else {
+            $("#messages").append(
+              "<div class='chat_line right'><li class='talk-bubble'><p class='talktext'>" + event["msg"] + "</p></li></div>"
+            );
+          }
         } else {
-
           $("#messages").append(
             "<div class='chat_line left'><li class='talk-bubble'><p class='talktext'>" + event["msg"] + "</p></li></div>"
           );

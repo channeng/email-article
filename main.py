@@ -303,9 +303,10 @@ def chat_room_page(chat_id):
 # message_event = u'{"msg":"hi","chat_id":"1","user_id":"2","username":"chan"}'
 def broadcast_chat_message(event):
     # event["msg"] = event["msg"].encode("latin1").decode("utf-8")
-    create_chatmessage(
-        db, event["msg"], event["chat_id"],
-        event["user_id"], event["username"])
+    if event["msg"] != "~~~ping~~~":
+        create_chatmessage(
+            db, event["msg"], event["chat_id"],
+            event["user_id"], event["username"])
     emit(event["chat_id"], event, broadcast=True)
 
 
