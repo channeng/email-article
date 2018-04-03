@@ -14,17 +14,6 @@
   #page .chat_line.left {
     padding-right: 25%;
   }
-
-  ::-webkit-scrollbar {
-    -webkit-appearance: none;
-    width: 6px;
-  }
-  ::-webkit-scrollbar-thumb {
-    border-radius: 5px;
-    background-color: rgba(0,0,0,.5);
-    -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
-  }
-
   .talk-bubble {
     margin: 1%;
     padding: 0px;
@@ -50,7 +39,7 @@
     line-height: 0em;
   }
   p.talktext {
-    font-size: 100% !important;
+    font-size: 120% !important;
     text-align: left;
   }
   .talktext p{
@@ -168,7 +157,7 @@
               "<div class='chat_line right'><li class='talk-bubble'><p class='talktext'>" + event["msg"] + "</p></li></div>"
             );
           }
-        } else {
+        } else if (event["msg"] != "~~~ping~~~") {
           $("#messages").append(
             "<div class='chat_line left'><li class='talk-bubble'><p class='talktext'>" + event["msg"] + "</p></li></div>"
           );
