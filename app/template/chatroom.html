@@ -3,6 +3,7 @@
 <style type="text/css">
   #page {
     padding-bottom: 0px;
+    max-height: 103vh;
   }
   #page .chat_line {
     float: none !important;
@@ -98,12 +99,35 @@
 <hr>
 <input id="send_button" type="submit" value="&#9658;" style="float: right; width: 17%; text-align: center; display: none;"/>
 <div style="overflow: hidden; padding-right: 7%;">
-   <textarea id="chat_message" onkeyup="auto_grow(this)" type="text" placeholder="Message" name="message"></textarea>
+  <textarea id="chat_message" onkeyup="auto_grow(this)" type="text" placeholder="Message" name="message">{% if chat_message %}{{ chat_message }}{% endif %}</textarea>
 </div>​
 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 <script type="text/javascript" charset="utf-8">
+  // Add / Update a key-value pair in the URL query parameters
+  function updateUrlParameter(uri, key, value) {
+      // remove the hash part before operating on the uri
+      var i = uri.indexOf('#');
+      var hash = i === -1 ? ''  : uri.substr(i);
+           uri = i === -1 ? uri : uri.substr(0, i);
+
+      var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+      var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+      if (uri.match(re)) {
+          uri = uri.replace(re, '$1' + key + "=" + value + '$2');
+      } else {
+          uri = uri + separator + key + "=" + value;
+      }
+      return uri + hash;  // finally append the hash as well
+  }
+
+  function uuidv4() {
+    return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+      (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    )
+  }
+
   function auto_grow(element) {
     element.style.height = "0px";
     element.style.height = (element.scrollHeight)+"px";
@@ -127,6 +151,7 @@
 
       // Send input value to 'message' event on click
       $("#send_button").on("click", function() {
+        var uuid = uuidv4();
         if ($("#chat_message").val().length > 0 && socket.connected) {
           socket.emit(
             'message',
@@ -134,11 +159,20 @@
               msg: $("#chat_message").val(),
               chat_id: "{{ chat_id }}",
               user_id: "{{ current_user.id }}",
-              username: "{{ current_user.username }}"
-            });
-          // Similar action
-          // socket.send($("#chat_message").val());
-          $("#chat_message").val("");
+              username: "{{ current_user.username }}",
+              msg_id: uuid
+            },
+            function (response) {
+              if (response == uuid) {
+                // Similar action
+                // socket.send($("#chat_message").val());
+                $("#chat_message").val("");
+              } else {
+                location.reload();
+                location.href = updateUrlParameter(location.href, "msg", $("#chat_message").val());
+              }
+            }
+          );
         }
         $("#chat_message").focus();
       });
@@ -151,7 +185,8 @@
             msg: "~~~ping~~~",
             chat_id: "{{ chat_id }}",
             user_id: "{{ current_user.id }}",
-            username: "{{ current_user.username }}"
+            username: "{{ current_user.username }}",
+            msg_id: ""
           });
       });
 
@@ -159,14 +194,11 @@
         console.log("{{ current_user.username }} disconnected from server.");
       });
 
-      // Read 'message' event and append as <li> to 'messages' element id
-      var connection_is_active = false;
-
+      // Listen to chat_id for broadcasted messages
       socket.on("{{ chat_id }}", function(event) {
         if (event["user_id"] == "{{ current_user.id }}") {
           if (event["msg"] == "~~~ping~~~") {
             console.log("Ping received. Chat connection verified.");
-            connection_is_active = true;
             $("#send_button").show();
             $("#chat_message").show();
           } else {

@@ -292,10 +292,12 @@ def chats_page():
 @login_required
 def chat_room_page(chat_id):
     chat_name = request.args.get('chat_name', "???")
+    chat_message = request.args.get('msg', "")
     _, messages = get_chat_name_messages(chat_id)
     return render_template(
         "chatroom.html", messages=messages,
-        chat_id=chat_id, chat_name=chat_name)
+        chat_id=chat_id, chat_name=chat_name,
+        chat_message=chat_message)
 
 
 @socketio.on('message')
@@ -308,6 +310,7 @@ def broadcast_chat_message(event):
             db, event["msg"], event["chat_id"],
             event["user_id"], event["username"])
     emit(event["chat_id"], event, broadcast=True)
+    return event["msg_id"]
 
 
 if __name__ == '__main__':
