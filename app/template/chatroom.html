@@ -3,7 +3,6 @@
 <style type="text/css">
   #page {
     padding-bottom: 0px;
-    max-height: 103vh;
   }
   #page .chat_line {
     float: none !important;
@@ -168,8 +167,11 @@
                 // socket.send($("#chat_message").val());
                 $("#chat_message").val("");
               } else {
-                location.reload();
-                location.href = updateUrlParameter(location.href, "msg", $("#chat_message").val());
+                setTimeout(
+                  function(){
+                    location.href = updateUrlParameter(location.href, "msg", $("#chat_message").val());
+                  }, 100
+                );
               }
             }
           );
