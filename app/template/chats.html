@@ -19,7 +19,7 @@
       {{ form.hidden_tag() }}
       <h4 class="notbold">
         {{ form.chat_with_username.label }}<br><br>
-        {{ form.chat_with_username(size=32, class_="lower_input") }}
+        {{ form.chat_with_username(size=32, class_="input_field lower_input") }}
         {% for error in form.chat_with_username.errors %}
         <span style="color: red;">[{{ error }}]</span><br><br>
         {% endfor %}

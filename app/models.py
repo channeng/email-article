@@ -39,10 +39,22 @@ class List(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     items = db.relationship(
         'ListItem', backref='list', lazy='dynamic')
+    invited_users = db.relationship(
+        'ListUser', backref='list', lazy='dynamic')
     is_deleted = db.Column(db.Boolean(), default=False)
 
     def __repr__(self):
         return '<List {}: {}>'.format(self.id, self.name)
+
+
+class ListUser(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    list_id = db.Column(db.Integer, db.ForeignKey('list.id'))
+
+    def __repr__(self):
+        return '<ListUser {}: user_id {}, list_id {}>'.format(
+            self.id, self.user_id, self.list_id)
 
 
 class ListItem(db.Model):

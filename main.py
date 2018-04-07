@@ -16,15 +16,30 @@ from app import app
 from app.forms import (
     LoginForm, RegistrationForm, NewListForm, NewListItemForm,
     NewChatForm, EditListForm)
-from app.models import User, List, ListItem, Chat, ChatMessage
 from app.email_article import create_task
 from app.lists import (
     get_lists, create_list, delete_list, get_list_name, get_list_name_items,
-    get_list_auth_user_ids, update_list, create_listitems, delete_listitems,
-    update_listitems)
+    get_list_owner, get_list_auth_user_ids, update_list, create_listitems,
+    delete_listitems, update_listitems, create_listuser)
 from app.chats import (
     get_chats, create_chat, delete_chat, get_chat_auth_user_ids,
     create_chatmessage, get_chat_name_messages)
+
+from app.models import User, List, ListUser, ListItem, Chat, ChatMessage
+
+
+# Called with `flask shell` cmd
+@app.shell_context_processor
+def make_shell_context():
+    return {
+        'db': db,
+        'User': User,
+        'List': List,
+        'ListUser': ListUser,
+        'ListItem': ListItem,
+        'Chat': Chat,
+        'ChatMessage': ChatMessage,
+    }
 
 
 db = SQLAlchemy(app)
@@ -60,19 +75,6 @@ def send_email_article():
     result = create_task(form_params)
     print(result)
     return render_template("email_article.html")
-
-
-# Called with `flask shell` cmd
-@app.shell_context_processor
-def make_shell_context():
-    return {
-        'db': db,
-        'User': User,
-        'List': List,
-        'ListItem': ListItem,
-        'Chat': Chat,
-        'ChatMessage': ChatMessage
-    }
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -209,22 +211,58 @@ def list_items_page(list_id, user_ids=[]):
     )
 
 
+def _user_was_invited(list_id, invited_user_id):
+    user_id = db.session.query(ListUser.user_id).filter_by(
+        user_id=invited_user_id,
+        list_id=list_id).scalar()
+    return user_id is not None
+
+
 @app.route('/lists/<int:list_id>/edit', methods=['GET', 'POST'])
 @login_required
 def list_edit_page(list_id, user_ids=[]):
     # Check if user has permission to access list
     if not user_ids:
-        auth_user_ids = get_list_auth_user_ids(list_id)
+        auth_user_ids = get_list_owner(list_id)
     if current_user.id not in auth_user_ids:
         return abort(401)
 
     list_name = get_list_name(list_id)
     edit_list_form = EditListForm()
-    if edit_list_form.validate_on_submit() and edit_list_form.list_name.data:
-        update_list(
-            db,
-            list_id,
-            edit_list_form.list_name.data)
+    if edit_list_form.validate_on_submit():
+        if edit_list_form.invite_username.data:
+            username = edit_list_form.invite_username.data.lower()
+            invited_user_id = db.session.query(User.id).filter_by(
+                username=username).scalar()
+            same_user = invited_user_id == current_user.id
+            if invited_user_id is not None and not same_user:
+                if _user_was_invited(list_id, invited_user_id):
+                    flash('List already shared with user {}.'.format(username))
+                    return redirect(url_for('list_edit_page', list_id=list_id))
+
+                else:
+                    create_listuser(db, list_id, invited_user_id)
+                    flash('List is shared with user {}!'.format(username))
+
+            elif same_user:
+                flash("You already have access to the list.")
+                return redirect(url_for('list_edit_page', list_id=list_id))
+
+            else:
+                flash("User {} does not exist. Please try again.".format(
+                    username))
+                return redirect(url_for('list_edit_page', list_id=list_id))
+
+        if edit_list_form.list_name.data:
+            update_list(
+                db,
+                list_id,
+                edit_list_form.list_name.data)
+        if not (
+                edit_list_form.list_name.data or
+                edit_list_form.invite_username.data):
+            flash("No changes were made.")
+
         return redirect(url_for(
             'list_items_page',
             list_id=list_id))

@@ -1,8 +1,10 @@
 from app.models import Chat, ChatMessage
-from app.models_items import ModelsItems
+from app.models_items import ModelsItems, handleError
 
 
 class ChatItems(ModelsItems):
+
+    @handleError
     def get_models(self, user_id, num_results=100):
         return self.model.query.filter(
             (self.model.user_id == user_id) |
@@ -11,6 +13,7 @@ class ChatItems(ModelsItems):
             self.model.id.desc()).limit(
                 num_results).all()
 
+    @handleError
     def create_model(self, db, model_name, user_id, invited_user_id):
         new_list = self.model(
             name=model_name,
@@ -19,6 +22,7 @@ class ChatItems(ModelsItems):
         db.session.add(new_list)
         db.session.commit()
 
+    @handleError
     def create_modelitems(self, db, message, chat_id, user_id, username):
         new_modelitems = self.model_item(
             message=message,
@@ -29,6 +33,7 @@ class ChatItems(ModelsItems):
         db.session.commit()
         # flash("Added new item: {}".format(item_name))
 
+    @handleError
     def get_model_name_items(self, model_id, is_active_only=False):
         model_obj = self.model.query.filter_by(
             id=model_id, is_deleted=False).first()
@@ -41,6 +46,7 @@ class ChatItems(ModelsItems):
                 is_deleted=False).all()
         return model_name, model_items
 
+    @handleError
     def get_model_auth_user_ids(self, model_id, is_active_only=False):
         model_obj = self.model.query.filter_by(
             id=model_id, is_deleted=False).first()
