@@ -41,6 +41,12 @@ class ChatItems(ModelsItems):
                 is_deleted=False).all()
         return model_name, model_items
 
+    def get_model_auth_user_ids(self, model_id, is_active_only=False):
+        model_obj = self.model.query.filter_by(
+            id=model_id, is_deleted=False).first()
+        return [model_obj.user_id, model_obj.invited_user_id]
+
+
 model_template = ChatItems(Chat, ChatMessage)
 
 
@@ -59,6 +65,10 @@ def delete_chat(db, chat_id):
 
 def get_chat_name_messages(chat_id, is_active_only=False):
     return model_template.get_model_name_items(chat_id, is_active_only)
+
+
+def get_chat_auth_user_ids(chat_id, is_active_only=False):
+    return model_template.get_model_auth_user_ids(chat_id, is_active_only)
 
 
 def create_chatmessage(db, message, chat_id, user_id, username):

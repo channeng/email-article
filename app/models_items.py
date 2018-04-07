@@ -33,6 +33,11 @@ class ModelsItems():
                 is_deleted=False).all()
         return model_name, model_items
 
+    def get_model_auth_user_ids(self, model_id, is_active_only=False):
+        model_obj = self.model.query.filter_by(
+            id=model_id, is_deleted=False).first()
+        return [model_obj.user_id]
+
     def create_modelitems(self):
         """Create model item."""
         raise NotImplementedError("Sub-classes should implement this method.")

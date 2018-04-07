@@ -20,9 +20,10 @@ from app.models import User, List, ListItem, Chat, ChatMessage
 from app.email_article import create_task
 from app.lists import (
     get_lists, create_list, delete_list, get_list_name_items,
-    create_listitems, delete_listitems, update_listitems)
+    get_list_auth_user_ids, create_listitems, delete_listitems,
+    update_listitems)
 from app.chats import (
-    get_chats, create_chat, delete_chat,
+    get_chats, create_chat, delete_chat, get_chat_auth_user_ids,
     create_chatmessage, get_chat_name_messages)
 
 from flask import jsonify, make_response
@@ -33,7 +34,7 @@ socketio = SocketIO(app)
 
 
 @app.errorhandler(404)
-def not_found(error):
+def not_found():
     return make_response(jsonify({'error': 'Not found'}), 404)
 
 
@@ -182,7 +183,13 @@ def _list_items_checked_unchecked(form_params):
 
 @app.route('/lists/<int:list_id>', methods=['GET', 'POST'])
 @login_required
-def list_items_page(list_id):
+def list_items_page(list_id, user_ids=[]):
+    # Check if user has permission to access list
+    if not user_ids:
+        auth_user_ids = get_list_auth_user_ids(list_id)
+    if current_user.id not in auth_user_ids:
+        return not_found()
+
     form_params = request.form.to_dict(flat=False)
     delete_in_request = _list_items_delete(form_params)
     checked_unchecked_in_request = _list_items_checked_unchecked(form_params)
@@ -196,7 +203,10 @@ def list_items_page(list_id):
                 new_item_form.item_desc.data,
                 new_item_form.item_url.data,
                 list_id)
-            return redirect(url_for('list_items_page', list_id=list_id))
+            return redirect(url_for(
+                'list_items_page',
+                list_id=list_id,
+                user_ids=auth_user_ids))
 
     return render_template(
         "list_items.html",
@@ -290,7 +300,13 @@ def chats_page():
 
 @app.route('/chats/<int:chat_id>', methods=['GET', 'POST'])
 @login_required
-def chat_room_page(chat_id):
+def chat_room_page(chat_id, user_ids=[]):
+    # Check if user has permission to access chat
+    if not user_ids:
+        auth_user_ids = get_chat_auth_user_ids(chat_id)
+    if current_user.id not in auth_user_ids:
+        return not_found()
+
     chat_name = request.args.get('chat_name', "???")
     chat_message = request.args.get('msg', "")
     _, messages = get_chat_name_messages(chat_id)
