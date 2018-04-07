@@ -4,7 +4,7 @@ if [ -d /home/ubuntu/email-article/migrations/ ]; then
 fi
 
 if [ -e /home/ubuntu/email-article/database/app.db ]; then
-	sqlite3 mydatabase.db < /home/ubuntu/email-article/delete_alembic_version.sqlite
+	sqlite3 /home/ubuntu/email-article/database/app.db < /home/ubuntu/email-article/delete_alembic_version.sqlite
 fi
 
 /home/ubuntu/.virtualenvs/env/bin/flask db init && \
