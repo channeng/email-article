@@ -35,6 +35,10 @@ def get_list_name_items(list_id, is_active_only=False):
     return model_template.get_model_name_items(list_id, is_active_only)
 
 
+def get_list_auth_user_ids(list_id, is_active_only=False):
+    return model_template.get_model_auth_user_ids(list_id, is_active_only)
+
+
 def create_listitems(db, item_name, desc, url, list_id):
     return model_template.create_modelitems(
         db, item_name, desc, url, list_id)
