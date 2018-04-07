@@ -33,8 +33,22 @@ class RegistrationForm(FlaskForm):
 
 
 class NewListForm(FlaskForm):
-    list_name = StringField('List name', validators=[DataRequired()])
+    length_message = "{} cannot be more than {} characters."
+
+    list_name_fieldname = "List name"
+    list_name_limit = 24
+    list_name = StringField(
+        list_name_fieldname,
+        render_kw={'maxlength': list_name_limit},
+        validators=[DataRequired(), Length(
+            max=list_name_limit,
+            message=length_message.format(
+                list_name_fieldname, list_name_limit))])
     submit = SubmitField('Create List')
+
+
+class EditListForm(NewListForm):
+    submit = SubmitField('Confirm')
 
 
 class NewListItemForm(FlaskForm):
@@ -69,6 +83,7 @@ class NewListItemForm(FlaskForm):
             max=item_url_limit,
             message=length_message.format(
                 item_url_fieldname, item_url_limit))])
+
     submit = SubmitField('Add Item')
 
 

@@ -28,7 +28,7 @@
       {{ form.hidden_tag() }}
       <h4 class="notbold">
         {{ form.list_name.label }}<br><br>
-        {{ form.list_name(size=32, class_="input_field lower_input") }}
+        {{ form.list_name(size=32, class_="input_field") }}
         {% for error in form.list_name.errors %}
         <span style="color: red;">[{{ error }}]</span><br><br>
         {% endfor %}

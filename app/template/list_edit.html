@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3>
+  <a href="{{ url_for('lists_page') }}">My Lists</a>&nbsp; > &nbsp; <a href="{{ url_for('list_items_page', list_id=list_id) }}">{{ list_name }}</a>
+  <button class="delete list_del" type="button" onClick="window.location.href='{{ url_for('list_items_page', list_id=list_id) }}';">Back</button>
+</h3>
+<hr>
+
+<h4>Edit List</h4>
+<div>
+  <form action="" method="post">
+    {{ edit_list_form.hidden_tag() }}
+    <h4 class="notbold">
+      {{ edit_list_form.list_name.label }}<br><br>
+      {{ edit_list_form.list_name(size=32, class_="input_field") }}
+      {% for error in edit_list_form.list_name.errors %}
+      <span style="color: red;">[{{ error }}]</span><br><br>
+      {% endfor %}
+    </h4>
+    <h4 class="notbold button_h4">{{ edit_list_form.submit(class_="form_button") }}</h4>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+    {% for message in messages %}
+    <li style="color: red;">- {{ message }}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+
+  </form>
+</div>
+{% endblock %}

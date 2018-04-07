@@ -8,6 +8,12 @@ class ListsItems(ModelsItems):
         db.session.add(new_list)
         db.session.commit()
 
+    def update_model(self, db, model_id, new_name):
+        model_obj = self.model.query.filter_by(id=model_id).first()
+        model_obj.name = new_name
+        db.session.merge(model_obj)
+        db.session.commit()
+
     def create_modelitems(self, db, item_name, desc, url, list_id):
         new_modelitems = self.model_item(
             name=item_name, body=desc, url=url,
@@ -27,8 +33,16 @@ def create_list(db, list_name, user_id):
     return model_template.create_model(db, list_name, user_id)
 
 
+def update_list(db, list_id, new_list_name):
+    return model_template.update_model(db, list_id, new_list_name)
+
+
 def delete_list(db, list_id):
     return model_template.delete_model(db, list_id)
+
+
+def get_list_name(list_id):
+    return model_template.get_model_name(list_id)
 
 
 def get_list_name_items(list_id, is_active_only=False):

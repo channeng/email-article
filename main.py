@@ -5,7 +5,7 @@ Usage:
 """
 import random
 
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, abort
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask_login import current_user, login_user, logout_user, login_required
 from flask_socketio import SocketIO, emit
@@ -15,27 +15,20 @@ import validators
 from app import app
 from app.forms import (
     LoginForm, RegistrationForm, NewListForm, NewListItemForm,
-    NewChatForm)
+    NewChatForm, EditListForm)
 from app.models import User, List, ListItem, Chat, ChatMessage
 from app.email_article import create_task
 from app.lists import (
-    get_lists, create_list, delete_list, get_list_name_items,
-    get_list_auth_user_ids, create_listitems, delete_listitems,
+    get_lists, create_list, delete_list, get_list_name, get_list_name_items,
+    get_list_auth_user_ids, update_list, create_listitems, delete_listitems,
     update_listitems)
 from app.chats import (
     get_chats, create_chat, delete_chat, get_chat_auth_user_ids,
     create_chatmessage, get_chat_name_messages)
 
-from flask import jsonify, make_response
-
 
 db = SQLAlchemy(app)
 socketio = SocketIO(app)
-
-
-@app.errorhandler(404)
-def not_found():
-    return make_response(jsonify({'error': 'Not found'}), 404)
 
 
 @app.route('/')
@@ -150,7 +143,7 @@ def lists_page():
 
     if not list_id_in_request:
         if form.validate_on_submit():
-            create_list(db, form.list_name.data.title(), current_user.id)
+            create_list(db, form.list_name.data, current_user.id)
             return redirect(url_for('lists_page'))
 
     return render_template("lists.html", form=form, lists=lists)
@@ -188,7 +181,7 @@ def list_items_page(list_id, user_ids=[]):
     if not user_ids:
         auth_user_ids = get_list_auth_user_ids(list_id)
     if current_user.id not in auth_user_ids:
-        return not_found()
+        return abort(401)
 
     form_params = request.form.to_dict(flat=False)
     delete_in_request = _list_items_delete(form_params)
@@ -213,6 +206,33 @@ def list_items_page(list_id, user_ids=[]):
         list_name=list_name, list_id=list_id,
         items=items,
         new_item_form=new_item_form,
+    )
+
+
+@app.route('/lists/<int:list_id>/edit', methods=['GET', 'POST'])
+@login_required
+def list_edit_page(list_id, user_ids=[]):
+    # Check if user has permission to access list
+    if not user_ids:
+        auth_user_ids = get_list_auth_user_ids(list_id)
+    if current_user.id not in auth_user_ids:
+        return abort(401)
+
+    list_name = get_list_name(list_id)
+    edit_list_form = EditListForm()
+    if edit_list_form.validate_on_submit() and edit_list_form.list_name.data:
+        update_list(
+            db,
+            list_id,
+            edit_list_form.list_name.data)
+        return redirect(url_for(
+            'list_items_page',
+            list_id=list_id))
+
+    return render_template(
+        "list_edit.html",
+        list_name=list_name, list_id=list_id,
+        edit_list_form=edit_list_form
     )
 
 
@@ -305,7 +325,7 @@ def chat_room_page(chat_id, user_ids=[]):
     if not user_ids:
         auth_user_ids = get_chat_auth_user_ids(chat_id)
     if current_user.id not in auth_user_ids:
-        return not_found()
+        return abort(401)
 
     chat_name = request.args.get('chat_name', "???")
     chat_message = request.args.get('msg', "")
