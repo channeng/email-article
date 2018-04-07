@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+{% block content %}
+<style type="text/css">
+  #page {
+    padding-bottom: 0px;
+  }
+  #page .chat_line {
+    float: none !important;
+    padding: 0px;
+  }
+  #page .chat_line.right {
+    padding-left: 25%;
+  }
+  #page .chat_line.left {
+    padding-right: 25%;
+  }
+  #chat_message {
+    width: 100%;
+    font-size: 16px;
+    max-width: 100%;
+    min-width: 100%;
+    height: 26px;
+    max-height: 50px;
+    resize: none;
+    display: none;
+    color: 000000 !important;
+  }
+  .talk-bubble {
+    margin: 1%;
+    padding: 0px;
+    display: inline-block;
+    position: relative;
+    background-color: #dcf8c6;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    max-width: 95%;
+  }
+  #page li.talk-bubble {
+    padding: 0px 3px 0px 3px;
+  }
+  .left>.talk-bubble {
+    background-color: #e4f3f8;
+  }
+  /* talk bubble contents */
+  .talktext{
+    padding: 0.4em 0.5em 0.2em 0.5em;
+    word-wrap: break-word;
+    /*text-align: left;*/
+    line-height: 0em;
+  }
+  p.talktext {
+    font-size: 120% !important;
+    text-align: left;
+  }
+  .talktext p{
+    /* remove webkit p margins */
+    /*display: inline-block;*/
+    -webkit-margin-before: 0em;
+    -webkit-margin-after: 0em;
+  }
+</style>
+<h3>
+  <a href="{{ url_for('chats_page') }}">My Chats</a>
+  &nbsp; > &nbsp; {{ chat_name }}
+  <button class="delete list_del" type="submit" form="delete_chat_form" onClick="return confirm('Are you sure you want to delete this chat: {{ chat_name }} ?')">Delete chat</button>
+</h3>
+  <form type="hidden" id="delete_chat_form" action="{{ url_for('chats_page') }}" method="post">
+    <input type="hidden" name="chat_id" value="{{ chat_id }}" id="{{ chat_id }}" />
+  </form>
+<hr>
+
+<div style="max-width:100%; overflow-x:hidden; height: 320px; overflow-y: scroll; display: flex; flex-direction: column-reverse;"> 
+
+  <ul id="messages">
+  {% if messages %}
+    {% for msg in messages %}
+      {% if msg.user_id == current_user.id %}
+      <div class='chat_line right'><li class='talk-bubble'><p class='talktext'>{{ msg.message }}</p></li></div>
+      {% else %}
+      <div class='chat_line left'><li class='talk-bubble'><p class='talktext'>{{ msg.message }}</p></li></div>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+  </ul>
+
+  {% with flash_messages = get_flashed_messages() %}
+  <ul id="flash_messages">
+  {% if flash_messages %}
+    {% for flash_message in flash_messages %}
+      <li style="color: red;">- {{ flash_message }}</li>
+    {% endfor %}
+  {% endif %}
+  </ul>
+  {% endwith %}
+
+</div>
+<hr>
+<input id="send_button" type="submit" value="&#9658;" style="float: right; width: 17%; text-align: center; display: none;"/>
+<div style="overflow: hidden; padding-right: 7%;">
+  <textarea id="chat_message" onkeyup="auto_grow(this)" type="text" placeholder="Message" name="message">{% if chat_message %}{{ chat_message }}{% endif %}</textarea>
+</div>​
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+  // Add / Update a key-value pair in the URL query parameters
+  function updateUrlParameter(uri, key, value) {
+      // remove the hash part before operating on the uri
+      var i = uri.indexOf('#');
+      var hash = i === -1 ? ''  : uri.substr(i);
+           uri = i === -1 ? uri : uri.substr(0, i);
+
+      var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+      var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+      if (uri.match(re)) {
+          uri = uri.replace(re, '$1' + key + "=" + value + '$2');
+      } else {
+          uri = uri + separator + key + "=" + value;
+      }
+      return uri + hash;  // finally append the hash as well
+  }
+
+  function uuidv4() {
+    return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+      (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    )
+  }
+
+  function auto_grow(element) {
+    element.style.height = "0px";
+    element.style.height = (element.scrollHeight)+"px";
+  }
+
+  function getBaseURL() {
+    baseURL = location.protocol + "//" + location.hostname + ":" + location.port;
+    console.log(baseURL);
+    return baseURL;
+  }
+
+  $(document).ready(
+    function() {
+      var baseURL = getBaseURL(); // Call function to determine it
+      var socket = io(baseURL);
+
+      // Listening on "connect", with a callback function to tell us that user has connected
+      // socket.on("connect", function() {
+      //   socket.send("User has connected!");
+      // })
+
+      // Send input value to 'message' event on click
+      $("#send_button").on("click", function() {
+        var uuid = uuidv4();
+        if ($("#chat_message").val().length > 0 && socket.connected) {
+          socket.emit(
+            'message',
+            {
+              msg: $("#chat_message").val(),
+              chat_id: "{{ chat_id }}",
+              user_id: "{{ current_user.id }}",
+              username: "{{ current_user.username }}",
+              msg_id: uuid
+            },
+            function (response) {
+              if (response == uuid) {
+                // Similar action
+                // socket.send($("#chat_message").val());
+                $("#chat_message").val("");
+              } else {
+                setTimeout(
+                  function(){
+                    location.href = updateUrlParameter(location.href, "msg", $("#chat_message").val());
+                  }, 100
+                );
+              }
+            }
+          );
+        }
+        $("#chat_message").focus();
+      });
+
+      socket.on('connect', function() {
+        console.log("{{ current_user.username }} connected to the server.");
+        socket.emit(
+          'message',
+          {
+            msg: "~~~ping~~~",
+            chat_id: "{{ chat_id }}",
+            user_id: "{{ current_user.id }}",
+            username: "{{ current_user.username }}",
+            msg_id: ""
+          });
+      });
+
+      socket.on("disconnect", function() {
+        console.log("{{ current_user.username }} disconnected from server.");
+      });
+
+      // Listen to chat_id for broadcasted messages
+      socket.on("{{ chat_id }}", function(event) {
+        if (event["user_id"] == "{{ current_user.id }}") {
+          if (event["msg"] == "~~~ping~~~") {
+            console.log("Ping received. Chat connection verified.");
+            $("#send_button").show();
+            $("#chat_message").show();
+          } else {
+            $("#messages").append(
+              "<div class='chat_line right'><li class='talk-bubble'><p class='talktext'>" + event["msg"] + "</p></li></div>"
+            );
+          }
+        } else if (event["msg"] != "~~~ping~~~") {
+          $("#messages").append(
+            "<div class='chat_line left'><li class='talk-bubble'><p class='talktext'>" + event["msg"] + "</p></li></div>"
+          );
+        }
+      });
+    }
+  );
+</script>
+
+{% endblock %}

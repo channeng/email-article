@@ -8,22 +8,28 @@ import random
 from flask import render_template, flash, redirect, url_for, request
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask_login import current_user, login_user, logout_user, login_required
+from flask_socketio import SocketIO, emit
 from werkzeug.urls import url_parse
 import validators
 
 from app import app
 from app.forms import (
-    LoginForm, RegistrationForm, NewListForm, NewListItemForm)
-from app.models import User, List, ListItem
+    LoginForm, RegistrationForm, NewListForm, NewListItemForm,
+    NewChatForm)
+from app.models import User, List, ListItem, Chat, ChatMessage
 from app.email_article import create_task
 from app.lists import (
     get_lists, create_list, delete_list, get_list_name_items,
     create_listitems, delete_listitems, update_listitems)
+from app.chats import (
+    get_chats, create_chat, delete_chat,
+    create_chatmessage, get_chat_name_messages)
 
 from flask import jsonify, make_response
 
 
 db = SQLAlchemy(app)
+socketio = SocketIO(app)
 
 
 @app.errorhandler(404)
@@ -65,7 +71,14 @@ def send_email_article():
 # Called with `flask shell` cmd
 @app.shell_context_processor
 def make_shell_context():
-    return {'db': db, 'User': User, 'List': List, 'ListItem': ListItem}
+    return {
+        'db': db,
+        'User': User,
+        'List': List,
+        'ListItem': ListItem,
+        'Chat': Chat,
+        'ChatMessage': ChatMessage
+    }
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -132,6 +145,7 @@ def lists_page():
     list_id_in_request = "list_id" in form_params.keys()
     if list_id_in_request:
         delete_list(db, int(form_params["list_id"]))
+        return redirect(url_for('lists_page'))
 
     if not list_id_in_request:
         if form.validate_on_submit():
@@ -176,7 +190,6 @@ def list_items_page(list_id):
     new_item_form = NewListItemForm()
     if not (delete_in_request or checked_unchecked_in_request):
         if new_item_form.validate_on_submit() and new_item_form.item_name.data:
-            print("New item form {}".format(new_item_form.item_name.data))
             create_listitems(
                 db,
                 new_item_form.item_name.data,
@@ -193,5 +206,112 @@ def list_items_page(list_id):
     )
 
 
+def _get_chat_names(chats):
+    """Set chat names relative to other party's username."""
+
+    chats_invited_user_ids = [chat.invited_user_id for chat in chats]
+    chats_invited_users = User.query.filter(
+        User.id.in_(chats_invited_user_ids)).all()
+
+    chats_started_user_ids = [chat.user_id for chat in chats]
+    chats_started_users = User.query.filter(
+        User.id.in_(chats_started_user_ids)).all()
+
+    userid_to_username = {}
+    for user in chats_invited_users:
+        userid_to_username[user.id] = user.username
+    for user in chats_started_users:
+        userid_to_username[user.id] = user.username
+
+    chat_names = []
+    for chat in chats:
+        if chat.name == "":
+            started_username = userid_to_username.get(
+                chat.user_id, "???")
+            invited_username = userid_to_username.get(
+                chat.invited_user_id, "???")
+            if current_user.username == started_username:
+                chat_names.append(invited_username)
+            elif current_user.username == invited_username:
+                chat_names.append(started_username)
+        else:
+            chat_names.append(chat.name)
+
+    return chat_names
+
+
+def _has_chat_with_user(user_id, invited_user_id):
+    chat_id = db.session.query(Chat.id).filter_by(
+        user_id=user_id,
+        invited_user_id=invited_user_id,
+        is_deleted=False).scalar()
+    chat_id_inverse = db.session.query(Chat.id).filter_by(
+        user_id=invited_user_id,
+        invited_user_id=user_id,
+        is_deleted=False).scalar()
+    return chat_id is not None or chat_id_inverse is not None
+
+
+@app.route('/chats', methods=['GET', 'POST'])
+@login_required
+def chats_page():
+    chats = get_chats(current_user.id)
+    chat_names = _get_chat_names(chats)
+    form = NewChatForm()
+
+    form_params = request.form.to_dict(flat=True)
+    chat_id_in_request = "chat_id" in form_params.keys()
+    if chat_id_in_request:
+        delete_chat(db, int(form_params["chat_id"]))
+        return redirect(url_for('chats_page'))
+
+    if not chat_id_in_request:
+        if form.validate_on_submit():
+            username = form.chat_with_username.data.lower()
+            invited_user_id = db.session.query(User.id).filter_by(
+                username=username).scalar()
+            same_user = invited_user_id == current_user.id
+            if invited_user_id is not None and not same_user:
+                if _has_chat_with_user(current_user.id, invited_user_id):
+                    flash('Chat already exists with user {}.'.format(username))
+                else:
+                    create_chat(db, current_user.id, invited_user_id)
+            elif same_user:
+                flash(
+                    "You can't create a chat with yourself.")
+            else:
+                flash("User {} does not exist. Please try again.".format(
+                    username))
+            return redirect(url_for('chats_page'))
+
+    return render_template(
+        "chats.html", form=form, chats=chats, chat_names=chat_names)
+
+
+@app.route('/chats/<int:chat_id>', methods=['GET', 'POST'])
+@login_required
+def chat_room_page(chat_id):
+    chat_name = request.args.get('chat_name', "???")
+    chat_message = request.args.get('msg', "")
+    _, messages = get_chat_name_messages(chat_id)
+    return render_template(
+        "chatroom.html", messages=messages,
+        chat_id=chat_id, chat_name=chat_name,
+        chat_message=chat_message)
+
+
+@socketio.on('message')
+@login_required
+# message_event = u'{"msg":"hi","chat_id":"1","user_id":"2","username":"chan"}'
+def broadcast_chat_message(event):
+    # event["msg"] = event["msg"].encode("latin1").decode("utf-8")
+    if event["msg"] != "~~~ping~~~":
+        create_chatmessage(
+            db, event["msg"], event["chat_id"],
+            event["user_id"], event["username"])
+    emit(event["chat_id"], event, broadcast=True)
+    return event["msg_id"]
+
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    socketio.run(app, host='0.0.0.0', port=5000, debug=False)

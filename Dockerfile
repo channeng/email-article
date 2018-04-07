@@ -7,7 +7,7 @@ RUN \
   mkdir /home/ubuntu && \
   mkdir /home/ubuntu/email-article && \
   apt-get update && \
-  apt-get install -y supervisor python-pip wget vim git lsb-release curl python-dev libxml2-dev libxslt1-dev zlib1g-dev && \
+  apt-get install -y supervisor python-pip wget vim git lsb-release curl python-dev libxml2-dev libxslt1-dev zlib1g-dev sqlite3 libsqlite3-dev && \
   rm -rf /var/lib/apt/lists/* && \
   sed -i 's/^\(\[supervisord\]\)$/\1\nnodaemon=true/' /etc/supervisor/supervisord.conf
 
