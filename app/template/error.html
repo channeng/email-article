@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h3>Oh no!</h3>
+  <hr><br>
+  <div>
+    <p>Oops! Seems like there's an error...</p>
+    <br>
+    <p style="color: red;">Error code: {{ error_number }}</p>
+    <p style="color: red;">{{ error_message }}</p>
+  </div>
+
+{% endblock %}

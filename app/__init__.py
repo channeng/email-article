@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, make_response
+from flask import Flask, render_template
 from flask_login import LoginManager
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
@@ -18,9 +18,15 @@ login.login_view = 'login'
 
 @app.errorhandler(404)
 def not_found(error):
-    return make_response(jsonify({'error': 'Not found'}), 404)
+    return render_template(
+        "error.html",
+        error_message="Page not found.",
+        error_number=404)
 
 
 @app.errorhandler(401)
 def unauthorized(error):
-    return make_response(jsonify({'error': 'Unauthorized'}), 401)
+    return render_template(
+        "error.html",
+        error_message="You are not authorized!",
+        error_number=401)
