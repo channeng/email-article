@@ -364,7 +364,7 @@ def chats_page():
 def chat_room_page(chat_id, user_ids=[]):
     # Check if user has permission to access chat
     if not user_ids:
-        auth_user_ids = get_chat_auth_user_ids(chat_id)
+        _, auth_user_ids = get_chat_auth_user_ids(chat_id)
     if current_user.id not in auth_user_ids:
         return abort(401)
 
