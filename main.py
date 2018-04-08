@@ -178,10 +178,12 @@ def _list_items_checked_unchecked(form_params):
 
 @app.route('/lists/<int:list_id>', methods=['GET', 'POST'])
 @login_required
-def list_items_page(list_id, user_ids=[]):
+def list_items_page(list_id, auth_user_ids=[], owner_username=None):
     # Check if user has permission to access list
-    if not user_ids:
-        auth_user_ids = get_list_auth_user_ids(list_id)
+    if not auth_user_ids or owner_username is None:
+        owner, auth_user_ids = get_list_auth_user_ids(list_id)
+        owner_username = db.session.query(User.username).filter_by(
+            id=owner).scalar()
     if current_user.id not in auth_user_ids:
         return abort(401)
 
@@ -201,13 +203,14 @@ def list_items_page(list_id, user_ids=[]):
             return redirect(url_for(
                 'list_items_page',
                 list_id=list_id,
-                user_ids=auth_user_ids))
+                auth_user_ids=auth_user_ids,
+                owner_username=owner_username))
 
     return render_template(
         "list_items.html",
         list_name=list_name, list_id=list_id,
-        items=items,
-        new_item_form=new_item_form,
+        items=items, new_item_form=new_item_form,
+        owner_username=owner_username
     )
 
 

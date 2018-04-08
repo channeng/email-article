@@ -50,7 +50,9 @@ class ChatItems(ModelsItems):
     def get_model_auth_user_ids(self, model_id, is_active_only=False):
         model_obj = self.model.query.filter_by(
             id=model_id, is_deleted=False).first()
-        return [model_obj.user_id, model_obj.invited_user_id]
+        owner = model_obj.user_id
+        auth_users = [owner, model_obj.invited_user_id]
+        return owner, auth_users
 
 
 model_template = ChatItems(Chat, ChatMessage)

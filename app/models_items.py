@@ -61,16 +61,16 @@ class ModelsItems():
             self, model_id, is_active_only=False, owner_only=False):
         model_obj = self.model.query.filter_by(
             id=model_id, is_deleted=False).first()
-
+        owner = model_obj.user_id
         if not owner_only:
             invited_users = [
                 invited_user.user_id
                 for invited_user in model_obj.invited_users]
-            auth_users = [model_obj.user_id] + invited_users
+            auth_users = [owner] + invited_users
         else:
-            auth_users = [model_obj.user_id]
+            auth_users = [owner]
 
-        return auth_users
+        return owner, auth_users
 
     def get_model_owner(self, model_id, is_active_only=False):
         return self.get_model_auth_user_ids(
