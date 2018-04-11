@@ -3,13 +3,13 @@ import httplib2
 import os
 
 from apiclient import discovery
-from oauth2client import tools
+from oauth2client import client, tools
 from oauth2client.file import Storage
 
 from config import Config
 
 _CREDENTIAL_DIR = Config.CREDENTIAL_DIR
-_CREDENTIALS = Config.CREDENTIALS
+_CLIENT_SECRET_FILE = Config.CLIENT_SECRET_FILE
 
 try:
     import argparse
@@ -24,6 +24,7 @@ SCOPES = [
     'https://www.googleapis.com/auth/gmail.compose',
     'https://www.googleapis.com/auth/calendar.readonly'
 ]
+APPLICATION_NAME = Config.APPLICATION_NAME
 
 
 def get_credentials():
@@ -37,9 +38,20 @@ def get_credentials():
     """
     if not os.path.exists(_CREDENTIAL_DIR):
         os.makedirs(_CREDENTIAL_DIR)
+    credential_path = os.path.join(
+        _CREDENTIAL_DIR, APPLICATION_NAME.lower().replace(" ", "_") + '.json')
 
-    store = Storage(_CREDENTIALS)
+    store = Storage(credential_path)
     credentials = store.get()
+    if not credentials or credentials.invalid:
+        flow = client.flow_from_clientsecrets(_CLIENT_SECRET_FILE, SCOPES)
+        flow.user_agent = APPLICATION_NAME
+        if flags:
+            credentials = tools.run_flow(flow, store, flags)
+        else:  # Needed only for compatibility with Python 2.6
+            credentials = tools.run(flow, store)
+        print('Storing credentials to ' + credential_path)
+
     return credentials
 
 
