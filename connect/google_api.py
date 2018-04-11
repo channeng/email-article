@@ -14,7 +14,7 @@ _CLIENT_SECRET_FILE = Config.CLIENT_SECRET_FILE
 try:
     import argparse
     flags = argparse.ArgumentParser(
-        parents=[tools.argparser]).parse_known_args()
+        parents=[tools.argparser]).parse_known_args()[0]
 except ImportError:
     flags = None
 
@@ -44,7 +44,8 @@ def get_credentials():
     store = Storage(credential_path)
     credentials = store.get()
     if not credentials or credentials.invalid:
-        flow = client.flow_from_clientsecrets(_CLIENT_SECRET_FILE, SCOPES)
+        flow = client.flow_from_clientsecrets(
+            os.path.join(_CREDENTIAL_DIR, _CLIENT_SECRET_FILE), SCOPES)
         flow.user_agent = APPLICATION_NAME
         if flags:
             credentials = tools.run_flow(flow, store, flags)
