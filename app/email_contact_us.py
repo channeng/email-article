@@ -10,17 +10,17 @@ _copyright = Config.COPYRIGHT
 _owner_email = Config.OWNER_EMAIL
 
 
-def _send_email(send_to, article_title, article_text):
+def _send_email(send_to, title, message, reply_to_email):
     service = get_gmail_service()
     sender = "me"
     user_id = sender
     to = [send_to]
-    subject = article_title.decode("utf-8")
-    sign_off = "\n\n\n"
+    subject = title.decode("utf-8")
+    sign_off = "\n\nReply to: {}\n".format(reply_to_email)
 
-    article_text = article_text + sign_off + _copyright
+    message = message + sign_off + _copyright
 
-    message = create_message(sender, to, subject, article_text)
+    message = create_message(sender, to, subject, message)
     send_message(service, user_id, message)
 
 
@@ -40,7 +40,8 @@ def send_contact_message(form_params):
         name = form_params.get("name", "")
         title = "{} from {}".format(msg_type, name).encode("utf-8")
         text = form_params["message"].encode("utf-8")
-        _send_email(_owner_email, title, text)
+        reply_to_email = form_params["email"]
+        _send_email(_owner_email, title, text, reply_to_email)
         return "Success: Article '{}' sent to {}".format(
             title, form_params["email"])
     except IOError:
