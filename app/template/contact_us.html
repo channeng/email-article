@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+  select {
+    font-size: 100%;
+  }
+</style>
+  <h3>Contact Us</h3>
+  <hr><br>
+  <div>
+  <form action="" method="post">
+    {{ form.hidden_tag() }}
+    <p>
+      {{ form.message_type.label }} &nbsp; &nbsp; &nbsp;
+      {{ form.message_type(size=1) }}
+      {% for error in form.message_type.errors %}
+      <span style="color: red;">[{{ error }}]</span><br><br>
+      {% endfor %}
+    </p>
+    <h4 class="notbold">
+      {{ form.name.label }}<br><br>
+      {{ form.name(size=32, class_="input_field") }}
+      {% for error in form.name.errors %}
+      <span style="color: red;">[{{ error }}]</span><br><br>
+      {% endfor %}
+    </h4>
+    <h4 class="notbold">
+      {{ form.email.label }}<br><br>
+      {{ form.email(size=64, class_="lower_input input_field", value=current_user.email) }}
+      {% for error in form.email.errors %}
+      <span style="color: red;">[{{ error }}]</span><br><br>
+      {% endfor %}
+    </h4>
+    <h4 class="notbold">
+      {{ form.message.label }}<br><br>
+      {{ form.message(size=32, class_="input_field") }}
+      {% for error in form.message.errors %}
+      <span style="color: red;">[{{ error }}]</span><br><br>
+      {% endfor %}
+    </h4>
+    <h4 class="notbold button_h4">{{ form.submit(class_="form_button") }}</h4>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+    {% for message in messages %}
+    <li style="color: red;">- {{ message }}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+
+  </form>
+  </div>
+{% endblock %}

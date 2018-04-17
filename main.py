@@ -15,8 +15,9 @@ import validators
 from app import app
 from app.forms import (
     LoginForm, RegistrationForm, NewListForm, NewListItemForm,
-    NewChatForm, EditListForm)
+    NewChatForm, EditListForm, ContactForm)
 from app.email_article import create_task
+from app.email_contact_us import send_contact_message
 from app.lists import (
     get_lists, create_list, delete_list, get_list_name, get_list_name_items,
     get_list_owner, get_list_auth_user_ids, update_list, create_listitems,
@@ -75,6 +76,18 @@ def send_email_article():
     result = create_task(form_params)
     print(result)
     return render_template("email_article.html")
+
+
+@app.route("/contact", methods=['GET', 'POST'])
+def contact_us():
+    form_params = request.form.to_dict(flat=True)
+    form = ContactForm()
+    if form.validate_on_submit():
+        result = send_contact_message(form_params)
+        print(result)
+        flash('Thank you, your message has been sent.')
+        return redirect(url_for('contact_us'))
+    return render_template("contact_us.html", form=form)
 
 
 @app.route('/login', methods=['GET', 'POST'])

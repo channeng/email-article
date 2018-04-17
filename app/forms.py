@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import (
-    StringField, PasswordField, BooleanField, SubmitField)
+    StringField, TextAreaField, PasswordField, BooleanField, SubmitField,
+    SelectField)
 from wtforms.validators import (
     ValidationError, DataRequired, Email, EqualTo, URL, Length, Optional)
 from app.models import User
@@ -30,6 +31,24 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(email=email.data.lower()).first()
         if user is not None:
             raise ValidationError('Please use a different email address.')
+
+
+class ContactForm(FlaskForm):
+    name = StringField('Name', validators=[Optional()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    choices = [
+        ('feedback', 'Feedback'),
+        ('new feature', 'Request new feature'),
+        ('partnership', 'Partnership'),
+        ('thanks', 'Say thanks!'),
+        ('others', 'Others')]
+    message_type = SelectField(
+        'Purpose',
+        choices=choices,
+        default="feedback",
+        validators=[DataRequired()])
+    message = TextAreaField('Message', validators=[DataRequired()])
+    submit = SubmitField('Send Message')
 
 
 class NewListForm(FlaskForm):
