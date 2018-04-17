@@ -1,0 +1,29 @@
+from os import environ, path
+
+basedir = path.abspath(path.dirname(__file__))
+
+
+class Config(object):
+    DOMAIN = "13.251.20.49:5000"
+    SQLALCHEMY_DATABASE_URI = environ.get('DATABASE_URL') or \
+        'sqlite:///' + path.join(basedir, "database", 'app.db')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    BASIC_AUTH_USERNAME = ""
+    BASIC_AUTH_PASSWORD = "aaaa"
+    TEMPLATES_AUTO_RELOAD = True
+    BASIC_AUTH_FORCE = True
+
+    SPECIAL_EMAIL = [
+        "veraxx92@gmail.com", "vera_soh@mof.gov.sg", "channeng@gmail.com"]
+    OWNER_EMAIL = "channeng@hotmail.com"
+    COPYRIGHT = "\n\xc2\xa9 Pocket Internet 2017"
+    HOME = environ.get("HOME")
+
+    if HOME == "/root":
+        CREDENTIAL_DIR = "/home/ubuntu/.credentials"
+    else:
+        CREDENTIAL_DIR = path.join(HOME, ".credentials")
+
+    CLIENT_SECRET_FILE = "pocketsg_google_client_secret.json"
+    APPLICATION_NAME = "pocketsg_app"
