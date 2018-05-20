@@ -3,11 +3,11 @@
 <!-- Color combinations: https://coolors.co/f0a202-7d1128-3c0919-fbfffe-6d676e -->
 <html lang="en">
   <head>
-    <title>My Pocket Internet</title>
+    <title>Pocket Internet</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style type="text/css">
 
-      html, body, div, h1, h2, p, a, ul, li, form, label, button {
+      html, body, div, h1, h2, p, a, ul, li, form, label, button:not(.nostyle) {
         margin: 0;
         padding: 0;
         border: 0;
@@ -146,7 +146,7 @@
       li:hover .extra_info {
         visibility: visible;
       }
-      #page button {
+      #page button:not(.nostyle) {
         padding: 10px;
         border-radius: 10px;
         -moz-border-radius: 10px;
@@ -252,7 +252,7 @@
   </head>
   <body>
     <div id="page">
-      <h1>My Pocket Internet</h1>
+      <h1>Pocket Internet</h1>
       <h2>
       <a href="{{ url_for('index') }}">Apps</a>&nbsp; &nbsp;
       <a href="{{ url_for('contact_us') }}">Contact</a>&nbsp; &nbsp;

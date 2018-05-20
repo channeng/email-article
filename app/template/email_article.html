@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
+  <style>
+    #page button {
+      margin:10px;
+      width:70px;
+      float:right;
+    }
+  </style>
   <h3>News article to email</h3>
   <hr>
   <div>
@@ -26,7 +33,7 @@
   {% endif %}
   {% endwith %}
 
-  <button type="submit" form="email_article" onClick="return empty()" value="Submit">Submit</button>
+  <button type="submit" form="email_article" onClick="return empty()" value="Submit" class="nostyle">Submit</button>
   <br><br><br><br>
   <p>
     <a href="https://github.com/channeng/email-article"
