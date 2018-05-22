@@ -76,3 +76,14 @@ Given a link to the article and the email of the recipient, the app will scrape 
 	```bash
 	sudo docker exec -it $(sudo docker ps -f ancestor=email-article --format "{{.ID}}") /bin/bash
 	```
+
+## Other commands:
+- To save a backup of the database:
+	```bash
+	sudo docker cp database_copy/app.db $(sudo docker ps -f ancestor=email-article --format "{{.ID}}"):/home/ubuntu/email-article/database/
+	```
+
+- To copy an updated config into Docker container:
+	```bash
+	sudo docker cp email-article/config.py $(sudo docker ps -f ancestor=email-article --format "{{.ID}}"):/home/ubuntu/email-article
+	```
