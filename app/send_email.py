@@ -1,6 +1,8 @@
 import base64
 
+from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.mime.application import MIMEApplication
 from googleapiclient import errors
 
 
@@ -30,7 +32,7 @@ def send_message(service, user_id, message):
         print 'An error occurred: %s' % error
 
 
-def create_message(sender, to, subject, message_text):
+def create_message(sender, to, subject, message_text, pdf_data={}):
     """Create a message for an email.
 
     Args:
@@ -42,11 +44,19 @@ def create_message(sender, to, subject, message_text):
     Returns:
         An object containing a base64url encoded email object.
     """
+    message = MIMEMultipart()
     message_text = "<p>" + message_text.replace("\n\n", "</p><p>") + "</p>"
-    message = MIMEText(message_text, "html")
+    message.attach(MIMEText(message_text, "html"))
     message['to'] = ", ".join(to)
     message['from'] = sender
     message['subject'] = subject
+    if pdf_data:
+        part = MIMEApplication(
+            pdf_data["response"].content,
+            Name="{}.pdf".format(pdf_data["title"]))
+        part['Content-Disposition'] = (
+            'attachment; filename="{}.pdf"'.format(pdf_data["title"]))
+        message.attach(part)
     return {
         'raw': base64.urlsafe_b64encode(message.as_string())
     }
