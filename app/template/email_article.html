@@ -38,7 +38,11 @@
   {% endif %}
   {% endwith %}
 
-  <button type="submit" form="email_article" onClick="return empty()" value="Submit" class="nostyle">Submit</button>
+  <button id="btnSubmit" type="submit" form="email_article" onClick="return empty()" value="Submit" class="nostyle">Submit</button>
+  <div id="divMsg" style="display:none; padding-right: 5px; float: right;">
+    <img src="{{url_for('static', filename='loading_icon.gif')}}" alt="Please wait.." />
+  </div>
+
   <br><br><br><br>
   <p>
     <a href="https://github.com/channeng/email-article"
@@ -48,6 +52,10 @@
   </p>
 </div>
 <script type="text/javascript">
+  function replace_with_loading_gif() {
+    document.getElementById('btnSubmit').style.display="none";
+    document.getElementById('divMsg').style.display="block";
+  };
   function empty() {
       var x;
       email = document.getElementById("email").value;
@@ -57,6 +65,7 @@
           alert("Email and link to article must be provided.");
           return false;
       };
+      replace_with_loading_gif()
     };
   function get_url_params(param) {
       var regex = /[?&]([^=#]+)=([^&#]*)/g,
