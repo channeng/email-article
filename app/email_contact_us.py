@@ -5,7 +5,6 @@ from connect.google_api import get_gmail_service
 from config import Config
 
 
-_domain = Config.DOMAIN
 _copyright = Config.COPYRIGHT
 _owner_email = Config.OWNER_EMAIL
 
