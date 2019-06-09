@@ -79,7 +79,7 @@ Given a link to the article and the email of the recipient, the app will scrape 
 ## Other commands:
 - To save a backup of the database:
 	```bash
-	sudo docker cp database_copy/app.db $(sudo docker ps -f ancestor=email-article --format "{{.ID}}"):/home/ubuntu/email-article/database/
+	sudo docker cp $(sudo docker ps -f ancestor=email-article --format "{{.ID}}"):/home/ubuntu/email-article/database/ database_copy/app.db
 	```
 
 - To copy an updated config into Docker container:
