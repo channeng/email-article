@@ -75,11 +75,11 @@ class TickerItems(object):
         INNER JOIN (
             SELECT id, name
             FROM ticker
-            WHERE is_deleted IS False
+            WHERE is_deleted = 0
             {filter_ticker}
         ) AS ticker
         ON ticker.id = ticker_user.ticker_id
-        WHERE ticker_user.is_deleted = False
+        WHERE ticker_user.is_deleted = 0
         GROUP BY 1
         LIMIT {limit};
         """
