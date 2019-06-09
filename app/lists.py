@@ -9,7 +9,7 @@ class ListsItems(ModelsItems):
         self.model_user = ModelUser
 
     @handleError
-    def get_models(self, user_id, num_results=100):
+    def get_models_by_user_id(self, user_id, num_results=100):
         list_users = self.model_user.query.filter_by(user_id=user_id).all()
         list_ids = [list_user.list_id for list_user in list_users]
         return self.model.query.filter(
@@ -56,7 +56,7 @@ model_template = ListsItems(List, ListItem, ListUser)
 
 
 def get_lists(user_id, num_results=100):
-    return model_template.get_models(user_id, num_results)
+    return model_template.get_models_by_user_id(user_id, num_results)
 
 
 def create_list(db, list_name, user_id):

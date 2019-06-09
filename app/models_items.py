@@ -18,7 +18,7 @@ class ModelsItems():
         self.model_item = ModelItem
 
     @handleError
-    def get_models(self, user_id, num_results=100):
+    def get_models_by_user_id(self, user_id, num_results=100):
         return self.model.query.filter_by(
             user_id=user_id, is_deleted=False).order_by(
                 self.model.id.desc()).limit(

@@ -5,7 +5,7 @@ from app.models_items import ModelsItems, handleError
 class ChatItems(ModelsItems):
 
     @handleError
-    def get_models(self, user_id, num_results=100):
+    def get_models_by_user_id(self, user_id, num_results=100):
         return self.model.query.filter(
             (self.model.user_id == user_id) |
             (self.model.invited_user_id == user_id)
@@ -59,7 +59,7 @@ model_template = ChatItems(Chat, ChatMessage)
 
 
 def get_chats(user_id, num_results=100):
-    return model_template.get_models(user_id, num_results)
+    return model_template.get_models_by_user_id(user_id, num_results)
 
 
 def create_chat(db, user_id, invited_user_id, chat_name=""):
