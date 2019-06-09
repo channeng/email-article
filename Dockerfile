@@ -53,6 +53,11 @@ ADD config.py /home/ubuntu/email-article
 
 ENV FLASK_APP=main.py
 
+# Fix errors on flask db cli
+# http://click.palletsprojects.com/en/5.x/python3/
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
+
 # Copy supervisor configs
 RUN \
   cp configs/supervisord.conf /etc/supervisor/supervisord.conf && \
