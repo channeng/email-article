@@ -68,7 +68,7 @@ Given a link to the article and the email of the recipient, the app will scrape 
 
 7. Run docker container
 	```bash
-	sudo docker run -v email-article-db:/home/ubuntu/email-article/database -p 5000:5000 -d email-article /usr/bin/supervisord --nodaemon
+	sudo docker run -v email-article-db:/home/ubuntu/email-article/database -p 80:5000 -d email-article /usr/bin/supervisord --nodaemon
 	```
 
 8. Enter bash terminal
