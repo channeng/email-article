@@ -125,3 +125,18 @@ class NewChatForm(FlaskForm):
     chat_with_username = StringField('Username', validators=[DataRequired()])
     # chat_name = StringField('Chat name', validators=[Optional()])
     submit = SubmitField('Create Chat')
+
+
+class NewTickerForm(FlaskForm):
+    length_message = "{} cannot be more than {} characters."
+
+    ticker_name_fieldname = "Ticker"
+    ticker_name_limit = 10
+    ticker_name = StringField(
+        ticker_name_fieldname,
+        render_kw={'maxlength': ticker_name_limit},
+        validators=[DataRequired(), Length(
+            max=ticker_name_limit,
+            message=length_message.format(
+                ticker_name_fieldname, ticker_name_limit))])
+    submit = SubmitField('Add Ticker')

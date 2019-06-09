@@ -5,9 +5,11 @@ Usage:
 """
 import random
 
-from flask import render_template, flash, redirect, url_for, request, abort
+from flask import (
+    render_template, flash, redirect, url_for, request, abort, jsonify)
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import current_user, login_user, logout_user, login_required
+from flask_basicauth import BasicAuth
 from flask_socketio import SocketIO, emit
 from werkzeug.urls import url_parse
 import validators
@@ -15,7 +17,7 @@ import validators
 from app import app
 from app.forms import (
     LoginForm, RegistrationForm, NewListForm, NewListItemForm,
-    NewChatForm, EditListForm, ContactForm)
+    NewChatForm, EditListForm, ContactForm, NewTickerForm)
 from app.email_article import create_task
 from app.email_contact_us import send_contact_message
 from app.lists import (
@@ -25,7 +27,9 @@ from app.lists import (
 from app.chats import (
     get_chats, create_chat, delete_chat, get_chat_auth_user_ids,
     create_chatmessage, get_chat_name_messages)
-
+from app.tickers import (
+    get_tickers, create_tickeruser, delete_tickeruser,
+    get_ticker_name, get_ticker_emails)
 from app.models import User, List, ListUser, ListItem, Chat, ChatMessage
 
 
@@ -42,7 +46,7 @@ def make_shell_context():
         'ChatMessage': ChatMessage,
     }
 
-
+basic_auth = BasicAuth(app)
 db = SQLAlchemy(app)
 socketio = SocketIO(app)
 
@@ -400,6 +404,41 @@ def broadcast_chat_message(event):
             event["user_id"], event["username"])
     emit(event["chat_id"], event, broadcast=True)
     return event["msg_id"]
+
+
+@app.route('/stocks', methods=['GET', 'POST'])
+@login_required
+def stocks_page():
+    tickers = get_tickers(current_user.id)
+    form = NewTickerForm()
+
+    form_params = request.form.to_dict(flat=True)
+    ticker_id_in_request = "ticker_id_delete" in form_params.keys()
+    if ticker_id_in_request:
+        ticker_id = int(form_params["ticker_id_delete"])
+        delete_tickeruser(db, ticker_id, current_user.id)
+        flash("Ticker: {} deleted.".format(get_ticker_name(ticker_id)))
+        return redirect(url_for('stocks_page'))
+
+    if not ticker_id_in_request:
+        if form.validate_on_submit():
+            ticker = form.ticker_name.data.upper()
+            if ticker not in [t.name for t in tickers]:
+                create_tickeruser(db, ticker, current_user.id)
+            else:
+                flash("Ticker: {} already exist.".format(ticker))
+            return redirect(url_for('stocks_page'))
+
+    return render_template("stocks.html", form=form, tickers=tickers)
+
+
+@app.route("/ticker_emails", methods=["POST"])
+@basic_auth.required
+def ticker_emails():
+    ticker = request.form.get("ticker", None)
+    limit = int(request.form.get("limit", 100))
+    result = get_ticker_emails(db, ticker=ticker, limit=limit)
+    return jsonify(dict(result))
 
 
 if __name__ == '__main__':
