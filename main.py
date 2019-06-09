@@ -46,7 +46,7 @@ def make_shell_context():
         'ChatMessage': ChatMessage,
     }
 
-basic_auth = BasicAuth(app)
+basic_auth = BasicAuth()
 db = SQLAlchemy(app)
 socketio = SocketIO(app)
 
