@@ -1,5 +1,17 @@
 # Pull base image.
-FROM ubuntu
+FROM ubuntu:16.04
+
+RUN apt-get update && \
+    apt-get install -y software-properties-common vim build-essential && \
+    add-apt-repository ppa:jonathonf/python-3.6
+
+RUN apt-get update && \
+    apt-get install -y python3.6 python3.6-dev python3-pip python3.6-venv && \
+    apt-get install -y git tmux
+
+# update pip
+RUN python3.6 -m pip install pip --upgrade && \
+        python3.6 -m pip install wheel
 
 # Install Supervisor.
 RUN \
@@ -7,7 +19,7 @@ RUN \
   mkdir /home/ubuntu && \
   mkdir /home/ubuntu/email-article && \
   apt-get update && \
-  apt-get install -y supervisor python-pip wget vim git lsb-release curl python-dev libxml2-dev libxslt1-dev zlib1g-dev sqlite3 libsqlite3-dev sqlite3 && \
+  apt-get install -y supervisor wget vim git lsb-release curl libxml2-dev libxslt1-dev zlib1g-dev sqlite3 libsqlite3-dev sqlite3 && \
   rm -rf /var/lib/apt/lists/* && \
   sed -i 's/^\(\[supervisord\]\)$/\1\nnodaemon=true/' /etc/supervisor/supervisord.conf
 
@@ -16,9 +28,9 @@ EXPOSE 5000
 
 # Create virtualenv.
 RUN \
-  pip install --upgrade pip && \
-  pip install --upgrade virtualenv && \
-  virtualenv -p /usr/bin/python2.7 /home/ubuntu/.virtualenvs/env
+  python3.6 -m pip install --upgrade pip && \
+  python3.6 -m pip install --upgrade virtualenv && \
+  virtualenv -p /usr/bin/python3.6 /home/ubuntu/.virtualenvs/env
 
 # Setup for ssh onto github, clone and define working directory
 ADD credentials/ /home/ubuntu/.credentials/
@@ -35,8 +47,7 @@ WORKDIR /home/ubuntu/email-article
 # Install app requirements
 RUN \
   . /home/ubuntu/.virtualenvs/env/bin/activate && \
-  pip install https://s3-us-west-2.amazonaws.com/jdimatteo-personal-public-readaccess/nltk-2.0.5-https-distribute.tar.gz && \
-  pip install -r requirements.txt
+  python3.6 -m pip install -r requirements.txt
 
 ADD config.py /home/ubuntu/email-article
 

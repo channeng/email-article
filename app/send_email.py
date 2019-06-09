@@ -26,10 +26,10 @@ def send_message(service, user_id, message):
             .send(userId=user_id, body=message)
             .execute()
         )
-        print 'Message Id: %s' % message['id']
+        print('Message Id: {}'.format(message['id']))
         return message
-    except errors.HttpError, error:
-        print 'An error occurred: %s' % error
+    except errors.HttpError as error:
+        print('An error occurred: {}'.format(error))
 
 
 def create_message(sender, to, subject, message_text, pdf_data={}):
@@ -58,5 +58,5 @@ def create_message(sender, to, subject, message_text, pdf_data={}):
             'attachment; filename="{}.pdf"'.format(pdf_data["title"]))
         message.attach(part)
     return {
-        'raw': base64.urlsafe_b64encode(message.as_string())
+        'raw': base64.urlsafe_b64encode(message.as_bytes()).decode()
     }

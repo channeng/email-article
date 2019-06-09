@@ -6,7 +6,7 @@ Usage:
 import random
 
 from flask import render_template, flash, redirect, url_for, request, abort
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 from flask_login import current_user, login_user, logout_user, login_required
 from flask_socketio import SocketIO, emit
 from werkzeug.urls import url_parse
@@ -394,7 +394,6 @@ def chat_room_page(chat_id, user_ids=[]):
 @login_required
 # message_event = u'{"msg":"hi","chat_id":"1","user_id":"2","username":"chan"}'
 def broadcast_chat_message(event):
-    # event["msg"] = event["msg"].encode("latin1").decode("utf-8")
     if event["msg"] != "~~~ping~~~":
         create_chatmessage(
             db, event["msg"], event["chat_id"],

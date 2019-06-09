@@ -48,7 +48,6 @@ Given a link to the article and the email of the recipient, the app will scrape 
 	sudo chmod 600 /swapfile
 	sudo mkswap /swapfile
 	sudo swapon /swapfile
-
 	sudo docker build -t email-article .
 	```
 

@@ -14,7 +14,7 @@ def _send_email(send_to, title, message, reply_to_email):
     sender = "me"
     user_id = sender
     to = [send_to]
-    subject = title.decode("utf-8")
+    subject = title
     sign_off = "\n\nReply to: {}\n".format(reply_to_email)
 
     message = message + sign_off + _copyright
@@ -37,8 +37,8 @@ def send_contact_message(form_params):
     try:
         msg_type = form_params["message_type"].title()
         name = form_params.get("name", "")
-        title = "{} from {}".format(msg_type, name).encode("utf-8")
-        text = form_params["message"].encode("utf-8")
+        title = "{} from {}".format(msg_type, name)
+        text = form_params["message"]
         reply_to_email = form_params["email"]
         _send_email(_owner_email, title, text, reply_to_email)
         return "Success: Article '{}' sent to {}".format(

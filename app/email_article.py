@@ -59,7 +59,7 @@ def _send_email(
     sender = "me"
     user_id = sender
     to = [send_to]
-    subject = "Article: {}".format(article_title).decode("utf-8")
+    subject = "Article: {}".format(article_title)
 
     article_authors = ""
     if authors:
@@ -99,8 +99,8 @@ def create_task(form_params):
         abort(400)
     try:
         article = _get_article(form_params["article_url"])
-        title = article["title"].encode("utf-8")
-        text = article["text"].encode("utf-8")
+        title = article["title"]
+        text = article["text"]
 
         pdf_link = None
         if form_params.get("include_pdf", False) == "on":
