@@ -4,6 +4,10 @@ from app.models import Ticker, TickerUser
 from app.models_items import handleError
 
 
+def _validate_ticker(ticker):
+    return re.sub(r"[^A-Z1-9\.]", "", ticker.upper())
+
+
 class TickerItems(object):
     def __init__(self, Model, ModelUser):
         self.model = Model
@@ -30,7 +34,7 @@ class TickerItems(object):
     @handleError
     def create_model(self, db, ticker):
         # Remove all spaces and symbols that is not A-Z, 1-9 or .
-        ticker_validated = re.sub(r"[^A-Z1-9\.]", "", ticker.upper())
+        ticker_validated = _validate_ticker(ticker)
         new_ticker = self.model(name=ticker_validated)
         db.session.add(new_ticker)
         db.session.commit()
@@ -43,8 +47,9 @@ class TickerItems(object):
         return model_name
 
     def get_model_id(self, ticker):
+        ticker_validated = _validate_ticker(ticker)
         model_obj = self.model.query.filter_by(
-            name=ticker, is_deleted=False).first()
+            name=ticker_validated, is_deleted=False).first()
         if model_obj is not None:
             return model_obj.id
         return
@@ -89,7 +94,8 @@ class TickerItems(object):
         """
         filter_ticker = ""
         if ticker is not None:
-            filter_ticker = "AND name = '{}'".format(ticker.upper())
+            ticker_validated = _validate_ticker(ticker)
+            filter_ticker = "AND name = '{}'".format(ticker_validated)
         result = db.engine.execute(
             ticker_emails_query.format(
                 filter_ticker=filter_ticker, limit=limit))
@@ -112,10 +118,10 @@ def get_ticker_name(ticker_id):
 
 
 def create_tickeruser(db, ticker, user_id):
-    ticker_id = model_template.get_model_id(ticker.upper())
+    ticker_id = model_template.get_model_id(ticker)
     if not isinstance(ticker_id, int):
         _create_ticker(db, ticker)
-        ticker_id = model_template.get_model_id(ticker.upper())
+        ticker_id = model_template.get_model_id(ticker)
     return model_template.create_modeluser(db, ticker_id, user_id)
 
 
@@ -124,5 +130,4 @@ def delete_tickeruser(db, ticker_id, user_id):
 
 
 def get_ticker_emails(db, ticker=None, limit=100):
-    return model_template.get_ticker_emails(
-        db, ticker=ticker, limit=limit)
+    return model_template.get_ticker_emails(db, ticker=ticker, limit=limit)
