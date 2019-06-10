@@ -1,11 +1,31 @@
 import re
+import requests
+import json
 
 from app.models import Ticker, TickerUser
 from app.models_items import handleError
+from config import Config
 
 
 def validate_ticker(ticker):
     return re.sub(r"[^A-Z1-9\.]", "", ticker.upper())
+
+
+def validate_ticker_api(ticker_validated):
+    api_key = Config.ALPHAVANTAGE_API_KEY
+    api_function = "Global Quote"
+    response = requests.get(
+        "https://www.alphavantage.co/query?"
+        "apikey={api_key}&datatype=json&"
+        "symbol={ticker}&function={function}".format(
+            api_key=api_key,
+            ticker=ticker_validated,
+            function=api_function.replace(" ", "_").upper()))
+    if response.ok:
+        results = json.loads(response.content)
+        results = results[api_function]
+        # empty {} if ticker is not found
+        return results
 
 
 class TickerItems(object):
@@ -35,9 +55,14 @@ class TickerItems(object):
     def create_model(self, db, ticker):
         # Remove all spaces and symbols that is not A-Z, 1-9 or .
         ticker_validated = validate_ticker(ticker)
+        ticker_data = validate_ticker_api(ticker_validated)
+        if ticker_data is None or not ticker_data:
+            return False
+
         new_ticker = self.model(name=ticker_validated)
         db.session.add(new_ticker)
         db.session.commit()
+        return True
 
     @handleError
     def get_model_name(self, model_id):
@@ -62,6 +87,7 @@ class TickerItems(object):
             ticker_id=int(model_id))
         db.session.add(new_modeluser)
         db.session.commit()
+        return True
 
     @handleError
     def delete_modeluser(self, db, model_id, user_id):
@@ -120,8 +146,11 @@ def get_ticker_name(ticker_id):
 def create_tickeruser(db, ticker, user_id):
     ticker_id = model_template.get_model_id(ticker)
     if not isinstance(ticker_id, int):
-        _create_ticker(db, ticker)
-        ticker_id = model_template.get_model_id(ticker)
+        ticker_is_created = _create_ticker(db, ticker)
+        if ticker_is_created:
+            ticker_id = model_template.get_model_id(ticker)
+        else:
+            return False
     return model_template.create_modeluser(db, ticker_id, user_id)
 
 

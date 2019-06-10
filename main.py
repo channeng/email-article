@@ -423,10 +423,14 @@ def stocks_page():
     if not ticker_id_in_request:
         if form.validate_on_submit():
             ticker_validated = validate_ticker(form.ticker_name.data)
-            if ticker_validated not in [t.name for t in tickers]:
-                create_tickeruser(db, ticker_validated, current_user.id)
+            if ticker_validated in [t.name for t in tickers]:
+                flash("Ticker: {} is already added.".format(ticker_validated))
             else:
-                flash("Ticker: {} already exist.".format(ticker_validated))
+                ticker_created_for_user = create_tickeruser(
+                    db, ticker_validated, current_user.id)
+                if not ticker_created_for_user:
+                    flash("Ticker: {} is invalid.".format(ticker_validated))
+
             return redirect(url_for('stocks_page'))
 
     return render_template("stocks.html", form=form, tickers=tickers)
