@@ -1,3 +1,5 @@
+import re
+
 from app.models import Ticker, TickerUser
 from app.models_items import handleError
 
@@ -27,7 +29,9 @@ class TickerItems(object):
 
     @handleError
     def create_model(self, db, ticker):
-        new_ticker = self.model(name=ticker)
+        # Remove all spaces and symbols that is not A-Z, 1-9 or .
+        ticker_validated = re.sub(r"[^A-Z1-9\.]", "", ticker.upper())
+        new_ticker = self.model(name=ticker_validated)
         db.session.add(new_ticker)
         db.session.commit()
 
