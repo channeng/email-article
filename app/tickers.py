@@ -4,7 +4,7 @@ from app.models import Ticker, TickerUser
 from app.models_items import handleError
 
 
-def _validate_ticker(ticker):
+def validate_ticker(ticker):
     return re.sub(r"[^A-Z1-9\.]", "", ticker.upper())
 
 
@@ -34,7 +34,7 @@ class TickerItems(object):
     @handleError
     def create_model(self, db, ticker):
         # Remove all spaces and symbols that is not A-Z, 1-9 or .
-        ticker_validated = _validate_ticker(ticker)
+        ticker_validated = validate_ticker(ticker)
         new_ticker = self.model(name=ticker_validated)
         db.session.add(new_ticker)
         db.session.commit()
@@ -47,7 +47,7 @@ class TickerItems(object):
         return model_name
 
     def get_model_id(self, ticker):
-        ticker_validated = _validate_ticker(ticker)
+        ticker_validated = validate_ticker(ticker)
         model_obj = self.model.query.filter_by(
             name=ticker_validated, is_deleted=False).first()
         if model_obj is not None:
@@ -94,7 +94,7 @@ class TickerItems(object):
         """
         filter_ticker = ""
         if ticker is not None:
-            ticker_validated = _validate_ticker(ticker)
+            ticker_validated = validate_ticker(ticker)
             filter_ticker = "AND name = '{}'".format(ticker_validated)
         result = db.engine.execute(
             ticker_emails_query.format(

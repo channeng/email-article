@@ -29,7 +29,7 @@ from app.chats import (
     create_chatmessage, get_chat_name_messages)
 from app.tickers import (
     get_tickers, create_tickeruser, delete_tickeruser,
-    get_ticker_name, get_ticker_emails)
+    get_ticker_name, get_ticker_emails, validate_ticker)
 from app.models import User, List, ListUser, ListItem, Chat, ChatMessage
 
 
@@ -422,11 +422,11 @@ def stocks_page():
 
     if not ticker_id_in_request:
         if form.validate_on_submit():
-            ticker = form.ticker_name.data.upper()
-            if ticker not in [t.name for t in tickers]:
-                create_tickeruser(db, ticker, current_user.id)
+            ticker_validated = validate_ticker(form.ticker_name.data)
+            if ticker_validated not in [t.name for t in tickers]:
+                create_tickeruser(db, ticker_validated, current_user.id)
             else:
-                flash("Ticker: {} already exist.".format(ticker))
+                flash("Ticker: {} already exist.".format(ticker_validated))
             return redirect(url_for('stocks_page'))
 
     return render_template("stocks.html", form=form, tickers=tickers)
