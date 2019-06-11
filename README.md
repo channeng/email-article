@@ -86,3 +86,22 @@ Given a link to the article and the email of the recipient, the app will scrape 
 	```bash
 	sudo docker cp email-article/config.py $(sudo docker ps -f ancestor=email-article --format "{{.ID}}"):/home/ubuntu/email-article
 	```
+
+- To test DB migration:
+	- Copy database/app.db from docker -> server -> database/app.db
+	- Run the following commands:
+		```bash
+		rm -rf migrations/
+
+		# Delete any previous alembic version in DB
+		sqlite3 database/app.db < delete_alembic_version.sqlite
+
+		# Create migrations folder to prepare for migration script
+		flask db init 
+
+		# Generate migration script
+		flask db migrate
+
+		# Check that changes are as expected, before executing the following:
+		flask db upgrade
+		```

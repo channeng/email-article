@@ -15,6 +15,11 @@ migrate = Migrate(app, db)
 login = LoginManager(app)
 login.login_view = 'login'
 
+# Import database models with app context
+# https://stackoverflow.com/questions/33905706/flask-migrate-seemed-to-delete-all-my-database-data
+with app.app_context():
+    from app.models import *
+
 
 @app.errorhandler(404)
 def not_found(error):
