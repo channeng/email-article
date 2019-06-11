@@ -4,9 +4,16 @@ from flask_login import UserMixin
 from werkzeug.security import (
     generate_password_hash, check_password_hash)
 from sqlalchemy.orm import validates
+from sqlalchemy.sql import functions as func
+from sqlalchemy import inspect
 
 from app import db
 from app import login
+
+
+def get_columns(db_model):
+    mapper = inspect(db_model)
+    return [column.key for column in mapper.attrs]
 
 
 @login.user_loader
@@ -123,10 +130,34 @@ class Ticker(db.Model):
     def convert_upper(self, key, value):
         return value.upper()
 
-    timestamp = db.Column(
-        db.DateTime, index=True, default=datetime.utcnow)
+    # https://stackoverflow.com/questions/13370317/sqlalchemy-default-datetime
+    time_created = db.Column(
+        db.DateTime,
+        # best to use sql DB server time
+        default=func.now())
+    time_updated = db.Column(
+        db.DateTime,
+        onupdate=func.now())
     subscribed_users = db.relationship(
         'TickerUser', backref='list', lazy='dynamic')
+
+    # https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=xiaomi&apikey=demo
+    full_name = db.Column(db.String(140))
+    type = db.Column(db.String(50))
+    region = db.Column(db.String(140))
+    currency = db.Column(db.String(50))
+    timezone = db.Column(db.String(50))
+
+    # https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=MSFT&apikey=demo
+    open = db.Column(db.Float)
+    high = db.Column(db.Float)
+    low = db.Column(db.Float)
+    price = db.Column(db.Float)
+    volume = db.Column(db.Integer)
+    latest_trading_day = db.Column(db.String(50))
+    previous_close = db.Column(db.Float)
+    change = db.Column(db.Float)
+    change_percent = db.Column(db.Float)
 
     is_deleted = db.Column(db.Boolean, default=False)
 
