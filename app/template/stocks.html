@@ -9,7 +9,7 @@
       <li>
         <div style="width:60px;float:left;"><a>{{ ticker.name }}</a></div>
         {% if ticker.full_name != None %}
-        <div style="width:240px;float:left;"><a>{{ ticker.full_name }}</a></div>
+        <div style="width:170px;float:left;"><a>{{ ticker.full_name }}</a></div>
         {% endif %}
         <div style="float:right;">
           <button class="delete" type="submit" value="{{ ticker.id }}" form="delete_ticker_form_{{ ticker.id }}" onClick="return confirm('Are you sure you want to delete {{ ticker.name }} ?')">&nbsp;&#10007;&nbsp;</button>
