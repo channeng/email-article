@@ -15,7 +15,7 @@ _ENDPOINT = (
 
 
 def validate_ticker(ticker):
-    return re.sub(r"[^A-Z1-9\.]", "", ticker.upper())
+    return re.sub(r"[^A-Z0-9\.]", "", ticker.upper())
 
 
 def get_ticker_stats(ticker_validated):
@@ -26,9 +26,10 @@ def get_ticker_stats(ticker_validated):
             ticker=ticker_validated))
     if response.ok:
         results = json.loads(response.content)
-        results = results[api_function]
+        if results.get(api_function, None) is None:
+            return {}
         # empty {} if ticker is not found
-        return results
+        return results[api_function]
 
 
 def get_ticker_details(ticker_validated):
@@ -38,6 +39,9 @@ def get_ticker_details(ticker_validated):
             ticker=ticker_validated))
     if response.ok:
         results = json.loads(response.content)
+        if results.get("bestMatches", None) is None:
+            return []
+
         results = results["bestMatches"]
         # empty [] if ticker is not found
         if results:
@@ -56,6 +60,20 @@ def _clean_ticker_stats(ticker_stats):
             metric_name = "full_name"
         if metric_name in _TICKER_COLUMNS:
             ticker_data[metric_name] = val
+
+    return ticker_data
+
+
+def get_ticker_data(ticker_validated, update_details=False):
+    ticker_stats = get_ticker_stats(ticker_validated)
+    if ticker_stats is None or not ticker_stats:
+        return False
+    if update_details:
+        ticker_details = get_ticker_details(ticker_validated)
+        if ticker_details:
+            ticker_stats.update(ticker_details)
+
+    ticker_data = _clean_ticker_stats(ticker_stats)
 
     return ticker_data
 
@@ -83,27 +101,59 @@ class TickerItems(object):
             .all()
         )
 
-    # TODO
-    # @handleError
-    # def update_model(self, db, model_id):
-    #     model_obj = self.model.query.filter_by(id=model_id).first()
-    #     ticker_stats = get_ticker_stats(model_obj.name)
-    #     embed()
-    #     db.session.merge(model_obj)
-    #     db.session.commit()
+    @handleError
+    def get_models(self, num_results=100):
+        return (
+            self.model.query
+            .with_entities(self.model.name, self.model.time_updated)
+            .filter_by(is_deleted=False)
+            .order_by(self.model.id.desc())
+            .limit(num_results)
+            .all()
+        )
+
+    @handleError
+    def update_model(self, db, ticker, update_details=False):
+        ticker_validated = validate_ticker(ticker)
+        model_obj = (
+            self.model.query
+            .filter_by(is_deleted=False)
+            .filter_by(name=ticker_validated)
+            .order_by(self.model.id.desc())
+            .first()
+        )
+
+        if model_obj is None:
+            return {
+                "ticker": ticker_validated,
+                "updated": False,
+                "error": "Ticker not found."
+            }
+
+        ticker_data = get_ticker_data(
+            model_obj.name, update_details=update_details)
+        if ticker_data == False or ticker_data == {}:  # noqa E712
+            return {
+                "ticker": model_obj.name,
+                "updated": False,
+                "error": "No ticker data retrieved."
+            }
+
+        model_obj.__dict__.update(ticker_data)
+        db.session.merge(model_obj)
+        db.session.commit()
+        return {
+            "ticker": model_obj.name,
+            "updated": True
+        }
 
     @handleError
     def create_model(self, db, ticker):
         # Remove all spaces and symbols that is not A-Z, 1-9 or .
         ticker_validated = validate_ticker(ticker)
-        ticker_stats = get_ticker_stats(ticker_validated)
-        if ticker_stats is None or not ticker_stats:
+        ticker_data = get_ticker_data(ticker_validated, update_details=True)
+        if ticker_data == False:  # noqa E712
             return False
-
-        ticker_details = get_ticker_details(ticker_validated)
-        if ticker_details:
-            ticker_stats.update(ticker_details)
-        ticker_data = _clean_ticker_stats(ticker_stats)
         new_ticker = self.model(name=ticker_validated, **ticker_data)
         db.session.add(new_ticker)
         db.session.commit()
@@ -205,3 +255,12 @@ def delete_tickeruser(db, ticker_id, user_id):
 
 def get_ticker_emails(db, ticker=None, limit=100):
     return model_template.get_ticker_emails(db, ticker=ticker, limit=limit)
+
+
+def update_ticker_data(db, ticker, update_details=False):
+    return model_template.update_model(
+        db, ticker, update_details=update_details)
+
+
+def get_all_tickers(num_results=100):
+    return model_template.get_models(num_results=num_results)

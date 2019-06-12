@@ -29,7 +29,8 @@ from app.chats import (
     create_chatmessage, get_chat_name_messages)
 from app.tickers import (
     get_tickers, create_tickeruser, delete_tickeruser,
-    get_ticker_name, get_ticker_emails, validate_ticker)
+    get_ticker_name, get_ticker_emails, validate_ticker,
+    update_ticker_data, get_all_tickers)
 from app.models import User, List, ListUser, ListItem, Chat, ChatMessage
 
 
@@ -443,6 +444,36 @@ def ticker_emails():
     limit = int(request.form.get("limit", 100))
     result = get_ticker_emails(db, ticker=ticker, limit=limit)
     return jsonify(dict(result))
+
+
+@app.route("/update_ticker", methods=["POST"])
+@basic_auth.required
+def update_ticker():
+    ticker = str(request.form.get("ticker", None))
+    if ticker is None:
+        return jsonify({"error": "Ticker must be provided."})
+    update_details = request.form.get("update_details", "false")
+    update_details = update_details.lower() == "true"
+    result = update_ticker_data(
+        db, ticker, update_details=update_details)
+    return jsonify(dict(result))
+
+
+@app.route("/all_tickers", methods=["POST"])
+@basic_auth.required
+def all_tickers():
+    limit = int(request.form.get("limit", 100))
+    results = get_all_tickers(num_results=limit)
+    tickers_list = []
+    for ticker, last_updated in results:
+        tickers_list.append({
+            "ticker": ticker,
+            "last_updated": last_updated
+        })
+
+    return jsonify(dict({
+        "all_tickers": tickers_list
+    }))
 
 
 if __name__ == '__main__':
