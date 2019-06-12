@@ -7,8 +7,14 @@
     <ul>
     {% for ticker in tickers %}
       <li>
-        {{ ticker.name }}
-        <button class="delete" type="submit" value="{{ ticker.id }}" form="delete_ticker_form_{{ ticker.id }}" onClick="return confirm('Are you sure you want to delete {{ ticker.name }} ?')">&nbsp;&#10007;&nbsp;</button>
+        <div style="width:60px;float:left;"><a>{{ ticker.name }}</a></div>
+        {% if ticker.full_name != None %}
+        <div style="width:240px;float:left;"><a>{{ ticker.full_name }}</a></div>
+        {% endif %}
+        <div style="float:right;">
+          <button class="delete" type="submit" value="{{ ticker.id }}" form="delete_ticker_form_{{ ticker.id }}" onClick="return confirm('Are you sure you want to delete {{ ticker.name }} ?')">&nbsp;&#10007;&nbsp;</button>
+        </div>
+        <br style="clear: left;" />
         <form type="hidden" id="delete_ticker_form_{{ ticker.id }}" action="{{ url_for('stocks_page', ticker_id=ticker_id) }}" method="post">
           <input form="delete_ticker_form_{{ ticker.id }}" id="delete_ticker_form_{{ ticker.id }}" type="hidden" name="ticker_id_delete" value="{{ ticker.id }}">
         </form>

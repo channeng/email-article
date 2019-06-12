@@ -85,18 +85,17 @@ class TickerItems(object):
 
     @handleError
     def get_models_by_user_id(self, user_id, num_results=100):
-        ticker_users = (
+        return (
             self.model_user.query
             .filter_by(user_id=user_id)
             .filter_by(is_deleted=False)
-            .all()
-        )
-        ticker_ids = [ticker_user.ticker_id for ticker_user in ticker_users]
-        return (
-            self.model.query
-            .filter(self.model.id.in_(ticker_ids))
-            .filter_by(is_deleted=False)
-            .order_by(self.model.id.desc())
+            .join(
+                self.model,
+                self.model_user.ticker_id == self.model.id,
+                isouter=True)
+            .with_entities(
+                self.model.id, self.model.name, self.model.full_name)
+            .order_by(self.model_user.id.desc())
             .limit(num_results)
             .all()
         )
