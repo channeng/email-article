@@ -29,7 +29,7 @@ from app.chats import (
     create_chatmessage, get_chat_name_messages)
 from app.tickers import (
     get_tickers, create_tickeruser, delete_tickeruser,
-    get_ticker_name, get_ticker_emails, validate_ticker,
+    get_ticker, get_ticker_name, get_ticker_emails, validate_ticker,
     update_ticker_data, get_all_tickers)
 from app.models import User, List, ListUser, ListItem, Chat, ChatMessage
 
@@ -437,6 +437,14 @@ def stocks_page():
     return render_template("stocks.html", form=form, tickers=tickers)
 
 
+@app.route('/stocks/<int:ticker_id>', methods=['GET', 'POST'])
+@login_required
+def stock_details_page(ticker_id):
+    ticker = get_ticker(ticker_id)
+    return render_template("stock_details.html", ticker=ticker)
+
+
+# Ticker API
 @app.route("/ticker_emails", methods=["POST"])
 @basic_auth.required
 def ticker_emails():

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px;width:100%;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg .tg-zv4m{border-color:#ffffff;text-align:center;vertical-align:top}
+.tg .tg-plr7{width:40%;font-weight:bold;background-color:#efefef;border-color:#ffffff;text-align:center;vertical-align:top}
+</style>
+<h3>
+  <div style="float; left; width: 70%; display:inline-block;">
+    <a href="{{ url_for('stocks_page') }}">My Stocks</a>&nbsp; > &nbsp; {{ ticker.name }}
+  </div>
+  <div style="float: right; display:block; width: 10%"><button class="delete list_del" type="submit" value="{{ ticker.id }}" form="delete_ticker_form_{{ ticker.id }}" onClick="return confirm('Are you sure you want to delete {{ ticker.name }}: {{ ticker.full_name }} ?')">Delete</button>
+  <form type="hidden" id="delete_ticker_form_{{ ticker.id }}" action="{{ url_for('stocks_page', ticker_id=ticker_id) }}" method="post">
+    <input form="delete_ticker_form_{{ ticker.id }}" id="delete_ticker_form_{{ ticker.id }}" type="hidden" name="ticker_id_delete" value="{{ ticker.id }}">
+  </form>
+  </div>
+  <br style="clear: left;" />
+</h3>
+<hr>
+
+<table class="tg">
+  <tr>
+    <td class="tg-plr7">Full name</td>
+    <td class="tg-zv4m">{{ ticker.full_name }}</td>
+  </tr>
+  <tr>
+    <td class="tg-plr7">Type</td>
+    <td class="tg-zv4m">{{ ticker.type }}</td>
+  </tr>
+  <tr>
+    <td class="tg-plr7">Region</td>
+    <td class="tg-zv4m">{{ ticker.region }}</td>
+  </tr>
+  <tr>
+    <td class="tg-plr7">Last trading day</td>
+    <td class="tg-zv4m">{{ ticker.latest_trading_day }}</td>
+  </tr>
+  <tr>
+    <td class="tg-plr7">Latest price</td>
+    <td class="tg-zv4m">{{ '{} $ {:.2f}'.format(ticker.currency, ticker.price) }}</td>
+  </tr>
+  <tr>
+    <td class="tg-plr7">Previous close</td>
+    <td class="tg-zv4m">{{ '{} $ {:.2f}'.format(ticker.currency, ticker.previous_close) }}</td>
+  </tr>
+  <tr>
+    <td class="tg-plr7">Absolute change</td>
+    <td class="tg-zv4m">{{ '{} $ {:.2f}'.format(ticker.currency, ticker.change) }}</td>
+  </tr>
+  <tr>
+    <td class="tg-plr7">% change</td>
+    <td class="tg-zv4m">{{'{:0.2f} %'.format(ticker.change_percent * 100)}}</td>
+  </tr>
+  <tr>
+    <td class="tg-plr7">Open</td>
+    <td class="tg-zv4m">{{ '{} $ {:.2f}'.format(ticker.currency, ticker.open) }}</td>
+  </tr>
+  <tr>
+    <td class="tg-plr7">High</td>
+    <td class="tg-zv4m">{{ '{} $ {:.2f}'.format(ticker.currency, ticker.high) }}</td>
+  </tr>
+  <tr>
+    <td class="tg-plr7">Low</td>
+    <td class="tg-zv4m">{{ '{} $ {:.2f}'.format(ticker.currency, ticker.low) }}</td>
+  </tr>
+  <tr>
+    <td class="tg-plr7">Volume</td>
+    <td class="tg-zv4m">{{ '{:,}'.format(ticker.volume) }}</td>
+  </tr>
+</table>
+
+<br>
+{% endblock %}

@@ -159,9 +159,17 @@ class TickerItems(object):
         return True
 
     @handleError
+    def get_model(self, model_id):
+        return (
+            self.model.query
+            .filter_by(id=model_id, is_deleted=False)
+            .order_by(self.model.id.desc())
+            .first()
+        )
+
+    @handleError
     def get_model_name(self, model_id):
-        model_obj = self.model.query.filter_by(
-            id=model_id, is_deleted=False).first()
+        model_obj = self.get_model(model_id)
         model_name = model_obj.name
         return model_name
 
@@ -231,6 +239,10 @@ def get_tickers(user_id, num_results=100):
 
 def _create_ticker(db, ticker):
     return model_template.create_model(db, ticker)
+
+
+def get_ticker(ticker_id):
+    return model_template.get_model(ticker_id)
 
 
 def get_ticker_name(ticker_id):

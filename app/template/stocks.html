@@ -1,27 +1,27 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h3>My Stocks</h3>
+  <h3>
+    <div style="float; left; width: 60%; display:inline-block;">
+    My Stocks
+    </div>
+  </h3>
   <hr><br>
   <div>
     <ul>
     {% for ticker in tickers %}
       <li>
-        <div style="width:15%;float:left;"><a>{{ ticker.name }}</a></div>
-
-        {% if ticker.full_name != None %}
-        <div style="width:60%;float:left;"><a>{{ ticker.full_name }}</a></div>
-        {% endif %}
-
-        <div style="float:right;">
-          <button class="delete" type="submit" value="{{ ticker.id }}" form="delete_ticker_form_{{ ticker.id }}" onClick="return confirm('Are you sure you want to delete {{ ticker.name }} ?')">&nbsp;&#10007;&nbsp;</button>
+        <div style="width:15%;float:left;">
+          <b><a href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">{{ ticker.name }}</a></b>
         </div>
 
-        <br style="clear: left;" />
+        {% if ticker.full_name != None %}
+        <div style="width:65%;float:left;">
+          <a href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">{{ ticker.full_name }}</a>
+        </div>
+        {% endif %}
 
-        <form type="hidden" id="delete_ticker_form_{{ ticker.id }}" action="{{ url_for('stocks_page', ticker_id=ticker_id) }}" method="post">
-          <input form="delete_ticker_form_{{ ticker.id }}" id="delete_ticker_form_{{ ticker.id }}" type="hidden" name="ticker_id_delete" value="{{ ticker.id }}">
-        </form>
+        <br style="clear: left;" />
       </li>
     {% endfor %}
     </ul>
