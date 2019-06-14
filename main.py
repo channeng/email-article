@@ -53,23 +53,23 @@ socketio = SocketIO(app)
 
 
 @app.route('/')
-@app.route('/index')
+@app.route('/index/')
 def index():
     return render_template("index.html")
 
 
-@app.route('/about')
+@app.route('/about/')
 def about():
     return render_template("about.html")
 
 
-@app.route('/email_article')
+@app.route('/email_article/')
 @login_required
 def email_article_page():
     return render_template("email_article.html")
 
 
-@app.route("/email_article", methods=["POST"])
+@app.route("/email_article/", methods=["POST"])
 @login_required
 def send_email_article():
     form_params = request.form.to_dict(flat=True)
@@ -83,7 +83,7 @@ def send_email_article():
     return render_template("email_article.html")
 
 
-@app.route("/contact", methods=['GET', 'POST'])
+@app.route("/contact/", methods=['GET', 'POST'])
 def contact_us():
     form_params = request.form.to_dict(flat=True)
     form = ContactForm()
@@ -95,7 +95,7 @@ def contact_us():
     return render_template("contact_us.html", form=form)
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login/', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
@@ -115,13 +115,13 @@ def login():
     return render_template('login.html', title='Sign In', form=form)
 
 
-@app.route('/logout')
+@app.route('/logout/')
 def logout():
     logout_user()
     return redirect(url_for('index'))
 
 
-@app.route('/register', methods=['GET', 'POST'])
+@app.route('/register/', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
@@ -140,7 +140,7 @@ def register():
     return render_template('register.html', title='Register', form=form)
 
 
-@app.route('/lists', methods=['GET', 'POST'])
+@app.route('/lists/', methods=['GET', 'POST'])
 @login_required
 def lists_page():
     lists = get_lists(current_user.id)
@@ -194,7 +194,7 @@ def _list_items_checked_unchecked(form_params):
     return checked_unchecked_in_request
 
 
-@app.route('/lists/<int:list_id>', methods=['GET', 'POST'])
+@app.route('/lists/<int:list_id>/', methods=['GET', 'POST'])
 @login_required
 def list_items_page(list_id, auth_user_ids=[], owner_username=None):
     # Check if user has permission to access list
@@ -239,7 +239,7 @@ def _user_was_invited(list_id, invited_user_id):
     return user_id is not None
 
 
-@app.route('/lists/<int:list_id>/edit', methods=['GET', 'POST'])
+@app.route('/lists/<int:list_id>/edit/', methods=['GET', 'POST'])
 @login_required
 def list_edit_page(list_id, user_ids=[]):
     # Check if user has permission to access list
@@ -341,7 +341,7 @@ def _has_chat_with_user(user_id, invited_user_id):
     return chat_id is not None or chat_id_inverse is not None
 
 
-@app.route('/chats', methods=['GET', 'POST'])
+@app.route('/chats/', methods=['GET', 'POST'])
 @login_required
 def chats_page():
     chats = get_chats(current_user.id)
@@ -377,7 +377,7 @@ def chats_page():
         "chats.html", form=form, chats=chats, chat_names=chat_names)
 
 
-@app.route('/chats/<int:chat_id>', methods=['GET', 'POST'])
+@app.route('/chats/<int:chat_id>/', methods=['GET', 'POST'])
 @login_required
 def chat_room_page(chat_id, user_ids=[]):
     # Check if user has permission to access chat
@@ -407,7 +407,7 @@ def broadcast_chat_message(event):
     return event["msg_id"]
 
 
-@app.route('/stocks', methods=['GET', 'POST'])
+@app.route('/stocks/', methods=['GET', 'POST'])
 @login_required
 def stocks_page():
     tickers = get_tickers(current_user.id)
@@ -437,7 +437,7 @@ def stocks_page():
     return render_template("stocks.html", form=form, tickers=tickers)
 
 
-@app.route('/stocks/<int:ticker_id>', methods=['GET', 'POST'])
+@app.route('/stocks/<int:ticker_id>/', methods=['GET', 'POST'])
 @login_required
 def stock_details_page(ticker_id):
     ticker = get_ticker(ticker_id)
@@ -445,7 +445,7 @@ def stock_details_page(ticker_id):
 
 
 # Ticker API
-@app.route("/ticker_emails", methods=["POST"])
+@app.route("/ticker_emails/", methods=["POST"])
 @basic_auth.required
 def ticker_emails():
     ticker = request.form.get("ticker", None)
@@ -454,7 +454,7 @@ def ticker_emails():
     return jsonify(dict(result))
 
 
-@app.route("/update_ticker", methods=["POST"])
+@app.route("/update_ticker/", methods=["POST"])
 @basic_auth.required
 def update_ticker():
     ticker = str(request.form.get("ticker", None))
@@ -467,7 +467,7 @@ def update_ticker():
     return jsonify(dict(result))
 
 
-@app.route("/all_tickers", methods=["POST"])
+@app.route("/all_tickers/", methods=["POST"])
 @basic_auth.required
 def all_tickers():
     limit = int(request.form.get("limit", 100))
