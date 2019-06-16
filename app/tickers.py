@@ -211,7 +211,7 @@ class TickerItems(object):
             ticker.full_name,
             ticker.currency,
             CASE WHEN ticker_rec.ticker_id IS NULL
-                 THEN False ELSE True END AS has_recommendation,
+                 THEN 0 ELSE 1 END AS has_recommendation,
             GROUP_CONCAT(DISTINCT user.email) emails
         FROM ticker_user
         LEFT JOIN user ON user.id = ticker_user.user_id
