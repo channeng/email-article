@@ -456,7 +456,15 @@ class TickerEmails(Resource):
         ticker = request.form.get("ticker", None)
         limit = int(request.form.get("limit", 100))
         result = get_ticker_emails(db, ticker=ticker, limit=limit)
-        return jsonify(dict(result))
+        result_dict = {}
+        for row in result:
+            result_dict[row[0]] = {
+                "name": row[1],
+                "currrency": row[2],
+                "has_recommendations": row[3] == 1,
+                "emails": row[4].split(",")
+            }
+        return jsonify(result_dict)
 
 api.add_resource(TickerEmails, '/ticker_emails')
 

@@ -206,18 +206,37 @@ class TickerItems(object):
 
     def get_ticker_emails(self, db, ticker=None, limit=100):
         ticker_emails_query = """
-        SELECT ticker.name, GROUP_CONCAT(DISTINCT user.email) emails
+        SELECT
+            ticker.name,
+            ticker.full_name,
+            ticker.currency,
+            CASE WHEN ticker_rec.ticker_id IS NULL
+                 THEN False ELSE True END AS has_recommendation,
+            GROUP_CONCAT(DISTINCT user.email) emails
         FROM ticker_user
         LEFT JOIN user ON user.id = ticker_user.user_id
         INNER JOIN (
-            SELECT id, name
+            SELECT id, name, full_name, currency
             FROM ticker
-            WHERE is_deleted = 0
+            -- Retrieve from latest id for each ticker
+            WHERE id in (
+                SELECT id FROM (
+                    SELECT name, max(id) as id
+                    FROM ticker
+                    WHERE is_deleted = 0
+                    GROUP by name
+                )
+            )
             {filter_ticker}
-        ) AS ticker
-        ON ticker.id = ticker_user.ticker_id
+            GROUP BY 1,2,3,4
+        ) AS ticker ON ticker.id = ticker_user.ticker_id
+        LEFT JOIN (
+            SELECT ticker_id
+            FROM ticker_recommendation
+            GROUP BY 1
+        ) AS ticker_rec ON ticker_rec.ticker_id = ticker_user.ticker_id
         WHERE ticker_user.is_deleted = 0
-        GROUP BY 1
+        GROUP BY 1,2,3,4
         LIMIT {limit};
         """
         filter_ticker = ""
