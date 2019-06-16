@@ -2,7 +2,7 @@ import re
 import requests
 import json
 
-from app.models import Ticker, TickerUser, get_columns
+from app.models import Ticker, TickerUser, TickerRecommendation, get_columns
 from app.models_items import handleError
 from config import Config
 
@@ -79,9 +79,10 @@ def get_ticker_data(ticker_validated, update_details=False):
 
 
 class TickerItems(object):
-    def __init__(self, Model, ModelUser):
+    def __init__(self, Model, ModelUser, ModelRecommendation):
         self.model = Model
         self.model_user = ModelUser
+        self.model_recommendation = ModelRecommendation
 
     @handleError
     def get_models_by_user_id(self, user_id, num_results=100):
@@ -183,7 +184,6 @@ class TickerItems(object):
 
     @handleError
     def create_modeluser(self, db, model_id, user_id):
-        """Create model-user for sharing Model with multiple Users."""
         new_modeluser = self.model_user(
             user_id=int(user_id),
             ticker_id=int(model_id))
@@ -230,7 +230,27 @@ class TickerItems(object):
         result = list(result)
         return result
 
-model_template = TickerItems(Ticker, TickerUser)
+    def create_modelrecommendation(
+            self, db, model_id, buy_or_sell, is_strong,
+            closing_date, closing_price, model_version):
+        """Add a recommendation for given ticker."""
+        new_recommendation = self.model_recommendation(
+            ticker_id=int(model_id),
+            recommendation=buy_or_sell,
+            is_strong=is_strong,
+            closing_date=closing_date,
+            closing_price=closing_price,
+            model_version=model_version
+        )
+        db.session.add(new_recommendation)
+        db.session.commit()
+        return {
+            "ticker": model_id,
+            "updated": True
+        }
+
+
+model_template = TickerItems(Ticker, TickerUser, TickerRecommendation)
 
 
 def get_tickers(user_id, num_results=100):
@@ -275,3 +295,16 @@ def update_ticker_data(db, ticker, update_details=False):
 
 def get_all_tickers(num_results=100):
     return model_template.get_models(num_results=num_results)
+
+
+def create_ticker_recommendation(
+        db, ticker, buy_or_sell, is_strong,
+        closing_date, closing_price, model_version):
+    ticker_id = model_template.get_model_id(ticker)
+    if not isinstance(is_strong, bool):
+        is_strong = is_strong.lower() == "true"
+    if not isinstance(ticker_id, int):
+        return False
+    return model_template.create_modelrecommendation(
+        db, ticker_id, buy_or_sell, is_strong,
+        closing_date, closing_price, model_version)

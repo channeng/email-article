@@ -11,6 +11,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import current_user, login_user, logout_user, login_required
 from flask_basicauth import BasicAuth
 from flask_socketio import SocketIO, emit
+from flask_restful import Resource, Api
 from werkzeug.urls import url_parse
 import validators
 
@@ -30,7 +31,7 @@ from app.chats import (
 from app.tickers import (
     get_tickers, create_tickeruser, delete_tickeruser,
     get_ticker, get_ticker_name, get_ticker_emails, validate_ticker,
-    update_ticker_data, get_all_tickers)
+    update_ticker_data, get_all_tickers, create_ticker_recommendation)
 from app.models import User, List, ListUser, ListItem, Chat, ChatMessage
 
 
@@ -49,6 +50,7 @@ def make_shell_context():
 
 basic_auth = BasicAuth()
 db = SQLAlchemy(app)
+api = Api(app)
 socketio = SocketIO(app)
 
 
@@ -448,43 +450,82 @@ def stock_details_page(ticker_id):
 
 
 # Ticker API
-@app.route("/ticker_emails", methods=["POST"], strict_slashes=False)
-@basic_auth.required
-def ticker_emails():
-    ticker = request.form.get("ticker", None)
-    limit = int(request.form.get("limit", 100))
-    result = get_ticker_emails(db, ticker=ticker, limit=limit)
-    return jsonify(dict(result))
+class TickerEmails(Resource):
+    @basic_auth.required
+    def get(self):
+        ticker = request.form.get("ticker", None)
+        limit = int(request.form.get("limit", 100))
+        result = get_ticker_emails(db, ticker=ticker, limit=limit)
+        return jsonify(dict(result))
+
+api.add_resource(TickerEmails, '/ticker_emails')
 
 
-@app.route("/update_ticker", methods=["POST"], strict_slashes=False)
-@basic_auth.required
-def update_ticker():
-    ticker = str(request.form.get("ticker", None))
-    if ticker is None:
-        return jsonify({"error": "Ticker must be provided."})
-    update_details = request.form.get("update_details", "false")
-    update_details = update_details.lower() == "true"
-    result = update_ticker_data(
-        db, ticker, update_details=update_details)
-    return jsonify(dict(result))
+class UpdateTicker(Resource):
+    @basic_auth.required
+    def post(self):
+        ticker = str(request.form.get("ticker", None))
+        if ticker is None:
+            return jsonify({"error": "Ticker must be provided."})
+        update_details = request.form.get("update_details", "false")
+        update_details = update_details.lower() == "true"
+        result = update_ticker_data(
+            db, ticker, update_details=update_details)
+        return jsonify(dict(result))
+
+api.add_resource(UpdateTicker, '/update_ticker')
 
 
-@app.route("/all_tickers", methods=["POST"], strict_slashes=False)
-@basic_auth.required
-def all_tickers():
-    limit = int(request.form.get("limit", 100))
-    results = get_all_tickers(num_results=limit)
-    tickers_list = []
-    for ticker, last_updated in results:
-        tickers_list.append({
-            "ticker": ticker,
-            "last_updated": last_updated
-        })
+class GetAllTickers(Resource):
+    @basic_auth.required
+    def get(self):
+        limit = int(request.form.get("limit", 100))
+        results = get_all_tickers(num_results=limit)
+        tickers_list = []
+        for ticker, last_updated in results:
+            tickers_list.append({
+                "ticker": ticker,
+                "last_updated": last_updated
+            })
 
-    return jsonify(dict({
-        "all_tickers": tickers_list
-    }))
+        return jsonify(dict({
+            "all_tickers": tickers_list
+        }))
+
+api.add_resource(GetAllTickers, '/all_tickers')
+
+
+class AddTickerRecommendation(Resource):
+    @basic_auth.required
+    def post(self):
+        ticker = str(request.form.get("ticker", None))
+        if ticker is None:
+            return jsonify({"error": "Ticker must be provided."})
+        buy_or_sell = request.form.get("buy_or_sell", None)
+        if buy_or_sell is None:
+            return jsonify({"error": "Buy/sell not provided. No updates."})
+        else:
+            closing_date = request.form.get("closing_date", None)
+            closing_price = request.form.get("closing_price", None)
+            model_version = request.form.get("model_version", None)
+            if (closing_date is None or closing_price is None or
+                    model_version is None):
+                return jsonify(
+                    {"error": "Please provide closing date, closing, "
+                              "price and model version."})
+
+        is_strong = request.form.get("is_strong", False)
+        result = create_ticker_recommendation(
+            db, ticker, buy_or_sell, is_strong,
+            closing_date, closing_price, model_version)
+
+        if not result:
+            return jsonify(
+                {"error": "Ticker {} does not exist.".format(ticker)})
+
+        return jsonify(dict(result))
+
+api.add_resource(AddTickerRecommendation, '/ticker_recommendation')
 
 
 if __name__ == '__main__':

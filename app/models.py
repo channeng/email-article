@@ -174,3 +174,21 @@ class TickerUser(db.Model):
     def __repr__(self):
         return '<TickerUser {}: user_id {}, ticker_id {}>'.format(
             self.id, self.user_id, self.ticker_id)
+
+
+class TickerRecommendation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ticker_id = db.Column(db.Integer, db.ForeignKey('ticker.id'))
+    time_created = db.Column(db.DateTime, default=func.now())
+
+    recommendation = db.Column(db.String(50))  # buy/sell
+    is_strong = db.Column(db.Boolean, default=False)
+    closing_date = db.Column(db.String(50))
+    closing_price = db.Column(db.Float)
+    model_version = db.Column(db.String(140))
+
+    def __repr__(self):
+        return (
+            "<TickerRecommendation {}: ticker_id {}, "
+            "closing_date {}, recommendation {}>").format(
+            self.id, self.ticker_id, self.closing_date, self.recommendation)
