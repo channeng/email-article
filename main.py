@@ -6,19 +6,19 @@ Usage:
 import random
 
 from flask import (
-    render_template, flash, redirect, url_for, request, abort, jsonify,
-    session)
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import current_user, login_user, logout_user, login_required
+    render_template, flash, redirect, url_for, request, abort, jsonify)
 from flask_basicauth import BasicAuth
 from flask_socketio import SocketIO, emit
 from flask_restful import Resource, Api
-from werkzeug.urls import url_parse
+from flask_security import (
+    Security, SQLAlchemyUserDatastore,
+    login_required, current_user, logout_user)
+from flask_security.utils import encrypt_password
 import validators
 
-from app import app
+from app import app, db
 from app.forms import (
-    LoginForm, RegistrationForm, NewListForm, NewListItemForm,
+    NewListForm, NewListItemForm,
     NewChatForm, EditListForm, ContactForm, NewTickerForm)
 from app.email_article import create_task
 from app.email_contact_us import send_contact_message
@@ -33,7 +33,8 @@ from app.tickers import (
     get_tickers, create_tickeruser, delete_tickeruser,
     get_ticker, get_ticker_name, get_ticker_emails, validate_ticker,
     update_ticker_data, get_all_tickers, create_ticker_recommendation)
-from app.models import User, List, ListUser, ListItem, Chat, ChatMessage
+from app.models import (
+    User, Role, List, ListUser, ListItem, Chat, ChatMessage)
 
 
 # Called with `flask shell` cmd
@@ -50,7 +51,56 @@ def make_shell_context():
     }
 
 basic_auth = BasicAuth()
-db = SQLAlchemy(app)
+
+# Setup Flask-Security
+user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+security = Security(app, user_datastore)
+
+
+# Executes before the first request is processed.
+@app.before_first_request
+def before_first_request():
+
+    # Create any database tables that don't exist yet.
+    db.create_all()
+
+    # Create the Roles "admin" and "end-user" -- unless they already exist
+    user_datastore.find_or_create_role(
+        name='admin', description='Administrator')
+    user_datastore.find_or_create_role(
+        name='end-user', description='End user')
+
+    # Create two Users for testing purposes -- unless they already exists.
+    # Use Flask-Security utility function to encrypt the password.
+    encrypted_password = encrypt_password('password')
+    if not user_datastore.get_user('stocks.pocket.sg@gmail.com'):
+        user_datastore.create_user(
+            username="stocks",
+            email='stocks.pocket.sg@gmail.com',
+            password=encrypted_password)
+    if not user_datastore.get_user('hello.pocket.sg@gmail.com'):
+        user_datastore.create_user(
+            username="hello",
+            email='hello.pocket.sg@gmail.com',
+            password=encrypted_password)
+
+    # Commit any database changes;
+    # User and Roles must exist before we can add a Role to the User
+    db.session.commit()
+
+    # Give one User has the "end-user" role, while the other has "admin" role.
+    # (This will have no effect if the Users already have these Roles.)
+    # Again, commit any database changes.
+    try:
+        user_datastore.add_role_to_user(
+            'stocks.pocket.sg@gmail.com', 'end-user')
+        user_datastore.add_role_to_user(
+            'hello.pocket.sg@gmail.com', 'admin')
+        db.session.commit()
+    except:
+        pass
+
+
 api = Api(app)
 socketio = SocketIO(app)
 
@@ -98,50 +148,10 @@ def contact_us():
     return render_template("contact_us.html", form=form)
 
 
-@app.route('/login', methods=['GET', 'POST'], strict_slashes=False)
-def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(
-            username=form.username.data.lower()).first()
-        if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password')
-            return redirect(url_for('login'))
-        login_user(user, remember=form.remember_me.data)
-        next_page = request.args.get('next')
-        if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('index')
-        session.permanent = True  # Create a login session
-        return redirect(next_page)
-
-    return render_template('login.html', title='Sign In', form=form)
-
-
 @app.route('/logout', strict_slashes=False)
 def logout():
     logout_user()
     return redirect(url_for('index'))
-
-
-@app.route('/register', methods=['GET', 'POST'], strict_slashes=False)
-def register():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        user = User(
-            username=form.username.data.lower(),
-            email=form.email.data.lower())
-        user.set_password(form.password.data)
-        db.session.add(user)
-        db.session.commit()
-        flash(
-            'Congratulations, you are now a registered user!\n'
-            'Please sign in.')
-        return redirect(url_for('login'))
-    return render_template('register.html', title='Register', form=form)
 
 
 @app.route('/lists/', methods=['GET', 'POST'])
