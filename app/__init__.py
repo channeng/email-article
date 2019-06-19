@@ -5,12 +5,14 @@ from flask_migrate import Migrate
 
 # Flask-Security
 from flask_mail import Mail
-from werkzeug.middleware.proxy_fix import ProxyFix
 
 
 app = Flask(__name__, template_folder="template")
 app.config.from_object(Config)
-app.wsgi_app = ProxyFix(app.wsgi_app, num_proxies=1)  # Flask-Security
+
+# Flask-Security fix for HTTP
+# from werkzeug.middleware.proxy_fix import ProxyFix
+# app.wsgi_app = ProxyFix(app.wsgi_app, num_proxies=1)
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
