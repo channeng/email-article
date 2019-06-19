@@ -4,37 +4,37 @@
   <h3>Register</h3>
   <hr>
   <div>
-  <form action="" method="post">
-    {{ form.hidden_tag() }}
+  <form action="" method="post" name="register_user_form">
+    {{ register_user_form.hidden_tag() }}
     <h4 class="notbold">
-      {{ form.username.label }}<br><br>
-      {{ form.username(size=32, class_="lower_input input_field") }}
-      {% for error in form.username.errors %}
+      {{ register_user_form.username.label }}<br><br>
+      {{ register_user_form.username(size=32, class_="lower_input input_field") }}
+      {% for error in register_user_form.username.errors %}
       <span style="color: red;">[{{ error }}]</span><br><br>
       {% endfor %}
     </h4>
     <h4 class="notbold">
-      {{ form.email.label }}<br><br>
-      {{ form.email(size=64, class_="lower_input input_field") }}
-      {% for error in form.email.errors %}
+      {{ register_user_form.email.label }}<br><br>
+      {{ register_user_form.email(size=64, class_="lower_input input_field") }}
+      {% for error in register_user_form.email.errors %}
       <span style="color: red;">[{{ error }}]</span><br><br>
       {% endfor %}
     </h4>
     <h4 class="notbold">
-      {{ form.password.label }}<br><br>
-      {{ form.password(size=32, class_="input_field") }}
-      {% for error in form.password.errors %}
+      {{ register_user_form.password.label }}<br><br>
+      {{ register_user_form.password(size=32, class_="input_field") }}
+      {% for error in register_user_form.password.errors %}
       <span style="color: red;">[{{ error }}]</span><br><br>
       {% endfor %}
     </h4>
     <h4 class="notbold">
-      {{ form.password2.label }}<br><br>
-      {{ form.password2(size=32, class_="input_field") }}
-      {% for error in form.password2.errors %}
+      {{ register_user_form.password_confirm.label }}<br><br>
+      {{ register_user_form.password_confirm(size=32, class_="input_field") }}
+      {% for error in register_user_form.password_confirm.errors %}
       <span style="color: red;">[{{ error }}]</span><br><br>
       {% endfor %}
     </h4>
-    <h4 class="notbold button_h4">{{ form.submit(class_="form_button") }}</h4>
+    <h4 class="notbold button_h4">{{ register_user_form.submit(class_="form_button") }}</h4>
 
     {% with messages = get_flashed_messages() %}
     {% if messages %}

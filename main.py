@@ -18,7 +18,7 @@ import validators
 
 from app import app, db
 from app.forms import (
-    NewListForm, NewListItemForm,
+    NewListForm, NewListItemForm, ExtendedRegisterForm,
     NewChatForm, EditListForm, ContactForm, NewTickerForm)
 from app.email_article import create_task
 from app.email_contact_us import send_contact_message
@@ -54,13 +54,15 @@ basic_auth = BasicAuth()
 
 # Setup Flask-Security
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-security = Security(app, user_datastore)
+security = Security(
+    app, user_datastore,
+    register_form=ExtendedRegisterForm,
+    confirm_register_form=ExtendedRegisterForm)
 
 
 # Executes before the first request is processed.
 @app.before_first_request
 def before_first_request():
-
     # Create any database tables that don't exist yet.
     db.create_all()
 

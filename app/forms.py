@@ -3,6 +3,12 @@ from wtforms import (
     StringField, TextAreaField, SubmitField, SelectField)
 from wtforms.validators import (
     DataRequired, Email, URL, Length, Optional)
+from flask_security.forms import RegisterForm
+
+
+class ExtendedRegisterForm(RegisterForm):
+    username = StringField(
+        'Username', [DataRequired(), Length(max=64)])
 
 
 class ContactForm(FlaskForm):
