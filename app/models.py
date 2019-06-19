@@ -28,11 +28,17 @@ class Role(db.Model, RoleMixin):
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), index=True, unique=True)
+    username = db.Column(db.String(64), unique=True)
     email = db.Column(db.String(255), index=True, unique=True)
     password = db.Column(db.String(255))
     active = db.Column(db.Boolean(), default=True)
     confirmed_at = db.Column(db.DateTime())
+
+    last_login_at = db.Column(db.DateTime())
+    current_login_at = db.Column(db.DateTime())
+    last_login_ip = db.Column(db.String(100))
+    current_login_ip = db.Column(db.String(100))
+    login_count = db.Column(db.Integer)
 
     roles = db.relationship(
         'Role',
