@@ -18,7 +18,8 @@ import validators
 
 from app import app, db
 from app.forms import (
-    NewListForm, NewListItemForm, ExtendedRegisterForm,
+    ExtendedRegisterForm, ExtendedLoginForm,
+    NewListForm, NewListItemForm,
     NewChatForm, EditListForm, ContactForm, NewTickerForm)
 from app.email_article import create_task
 from app.email_contact_us import send_contact_message
@@ -57,7 +58,8 @@ user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(
     app, user_datastore,
     register_form=ExtendedRegisterForm,
-    confirm_register_form=ExtendedRegisterForm)
+    confirm_register_form=ExtendedRegisterForm,
+    login_form=ExtendedLoginForm)
 
 
 # Executes before the first request is processed.
