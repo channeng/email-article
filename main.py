@@ -411,12 +411,15 @@ class TickerEmails(Resource):
         result = get_ticker_emails(db, ticker=ticker, limit=limit)
         result_dict = {}
         for row in result:
-            result_dict[row[0]] = {
-                "name": row[1],
-                "currrency": row[2],
-                "has_recommendations": row[3] == 1,
-                "emails": row[4].split(",")
-            }
+            emails = row[5].split(",")
+            if emails:
+                result_dict[row[1]] = {
+                    "ticker_id": row[0],
+                    "name": row[2],
+                    "currency": row[3],
+                    "has_recommendations": row[4] == 1,
+                    "emails": emails
+                }
         return jsonify(result_dict)
 
 api.add_resource(TickerEmails, '/ticker_emails')

@@ -207,6 +207,7 @@ class TickerItems(object):
     def get_ticker_emails(self, db, ticker=None, limit=100):
         ticker_emails_query = """
         SELECT
+            ticker.id,
             ticker.name,
             ticker.full_name,
             ticker.currency,
