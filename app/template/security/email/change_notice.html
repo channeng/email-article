@@ -72,9 +72,16 @@ a:visited {}</style>
                         <br>
                         <span style="font-size:15px">
                           <span>
+                            {{ _('Hi %(username)s,', username=user.username) }}
                             <br>
-                            {{ _('To reset your password, please click on the link below:') }}
-                            <br><u><a href="{{ reset_link }}" style="color:#94262C; text-align:center;">{{ _('Reset password') }}</a></u>
+                            <br>Your password has been changed recently.
+                            <br><br>
+                            {% if security.recoverable %}
+                            {{ _('If you did not change your password,') }}
+                            <br><u><a href="{{ url_for('security.forgot_password', _external=True) }}" style="color:#94262C; text-align:center;">{{ _('click here to reset it') }}</a></u>
+                            {% endif %}
+                            <br><br>
+                            If you have any questions, you can reach us at <span style="color:#7e8890;">hello.pocket.sg@gmail.com.</span>
                             <br><br>
                             Sincerely,
                             <br>
