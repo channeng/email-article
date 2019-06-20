@@ -2,18 +2,24 @@ from flask_wtf import FlaskForm
 from wtforms import (
     StringField, TextAreaField, SubmitField, SelectField)
 from wtforms.validators import (
-    DataRequired, Email, URL, Length, Optional)
+    DataRequired, Email, URL, Length, Optional, ValidationError)
 from flask_security.forms import RegisterForm, LoginForm
+from app.models import User
 
 
 class ExtendedRegisterForm(RegisterForm):
     username = StringField(
         'Username', [DataRequired(), Length(max=64)])
 
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data.lower()).first()
+        if user is not None:
+            raise ValidationError('Please use a different username.')
+
 
 class ExtendedLoginForm(LoginForm):
     email = StringField(
-        'Username or Email Address', [DataRequired(), Length(max=255)])
+        'Username or Email', [DataRequired(), Length(max=255)])
 
 
 class ContactForm(FlaskForm):

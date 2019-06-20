@@ -30,6 +30,11 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(255), index=True, unique=True)
+
+    @validates('username', 'email')
+    def convert_lower(self, key, value):
+        return value.lower()
+
     password = db.Column(db.String(255))
     active = db.Column(db.Boolean(), default=True)
     confirmed_at = db.Column(db.DateTime())
