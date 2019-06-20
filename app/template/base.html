@@ -271,11 +271,11 @@
       {% if current_user.is_anonymous %}
 
         {% if (title != "Register") %}
-        &nbsp; &nbsp;<a class="right" href="{{ url_for('register') }}">Register</a>
+        &nbsp; &nbsp;<a class="right" href="{{ url_for('security.register') }}">Register</a>
         {% endif %}
 
         {% if (title != "Sign In") %}
-        &nbsp; &nbsp;<a class="right" href="{{ url_for('login') }}">Login</a>
+        &nbsp; &nbsp;<a class="right" href="{{ url_for('security.login') }}">Login</a>
         {% endif %}
 
       {% else %}

@@ -1,36 +1,25 @@
 from flask_wtf import FlaskForm
 from wtforms import (
-    StringField, TextAreaField, PasswordField, BooleanField, SubmitField,
-    SelectField)
+    StringField, TextAreaField, SubmitField, SelectField)
 from wtforms.validators import (
-    ValidationError, DataRequired, Email, EqualTo, URL, Length, Optional)
+    DataRequired, Email, URL, Length, Optional, ValidationError)
+from flask_security.forms import RegisterForm, LoginForm
 from app.models import User
 
 
-class LoginForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    remember_me = BooleanField('Remember Me')
-    submit = SubmitField('Sign In')
-
-
-class RegistrationForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    password2 = PasswordField(
-        'Repeat Password', validators=[DataRequired(), EqualTo('password')])
-    submit = SubmitField('Register')
+class ExtendedRegisterForm(RegisterForm):
+    username = StringField(
+        'Username', [DataRequired(), Length(max=64)])
 
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data.lower()).first()
         if user is not None:
             raise ValidationError('Please use a different username.')
 
-    def validate_email(self, email):
-        user = User.query.filter_by(email=email.data.lower()).first()
-        if user is not None:
-            raise ValidationError('Please use a different email address.')
+
+class ExtendedLoginForm(LoginForm):
+    email = StringField(
+        'Username or Email', [DataRequired(), Length(max=255)])
 
 
 class ContactForm(FlaskForm):

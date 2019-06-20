@@ -1,27 +1,22 @@
-from flask import Flask, session, render_template
-from flask_login import LoginManager
+from flask import Flask, render_template
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
+# Flask-Security
+from flask_mail import Mail
+
 
 app = Flask(__name__, template_folder="template")
 app.config.from_object(Config)
+
+# Flask-Security fix for HTTP
+# from werkzeug.middleware.proxy_fix import ProxyFix
+# app.wsgi_app = ProxyFix(app.wsgi_app, num_proxies=1)
+
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-
-# Flask-Login needs to know what is the view function that handles logins
-login = LoginManager(app)
-login.login_view = 'login'
-login.refresh_view = 'login'
-login.needs_refresh_message = (u"Session timed out, please re-login")
-login.needs_refresh_message_category = "info"
-
-
-@app.before_first_request
-def before_first_request():
-    # Update session to extend timeout
-    session.modified = True
+mail = Mail(app)
 
 # Import database models with app context
 # https://stackoverflow.com/questions/33905706/flask-migrate-seemed-to-delete-all-my-database-data
