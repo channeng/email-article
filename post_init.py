@@ -62,9 +62,9 @@ def before_first_request():
     # Again, commit any database changes.
     user_datastore.add_role_to_user(app.config["ADMIN_EMAIL"], 'admin')
 
-    # Retro-actively apply user role to old users
-    for user in user_datastore.user_model.query.all():
-        if user.email != app.config["ADMIN_EMAIL"]:
-            user_datastore.add_role_to_user(user.email, 'user')
+    # Retro-actively apply user role to old users (Backfilling)
+    # for user in user_datastore.user_model.query.all():
+    #     if user.email != app.config["ADMIN_EMAIL"]:
+    #         user_datastore.add_role_to_user(user.email, 'user')
 
     db.session.commit()

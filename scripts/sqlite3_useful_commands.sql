@@ -5,7 +5,7 @@ PRAGMA table_info(ticker_recommendation);
 # Delete row from user table where user id is 4
 DELETE FROM user WHERE id = 4;
 # Set column 'active' for all rows in user table to be True
-UPDATE user SET active = True;
+UPDATE user SET active = 1;
 # Set column 'confirmed_at' for all rows in user table to be of given date
 UPDATE user SET confirmed_at = '2019-06-01 10:00:00';
 
