@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex
+set -x
 
 PROJECT_DIR=/home/ubuntu/email-article
 if [ $(uname) == "Darwin" ]; then
@@ -17,8 +17,11 @@ fi
 if [ $(uname) == "Darwin" ]; then
 	flask db init && \
 	python $PROJECT_DIR/scripts/sqlite3_migration_fix_alter_table.py && \
+	# When developing/debugging, only run `flask db migrate`.
+	# Only run `flask db upgrade` after reviewing alembic changes.
 	flask db migrate && \
 	flask db upgrade
+	# flask db migrate
 else
 	/home/ubuntu/.virtualenvs/env/bin/flask db init && \
 	/home/ubuntu/.virtualenvs/env/bin/python $PROJECT_DIR/scripts/sqlite3_migration_fix_alter_table.py && \
