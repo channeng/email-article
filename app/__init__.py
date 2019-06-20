@@ -1,4 +1,4 @@
-from flask import Flask, session, render_template
+from flask import Flask, render_template
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -22,13 +22,6 @@ mail = Mail(app)
 # https://stackoverflow.com/questions/33905706/flask-migrate-seemed-to-delete-all-my-database-data
 with app.app_context():
     from app.models import *  # noqa
-
-
-@app.before_request
-def extend_session():
-    # Update session to extend timeout
-    session.permanent = True
-    session.modified = True
 
 
 @app.errorhandler(404)
