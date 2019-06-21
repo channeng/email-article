@@ -327,6 +327,8 @@ def create_tickeruser(db, ticker, user_id):
             return False, "Ticker {} is invalid.".format(ticker)
     elif model_obj.is_deleted:
         return False, "Ticker {} has insufficient data.".format(ticker)
+
+    model_obj = model_template.get_model_by_name(ticker)
     return (
         model_template.create_modeluser(db, model_obj.id, user_id),
         "Ticker {} added.".format(ticker))
