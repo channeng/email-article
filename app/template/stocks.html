@@ -1,57 +1,67 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h3>
-    <div style="float; left; width: 60%; display:inline-block;">
-    My Stocks
-    </div>
-  </h3>
-  <hr><br>
-  <div>
+<h3>
+  <div style="float; left; width: 60%; display:inline-block;">
+  My Stocks
+  </div>
+</h3>
+<hr><br>
+<div>
+  <ul>
+  {% for ticker in tickers %}
+    <li>
+      <div style="width:15%;float:left;">
+        <b><a href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">{{ ticker.name }}</a></b>
+      </div>
+
+      {% if ticker.full_name != None %}
+      <div style="width:65%;float:left;">
+        <a href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">{{ ticker.full_name }}</a>
+      </div>
+      {% endif %}
+
+      <br style="clear: left;" />
+    </li>
+  {% endfor %}
+  </ul>
+</div>
+<br>
+<h4>Create New Ticker</h4>
+<div>
+  <form action="" method="post">
+    {{ form.hidden_tag() }}
+    <h4 class="notbold">
+      {{ form.ticker_name.label }}<br><br>
+      {{ form.ticker_name(size=32, class_="input_field") }}
+      {% for error in form.ticker_name.errors %}
+      <span style="color: red;">[{{ error }}]</span><br><br>
+      {% endfor %}
+    </h4>
+    <h4 class="notbold button_h4">
+      {{ form.submit(class_="form_button", onClick="return replace_with_loading_gif()") }}
+      <div id="divMsg" style="display:none; padding-right: 5px; float: right;">
+        <img src="{{url_for('static', filename='loading_icon.gif')}}" alt="Please wait.." />
+      </div>
+    </h4>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
     <ul>
-    {% for ticker in tickers %}
-      <li>
-        <div style="width:15%;float:left;">
-          <b><a href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">{{ ticker.name }}</a></b>
-        </div>
-
-        {% if ticker.full_name != None %}
-        <div style="width:65%;float:left;">
-          <a href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">{{ ticker.full_name }}</a>
-        </div>
-        {% endif %}
-
-        <br style="clear: left;" />
-      </li>
+    {% for message in messages %}
+    <li style="color: red;">- {{ message }}</li>
     {% endfor %}
     </ul>
-  </div>
-  <br>
-  <h4>Create New Ticker</h4>
-  <div>
-    <form action="" method="post">
-      {{ form.hidden_tag() }}
-      <h4 class="notbold">
-        {{ form.ticker_name.label }}<br><br>
-        {{ form.ticker_name(size=32, class_="input_field") }}
-        {% for error in form.ticker_name.errors %}
-        <span style="color: red;">[{{ error }}]</span><br><br>
-        {% endfor %}
-      </h4>
-      <h4 class="notbold button_h4">{{ form.submit(class_="form_button") }}</h4>
+    {% endif %}
+    {% endwith %}
 
-      {% with messages = get_flashed_messages() %}
-      {% if messages %}
-      <ul>
-      {% for message in messages %}
-      <li style="color: red;">- {{ message }}</li>
-      {% endfor %}
-      </ul>
-      {% endif %}
-      {% endwith %}
+  </form>
+</div>
 
-    </form>
-  </div>
-
-
+<script type="text/javascript">
+  function replace_with_loading_gif() {
+    document.getElementById('submit').style.display="none";
+    document.getElementById('divMsg').style.display="block";
+  };
+</script>
 {% endblock %}
