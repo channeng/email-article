@@ -94,6 +94,7 @@ class TickerItems(object):
                 self.model,
                 self.model_user.ticker_id == self.model.id,
                 isouter=True)
+            .filter(self.model.is_deleted == 0)
             .with_entities(
                 self.model.id, self.model.name, self.model.full_name)
             .order_by(self.model_user.id.desc())
@@ -201,13 +202,15 @@ class TickerItems(object):
         model_name = model_obj.name
         return model_name
 
-    def get_model_id(self, ticker):
+    def get_model_by_name(self, ticker):
         ticker_validated = validate_ticker(ticker)
-        model_obj = self.model.query.filter_by(
-            name=ticker_validated, is_deleted=False).first()
-        if model_obj is not None:
-            return model_obj.id
-        return
+        model_obj = (
+            self.model.query
+            .filter_by(name=ticker_validated)
+            .order_by(self.model.id.desc())
+            .first()
+        )
+        return model_obj
 
     @handleError
     def create_modeluser(self, db, model_id, user_id):
@@ -317,14 +320,16 @@ def get_ticker_name(ticker_id):
 
 
 def create_tickeruser(db, ticker, user_id):
-    ticker_id = model_template.get_model_id(ticker)
-    if not isinstance(ticker_id, int):
+    model_obj = model_template.get_model_by_name(ticker)
+    if model_obj is None:
         ticker_is_created = _create_ticker(db, ticker)
-        if ticker_is_created:
-            ticker_id = model_template.get_model_id(ticker)
-        else:
-            return False
-    return model_template.create_modeluser(db, ticker_id, user_id)
+        if not ticker_is_created:
+            return False, "Ticker {} is invalid.".format(ticker)
+    elif model_obj.is_deleted:
+        return False, "Ticker {} has insufficient data.".format(ticker)
+    return (
+        model_template.create_modeluser(db, model_obj.id, user_id),
+        "Ticker {} added.".format(ticker))
 
 
 def delete_tickeruser(db, ticker_id, user_id):
@@ -347,13 +352,15 @@ def get_all_tickers(num_results=100):
 def create_ticker_recommendation(
         db, ticker, buy_or_sell, is_strong,
         closing_date, closing_price, model_version):
-    ticker_id = model_template.get_model_id(ticker)
     if not isinstance(is_strong, bool):
         is_strong = is_strong.lower() == "true"
-    if not isinstance(ticker_id, int):
+
+    model_obj = model_template.get_model_by_name(ticker)
+    if model_obj is None:
         return False
+
     return model_template.create_modelrecommendation(
-        db, ticker_id, buy_or_sell, is_strong,
+        db, model_obj.id, buy_or_sell, is_strong,
         closing_date, closing_price, model_version)
 
 

@@ -385,10 +385,10 @@ def stocks_page():
             if ticker_validated in [t.name for t in tickers]:
                 flash("Ticker: {} is already added.".format(ticker_validated))
             else:
-                ticker_created_for_user = create_tickeruser(
+                ticker_created_for_user, message = create_tickeruser(
                     db, ticker_validated, current_user.id)
                 if not ticker_created_for_user:
-                    flash("Ticker: {} is invalid.".format(ticker_validated))
+                    flash(message)
 
             return redirect(url_for('stocks_page'))
 
