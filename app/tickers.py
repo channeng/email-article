@@ -139,7 +139,9 @@ class TickerItems(object):
                 "error": "No ticker data retrieved."
             }
 
-        model_obj.__dict__.update(ticker_data)
+        for key in ticker_data:
+            setattr(model_obj, key, ticker_data[key])
+
         db.session.merge(model_obj)
         db.session.commit()
         return {

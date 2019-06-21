@@ -10,9 +10,11 @@ UPDATE user SET active = 1;
 UPDATE user SET confirmed_at = '2019-06-01 10:00:00';
 
 # Get all ticker recommendations
-SELECT tr.time_created, name, recommendation, closing_date
+SELECT tr.time_created, name, closing_date, closing_price, recommendation
 FROM ticker_recommendation AS tr
-LEFT JOIN ticker ON ticker.id = tr.ticker_id;
+LEFT JOIN ticker ON ticker.id = tr.ticker_id
+WHERE name = "CWEB"
+ORDER BY closing_date;
 
 # Quit SQLite3
 .quit
