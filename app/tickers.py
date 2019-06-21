@@ -150,6 +150,31 @@ class TickerItems(object):
         }
 
     @handleError
+    def delete_model(self, db, ticker, set_active=False):
+        ticker_validated = validate_ticker(ticker)
+        models = (
+            self.model.query
+            .filter_by(name=ticker_validated)
+            .all()
+        )
+        if len(models) < 1:
+            return {
+                "ticker": ticker_validated,
+                "deleted": False,
+                "error": "Ticker not found."
+            }
+
+        for model_obj in models:
+            model_obj.is_deleted = not set_active
+            db.session.merge(model_obj)
+            db.session.commit()
+
+        return {
+            "ticker": ticker_validated,
+            "deleted": not set_active
+        }
+
+    @handleError
     def create_model(self, db, ticker):
         # Remove all spaces and symbols that is not A-Z, 1-9 or .
         ticker_validated = validate_ticker(ticker)
@@ -330,3 +355,7 @@ def create_ticker_recommendation(
     return model_template.create_modelrecommendation(
         db, ticker_id, buy_or_sell, is_strong,
         closing_date, closing_price, model_version)
+
+
+def delete_ticker(db, ticker, set_active=False):
+    return model_template.delete_model(db, ticker, set_active=set_active)

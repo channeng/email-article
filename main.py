@@ -31,7 +31,8 @@ from app.chats import (
 from app.tickers import (
     get_tickers, create_tickeruser, delete_tickeruser,
     get_ticker, get_ticker_name, get_ticker_emails, validate_ticker,
-    update_ticker_data, get_all_tickers, create_ticker_recommendation)
+    update_ticker_data, get_all_tickers, create_ticker_recommendation,
+    delete_ticker)
 from app.models import User, ListUser, Chat
 from post_init import user_datastore
 
@@ -438,6 +439,20 @@ class UpdateTicker(Resource):
         return jsonify(dict(result))
 
 api.add_resource(UpdateTicker, '/update_ticker')
+
+
+class DeleteTicker(Resource):
+    @basic_auth.required
+    def post(self):
+        ticker = str(request.form.get("ticker", None))
+        if ticker is None:
+            return jsonify({"error": "Ticker must be provided."})
+        set_active = request.form.get("set_active", "false")
+        set_active = set_active.lower() == "true"
+        result = delete_ticker(db, ticker, set_active=set_active)
+        return jsonify(dict(result))
+
+api.add_resource(DeleteTicker, '/delete_ticker')
 
 
 class GetAllTickers(Resource):
