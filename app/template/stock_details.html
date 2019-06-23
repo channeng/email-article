@@ -2,11 +2,21 @@
 
 {% block content %}
 <style type="text/css">
+  .headers {
+    font-size:110%;
+  }
+  .secondary {
+    font-weight: normal;
+  }
   .tg  {
     border-collapse:collapse;
     border-spacing:0;
     margin:0px;
     width:100%;
+  }
+  .tg tbody {
+    display: block;
+    max-width: 500px;
   }
   .tg td{
     font-family:Arial, sans-serif;
@@ -30,15 +40,17 @@
     border-color:black;
   }
   .tg .col1{
-    width:40%;
-    font-weight:bold;
+    width:30%;
+    /*font-weight:bold;*/
     background-color:#efefef;
-    border-color:#ffffff;
+    border-color:#FCFCFC;
     text-align:center;
     vertical-align:top
   }
   .tg .col2{
-    border-color:#ffffff;
+    width:30%;
+    /*background-color:#fcfdfd;*/
+    border-color:#FCFCFC;
     text-align:center;
     vertical-align:top
   }
@@ -47,18 +59,14 @@
   <div style="float; left; width: 70%; display:inline-block;">
     <a href="{{ url_for('stocks_page') }}">My Stocks</a>&nbsp; > &nbsp; {{ ticker.name }}
   </div>
-  <div style="float: right; display:block; width: 10%"><button class="delete list_del" type="submit" value="{{ ticker.id }}" form="delete_ticker_form_{{ ticker.id }}" onClick="return confirm('Are you sure you want to delete {{ ticker.name }}: {{ ticker.full_name }} ?')">Delete</button>
-  <form type="hidden" id="delete_ticker_form_{{ ticker.id }}" action="{{ url_for('stocks_page', ticker_id=ticker_id) }}" method="post">
-    <input form="delete_ticker_form_{{ ticker.id }}" id="delete_ticker_form_{{ ticker.id }}" type="hidden" name="ticker_id_delete" value="{{ ticker.id }}">
-  </form>
-  </div>
-  <br style="clear: left;" />
 </h3>
 <hr>
 
+<h3 class="headers" style="margin-block-end: 0.5em;line-height: 1.3">{{ ticker.full_name }}</h3>
 {% if latest_recommendation != None %}
 <br>
-<table class="tg">
+<div>
+  <table class="tg">
     <tr>
       <td class="col1">Last trading day</td>
       <td class="col2">{{ ticker.latest_trading_day }}</td>
@@ -68,7 +76,7 @@
       <td class="col2">{{ '{} $ {:.2f}'.format(ticker.currency, ticker.price) }}</td>
     </tr>
     <tr>
-      <td class="col1" style="background-color:#616161; color:#FCFCFC;">Recommendation</td>
+      <td class="col1" style="background-color:#616161; color:#FCFCFC;">Recommend</td>
       {% if latest_recommendation['buy_or_sell'] == 'Sell' %}
       <td class="col2" style="background-color:#fff0f0; color:#AE0D16;"><b>{{ latest_recommendation['buy_or_sell'] }}<b></td>
       {% elif latest_recommendation['buy_or_sell'] == 'Buy' %}
@@ -77,12 +85,14 @@
       <td class="col2"><b>{{ latest_recommendation['buy_or_sell'] }}<b></td>
       {% endif %}
     </tr>
-</table>
+  </table>
+</div>
 <br>
+<hr>
 {% endif %}
 
 {% if plot_exists %}
-<h3>Past year recommendations</h3>
+<h3 class="secondary headers">Past year recommendations</h3>
 <br>
 <div>
   <a href="{{url_for('static', filename='ticker_plots/' + ticker['name'].lower().replace('.', '') + '.png')}}">
@@ -90,14 +100,11 @@
   </a>
 </div>
 <br>
+<hr>
 {% endif %}
-<h3>Stats</h3>
+<h3 class="secondary headers">Stats</h3>
 <div>
   <table class="tg">
-    <tr>
-      <td class="col1">Full name</td>
-      <td class="col2">{{ ticker.full_name }}</td>
-    </tr>
     <tr>
       <td class="col1">Type</td>
       <td class="col2">{{ ticker.type }}</td>
@@ -145,4 +152,11 @@
   </table>
 <div>
 <br>
+<div style="float: right; display:block; width: 100%">
+  <button class="delete list_del" style="font-size:80%; width:40%" type="submit" value="{{ ticker.id }}" form="delete_ticker_form_{{ ticker.id }}" onClick="return confirm('Are you sure you want to delete {{ ticker.name }}: {{ ticker.full_name }} ?')">Remove Stock</button>
+  <form type="hidden" id="delete_ticker_form_{{ ticker.id }}" action="{{ url_for('stocks_page', ticker_id=ticker_id) }}" method="post">
+    <input form="delete_ticker_form_{{ ticker.id }}" id="delete_ticker_form_{{ ticker.id }}" type="hidden" name="ticker_id_delete" value="{{ ticker.id }}">
+  </form>
+</div>
+<br style="clear: left;" />
 {% endblock %}
