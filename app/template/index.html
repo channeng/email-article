@@ -18,7 +18,11 @@
 
     <h4><a href="{{ url_for('stocks_page') }}">(4) My Stocks</a></h4>
     <div class="subtext"><p>Get buy / sell recommendations for any stock.</p></div>
-
+  <br>
+  <hr>
+  {% if not current_user.is_anonymous %}
+  &nbsp; &nbsp;<a class="right" href="{{ url_for('logout') }}" style="font-size: 80%">Logout</a>
+  {% endif %}
   </div>
 
 {% endblock %}
