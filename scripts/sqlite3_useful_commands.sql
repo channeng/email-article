@@ -16,6 +16,18 @@ FROM ticker_recommendation AS tr
 LEFT JOIN ticker ON ticker.id = tr.ticker_id
 WHERE name = "CWEB"
 ORDER BY closing_date;
-
+# Get latest recommendation for a given ticker
+SELECT
+    ticker_recommendation.time_created,
+    ticker.name,
+    ticker.id,
+    closing_date,
+    recommendation,
+    is_strong
+FROM ticker_recommendation
+JOIN ticker ON ticker.id = ticker_recommendation.ticker_id
+WHERE name = "FB"
+ORDER BY closing_date DESC
+LIMIT 1;
 # Quit SQLite3
 .quit
