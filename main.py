@@ -3,6 +3,7 @@
 Usage:
     python app.py
 """
+import os
 import random
 
 from flask import (
@@ -32,8 +33,11 @@ from app.tickers import (
     get_tickers, create_tickeruser, delete_tickeruser,
     get_ticker, get_ticker_name, get_ticker_emails, validate_ticker,
     update_ticker_data, get_all_tickers, create_ticker_recommendation,
-    delete_ticker)
+    delete_ticker, get_ticker_latest_recommendation)
+from app.tickers_plot import plot_ticker_df
+
 from app.models import User, ListUser, Chat
+
 from post_init import user_datastore
 
 
@@ -400,7 +404,36 @@ def stocks_page():
 @login_required
 def stock_details_page(ticker_id):
     ticker = get_ticker(ticker_id)
-    return render_template("stock_details.html", ticker=ticker)
+    plot_exists = False
+    if ticker.name.lower() + ".png" in os.listdir("app/static/ticker_plots"):
+        plot_exists = True
+
+    latest_recommend = get_ticker_latest_recommendation(ticker_id)
+    if latest_recommend is None:
+        return render_template(
+            "stock_details.html",
+            ticker=ticker,
+            plot_exists=plot_exists,
+            latest_recommendation=None
+        )
+
+    _, latest_recommend_date, buy_or_sell, is_strong = latest_recommend
+
+    today_recommend = {
+        "date": ticker.latest_trading_day,
+        "buy_or_sell": "Hold",
+    }
+    if ticker.latest_trading_day == latest_recommend_date:
+        today_recommend["buy_or_sell"] = buy_or_sell.title()
+        if is_strong:
+            today_recommend["buy_or_sell"] = "Strong " + buy_or_sell
+
+    return render_template(
+        "stock_details.html",
+        ticker=ticker,
+        plot_exists=plot_exists,
+        latest_recommendation=today_recommend
+    )
 
 
 # Ticker API
@@ -505,6 +538,26 @@ class AddTickerRecommendation(Resource):
         return jsonify(dict(result))
 
 api.add_resource(AddTickerRecommendation, '/ticker_recommendation')
+
+
+class PlotTickerRecommendations(Resource):
+    @basic_auth.required
+    def post(self):
+        ticker = str(request.form.get("ticker", None))
+        if ticker is None:
+            return jsonify({"error": "Ticker must be provided."})
+        updated_at, plot_exists = plot_ticker_df(ticker)
+        if not updated_at:
+            return jsonify(
+                {"error": "Ticker {} does not exist.".format(ticker)})
+
+        return jsonify({
+            "ticker": ticker,
+            "updated_at": updated_at,
+            "plot_exists": plot_exists
+        })
+
+api.add_resource(PlotTickerRecommendations, '/plot_ticker_recommendations')
 
 
 if __name__ == '__main__':

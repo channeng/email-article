@@ -5,3 +5,4 @@ migrations/
 credentials/
 scripts/startup/
 config.py
+app/static/ticker_plots/*
