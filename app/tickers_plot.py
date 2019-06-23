@@ -179,4 +179,6 @@ def plot_ticker_df(ticker):
             facecolor=Config.PLOT_FORMATTING["background_color"]
         )
 
+    plt.close()
+
     return date_today.strftime("%Y-%m-%d"), plot_exists
