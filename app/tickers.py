@@ -403,7 +403,7 @@ def delete_ticker(db, ticker, set_active=False):
 def get_ticker_recommendations(ticker):
     model_obj = model_template.get_model_by_name(ticker)
     if model_obj is None:
-        return False
+        return False, None
     recommendations = model_template.get_modelrecommendations(model_obj.id)
     columns = ["date", "recommendation", "is_strong"]
     recommendations_df = pd.DataFrame(

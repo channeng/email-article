@@ -126,6 +126,9 @@ def plot_ticker_df(ticker):
         datetime.today(), datetime.min.time()) - timedelta(days=365)
 
     recommendations_df, currency = get_ticker_recommendations(ticker)
+    if recommendations_df == False:  # noqa
+        return False, False
+
     ticker_df = get_ticker_df(ticker, df_start_date=datetime_one_year_ago)
     ticker_df = ticker_df.merge(recommendations_df, how="left", on="date")
     for buy_or_sell in ["buy", "sell"]:
