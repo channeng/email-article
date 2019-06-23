@@ -2,6 +2,8 @@ import re
 import requests
 import json
 
+import pandas as pd
+
 from app.models import Ticker, TickerUser, TickerRecommendation, get_columns
 from app.models_items import handleError
 from config import Config
@@ -299,6 +301,34 @@ class TickerItems(object):
             "updated": True
         }
 
+    def get_modelrecommendations(self, model_id):
+        """Get all recommendations for given ticker."""
+        return (
+            self.model_recommendation.query
+            .filter_by(ticker_id=model_id)
+            .with_entities(
+                self.model_recommendation.closing_date,
+                self.model_recommendation.recommendation,
+                self.model_recommendation.is_strong
+            )
+            .order_by(self.model_recommendation.id)
+            .all()
+        )
+
+    def get_modelrecommendation(self, model_id):
+        """Get latest recommendation for a given ticker."""
+        return (
+            self.model_recommendation.query
+            .filter_by(ticker_id=model_id)
+            .with_entities(
+                self.model_recommendation.time_created,
+                self.model_recommendation.closing_date,
+                self.model_recommendation.recommendation,
+                self.model_recommendation.is_strong
+            )
+            .order_by(self.model_recommendation.id.desc())
+            .first()
+        )
 
 model_template = TickerItems(Ticker, TickerUser, TickerRecommendation)
 
@@ -368,3 +398,22 @@ def create_ticker_recommendation(
 
 def delete_ticker(db, ticker, set_active=False):
     return model_template.delete_model(db, ticker, set_active=set_active)
+
+
+def get_ticker_recommendations(ticker):
+    model_obj = model_template.get_model_by_name(ticker)
+    if model_obj is None:
+        return False
+    recommendations = model_template.get_modelrecommendations(model_obj.id)
+    columns = ["date", "recommendation", "is_strong"]
+    recommendations_df = pd.DataFrame(
+        recommendations,
+        columns=columns)
+    recommendations_df["date"] = recommendations_df["date"].apply(
+        lambda x: pd.datetime.strptime(x, '%Y-%m-%d'))
+    recommendations_df = recommendations_df.groupby("date").first()
+    return recommendations_df, model_obj.currency
+
+
+def get_ticker_latest_recommendation(ticker_id):
+    return model_template.get_modelrecommendation(ticker_id)
