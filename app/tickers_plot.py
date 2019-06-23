@@ -100,8 +100,7 @@ def create_directory(dir):
 
 def plot_ticker_df(ticker):
     plots_dir = "app/static/ticker_plots"
-    ticker = ticker.lower().replace(".", "")
-    ticker_plot_filename = "{}.png".format(ticker)
+    ticker_plot_filename = "{}.png".format(ticker.lower().replace(".", ""))
     ticker_plot_filepath = os.path.join(plots_dir, ticker_plot_filename)
     plot_exists = False
     date_today = date.today()

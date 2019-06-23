@@ -85,8 +85,8 @@
 <h3>Past year recommendations</h3>
 <br>
 <div>
-  <a href="{{url_for('static', filename='ticker_plots/' + ticker['name'].lower() + '.png')}}">
-    <img src="{{url_for('static', filename='ticker_plots/' + ticker['name'].lower() + '.png')}}" alt="Please wait.." style="width:100%;"/>
+  <a href="{{url_for('static', filename='ticker_plots/' + ticker['name'].lower().replace('.', '') + '.png')}}">
+    <img src="{{url_for('static', filename='ticker_plots/' + ticker['name'].lower().replace('.', '') + '.png')}}" alt="Please wait.." style="width:100%;"/>
   </a>
 </div>
 <br>
