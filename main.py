@@ -405,7 +405,8 @@ def stocks_page():
 def stock_details_page(ticker_id):
     ticker = get_ticker(ticker_id)
     plot_exists = False
-    if ticker.name.lower() + ".png" in os.listdir("app/static/ticker_plots"):
+    plots = os.listdir("app/static/ticker_plots")
+    if ticker.name.lower().replace(".", "") + ".png" in plots:
         plot_exists = True
 
     latest_recommend = get_ticker_latest_recommendation(ticker_id)

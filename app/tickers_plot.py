@@ -125,7 +125,7 @@ def plot_ticker_df(ticker):
         datetime.today(), datetime.min.time()) - timedelta(days=365)
 
     recommendations_df, currency = get_ticker_recommendations(ticker)
-    if recommendations_df == False:  # noqa
+    if recommendations_df is None:  # noqa
         return False, False
 
     ticker_df = get_ticker_df(ticker, df_start_date=datetime_one_year_ago)
