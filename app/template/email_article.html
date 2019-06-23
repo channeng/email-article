@@ -10,7 +10,7 @@
   </style>
   <h3>News article to email</h3>
   <hr>
-  <div>
+  <div class="form_div">
   <form id="email_article" action="{{ url_for('send_email_article') }}" method="post">
 
     <h4 class="notbold">
@@ -43,13 +43,7 @@
     <img src="{{url_for('static', filename='loading_icon.gif')}}" alt="Please wait.." />
   </div>
 
-  <br><br><br><br>
-  <p>
-    <a href="https://github.com/channeng/email-article"
-       target="_blank" title="View code in github">
-      Link to github
-    </a>
-  </p>
+  <br><br><br>
 </div>
 <script type="text/javascript">
   function replace_with_loading_gif() {

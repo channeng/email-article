@@ -17,13 +17,11 @@
     <link rel="shortcut icon" type="image/png" href="{{url_for('static', filename='favicon.png')}}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style type="text/css">
-
       html, body, div, h1, h2, p, a, ul, li, form, label, button:not(.nostyle) {
         margin: 0;
         padding: 0;
         border: 0;
         color: #424242;
-        font-size: 100%;
         font: inherit;
         vertical-align: baseline;
       }
@@ -52,6 +50,9 @@
         font-size: 70%;
       }
       #page div {
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
         padding: 0px 5px 0px 5px;
       }
       #page div.subtext {
@@ -112,6 +113,12 @@
       #page .bold {
         font-weight:bold;
       }
+      .form_div {
+        max-width: 420px !important;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+      }
       input, textarea {
         width: 100%;
         padding: 4px;
@@ -133,10 +140,10 @@
       }
       #page li {
         line-height: 150%;
-        padding-left: 10px;
+        padding-left: 3px;
         color: #333;
-        font-size: 80%;
-        margin: 0 0 10px 0;
+        font-size: 85%;
+        margin: 0 0 12px 0;
       }
       #page li > ul > li {
         font-size: 100%;
