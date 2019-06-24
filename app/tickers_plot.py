@@ -1,4 +1,5 @@
 import os
+import shutil
 import logging
 import requests
 import pathlib
@@ -117,8 +118,13 @@ def plot_ticker_df(ticker):
         for plot in plots:
             if plot.split(".")[0] == ticker.lower():
                 os.remove(os.path.join(plots_dir, plot))
+
     except FileNotFoundError:  # noqa
         create_directory(plots_dir)
+
+    temp_dir = "/tmp/ticker_plots"
+    create_directory(temp_dir)
+    temp_ticker_plot_filepath = os.path.join(temp_dir, ticker_plot_filename)
 
     # Construct ticker and recommendations df
     datetime_one_year_ago = datetime.combine(
@@ -173,12 +179,15 @@ def plot_ticker_df(ticker):
         ax1.xaxis.set_major_formatter(mdates.DateFormatter("%b '%y"))
         ax1.set_ylabel(currency)
         plt.savefig(
-            ticker_plot_filepath,
+            temp_ticker_plot_filepath,
             bbox_inches='tight',
             transparent=True,
             facecolor=Config.PLOT_FORMATTING["background_color"]
         )
 
     plt.close()
+
+    # Replace existing ticker plot
+    shutil.move(temp_ticker_plot_filepath, ticker_plot_filepath)
 
     return date_today.strftime("%Y-%m-%d"), plot_exists
