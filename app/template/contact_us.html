@@ -22,28 +22,29 @@
       <span style="color: red;">[{{ error }}]</span><br><br>
       {% endfor %}
     </p>
-    <h4 class="notbold">
+    <br>
+    <p>
       {{ form.name.label }}<br><br>
       {{ form.name(size=32, class_="input_field") }}
       {% for error in form.name.errors %}
       <span style="color: red;">[{{ error }}]</span><br><br>
       {% endfor %}
-    </h4>
-    <h4 class="notbold">
+    </p>
+    <p>
       {{ form.email.label }}<br><br>
       {{ form.email(size=64, class_="lower_input input_field", value=current_user.email) }}
       {% for error in form.email.errors %}
       <span style="color: red;">[{{ error }}]</span><br><br>
       {% endfor %}
-    </h4>
-    <h4 class="notbold">
+    </p>
+    <p>
       {{ form.message.label }}<br><br>
       {{ form.message(size=32, class_="input_field") }}
       {% for error in form.message.errors %}
       <span style="color: red;">[{{ error }}]</span><br><br>
       {% endfor %}
-    </h4>
-    <h4 class="notbold button_h4">{{ form.submit(class_="form_button") }}</h4>
+    </p>
+    <p class="button_h4">{{ form.submit(class_="form_button") }}</p>
 
     {% with messages = get_flashed_messages() %}
     {% if messages %}

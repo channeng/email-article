@@ -10,22 +10,19 @@
   </style>
   <h3>News article to email</h3>
   <hr>
+  <br>
   <div class="form_div">
   <form id="email_article" action="{{ url_for('send_email_article') }}" method="post">
-
-    <h4 class="notbold">
-      Link to article:<br><br>
+    <p>Link to article:<br><br>
       <input type="url" placeholder="Article URL" name="article_url" id="article_url" class="lower_input"/>
-    </h4>
-    <h4 class="notbold">
-      Send to email:<br><br>
+    </p>
+    <p>Send to email:<br><br>
       <input type="email" placeholder="Email" name="email" id="email" class="lower_input" />
-    </h4>
-    <h4 class="notbold">
-
+    </p>
+    <p>
       <div style="display: inline-block; padding-right: 5px;"><input type="checkbox" name="include_pdf" id="include_pdf" class="lower_input" /></div>
       <div style="display: inline-block;"><p>Include PDF in email</p></div>
-    </h4>
+    </p>
   </form>
 
   {% with messages = get_flashed_messages() %}
