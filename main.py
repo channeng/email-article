@@ -33,7 +33,8 @@ from app.tickers import (
     get_tickers, create_tickeruser, delete_tickeruser,
     get_ticker, get_ticker_name, get_ticker_emails, validate_ticker,
     update_ticker_data, get_all_tickers, create_ticker_recommendation,
-    delete_ticker, get_ticker_latest_recommendation)
+    delete_ticker, get_ticker_latest_recommendation,
+    get_ticker_recommendations_for_user)
 from app.tickers_plot import plot_ticker_df
 
 from app.models import User, ListUser, Chat
@@ -373,6 +374,21 @@ def broadcast_chat_message(event):
 @login_required
 def stocks_page():
     tickers = get_tickers(current_user.id)
+    results = get_ticker_recommendations_for_user(
+        db, current_user.id, num_results=len(tickers))
+    ticker_recommendations = {}
+    for row in results:
+        ticker_recommendations[row[0]] = {
+            "recommendation": row[1].title(),
+            "is_strong": row[2] == 1
+        }
+    for ticker in tickers:
+        if ticker.id not in ticker_recommendations.keys():
+            ticker_recommendations[ticker.id] = {
+                "recommendation": "Hold",
+                "is_strong": False
+            }
+
     form = NewTickerForm()
 
     form_params = request.form.to_dict(flat=True)
@@ -396,7 +412,11 @@ def stocks_page():
 
             return redirect(url_for('stocks_page'))
 
-    return render_template("stocks.html", form=form, tickers=tickers)
+    return render_template(
+        "stocks.html",
+        form=form,
+        tickers=tickers,
+        ticker_recommendations=ticker_recommendations)
 
 
 @app.route('/stocks/<int:ticker_id>',

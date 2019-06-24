@@ -29,5 +29,27 @@ JOIN ticker ON ticker.id = ticker_recommendation.ticker_id
 WHERE name = "FB"
 ORDER BY closing_date DESC
 LIMIT 1;
+# Get latest recommendations for a given user
+SELECT
+    ticker_id,
+    MAX(recommendation) AS recommendation,
+    MAX(is_strong) AS is_strong
+FROM (
+    SELECT *
+    FROM ticker_recommendation
+    INNER JOIN (
+        SELECT ticker_id
+        FROM ticker_user
+        WHERE user_id = 1
+        AND is_deleted = 0
+        GROUP BY 1
+    ) USING (ticker_id)
+    WHERE closing_date = (
+        SELECT MAX(latest_trading_day)
+        FROM ticker
+        WHERE time_updated IS NOT NULL
+    )
+)
+GROUP BY ticker_id;
 # Quit SQLite3
 .quit

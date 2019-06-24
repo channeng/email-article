@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import seaborn as sns
 
-from app.tickers import get_ticker_recommendations
+from app.tickers import get_ticker_recommendations_df
 from config import Config
 
 
@@ -130,7 +130,7 @@ def plot_ticker_df(ticker):
     datetime_one_year_ago = datetime.combine(
         datetime.today(), datetime.min.time()) - timedelta(days=365)
 
-    recommendations_df, currency = get_ticker_recommendations(ticker)
+    recommendations_df, currency = get_ticker_recommendations_df(ticker)
     if recommendations_df is None:  # noqa
         return False, False
 

@@ -301,7 +301,39 @@ class TickerItems(object):
             "updated": True
         }
 
-    def get_modelrecommendations(self, model_id):
+    @handleError
+    def get_modelrecommendations_by_user_id(
+            self, db, user_id, num_results=100):
+        ticker_recommendation_query = """
+        SELECT
+            ticker_id,
+            MAX(recommendation) AS recommendation,
+            MAX(is_strong) AS is_strong
+        FROM (
+            SELECT *
+            FROM ticker_recommendation
+            INNER JOIN (
+                SELECT ticker_id
+                FROM ticker_user
+                WHERE user_id = {user_id}
+                AND is_deleted = 0
+                GROUP BY 1
+            ) USING (ticker_id)
+            WHERE closing_date = (
+                SELECT MAX(latest_trading_day)
+                FROM ticker
+                WHERE time_updated IS NOT NULL
+            )
+        )
+        GROUP BY ticker_id
+        LIMIT {limit};"""
+        result = db.engine.execute(
+            ticker_recommendation_query.format(
+                user_id=user_id, limit=num_results))
+        result = list(result)
+        return result
+
+    def get_modelrecommendations_for_model(self, model_id):
         """Get all recommendations for given ticker."""
         return (
             self.model_recommendation.query
@@ -315,7 +347,7 @@ class TickerItems(object):
             .all()
         )
 
-    def get_modelrecommendation(self, model_id):
+    def get_latest_modelrecommendation(self, model_id):
         """Get latest recommendation for a given ticker."""
         return (
             self.model_recommendation.query
@@ -400,11 +432,12 @@ def delete_ticker(db, ticker, set_active=False):
     return model_template.delete_model(db, ticker, set_active=set_active)
 
 
-def get_ticker_recommendations(ticker):
+def get_ticker_recommendations_df(ticker):
     model_obj = model_template.get_model_by_name(ticker)
     if model_obj is None:
         return None, None
-    recommendations = model_template.get_modelrecommendations(model_obj.id)
+    recommendations = model_template.get_modelrecommendations_for_model(
+        model_obj.id)
     columns = ["date", "recommendation", "is_strong"]
     recommendations_df = pd.DataFrame(
         recommendations,
@@ -416,4 +449,10 @@ def get_ticker_recommendations(ticker):
 
 
 def get_ticker_latest_recommendation(ticker_id):
-    return model_template.get_modelrecommendation(ticker_id)
+    return model_template.get_latest_modelrecommendation(ticker_id)
+
+
+def get_ticker_recommendations_for_user(db, user_id, num_results=100):
+    results = model_template.get_modelrecommendations_by_user_id(
+        db, user_id, num_results=100)
+    return results

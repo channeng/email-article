@@ -16,11 +16,26 @@
       </div>
 
       {% if ticker.full_name != None %}
-      <div style="width:65%;float:left;">
+      <div style="width:60%;float:left;">
         <a href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">{{ ticker.full_name }}</a>
       </div>
-      {% endif %}
 
+      <div style="width:10%; float:right;">
+        {% if ticker_recommendations[ticker.id]["recommendation"] == 'Sell' %}
+        <a href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}" style="color:#d22630;">
+            <b>{{ ticker_recommendations[ticker.id]["recommendation"] }}</b>
+        </a>
+        {% elif ticker_recommendations[ticker.id]["recommendation"] == 'Buy' %}
+        <a href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}" style="color:#006600;">
+            <b>{{ ticker_recommendations[ticker.id]["recommendation"] }}</b>
+        </a>
+        {% else %}
+        <a href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">
+            {{ ticker_recommendations[ticker.id]["recommendation"] }}
+        </a>
+        {% endif %}
+      </div>
+      {% endif %}
       <br style="clear: left;" />
     </li>
   {% endfor %}
