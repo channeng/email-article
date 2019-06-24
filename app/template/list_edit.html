@@ -15,7 +15,7 @@
 <div>
   <form action="" method="post">
     {{ edit_list_form.hidden_tag() }}
-    <h4 class="notbold">
+    <p>
       {{ edit_list_form.list_name.label }}<br><br>
       {{ edit_list_form.list_name(size=32, class_="input_field") }}
       {{ edit_list_form.invite_username.label }}<br><br>
@@ -23,8 +23,8 @@
       {% for error in edit_list_form.list_name.errors %}
       <span style="color: red;">[{{ error }}]</span><br><br>
       {% endfor %}
-    </h4>
-    <h4 class="notbold button_h4">{{ edit_list_form.submit(class_="form_button") }}</h4>
+    </p>
+    <p id="submit_button">{{ edit_list_form.submit(class_="form_button") }}</p>
 
     {% with messages = get_flashed_messages() %}
     {% if messages %}

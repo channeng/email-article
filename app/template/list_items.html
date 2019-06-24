@@ -57,7 +57,7 @@
 <div>
   <form action="" method="post">
     {{ new_item_form.hidden_tag() }}
-    <h4 class="notbold">
+    <p>
 
       {{ new_item_form.item_name.label }}<br><br>
       {{ new_item_form.item_name(size=32, class_="input_field") }}
@@ -72,8 +72,8 @@
       {% endfor %}
       {% endfor %}
 
-    </h4>
-    <h4 class="button_h4 notbold">{{ new_item_form.submit(class_="form_button") }}</h4>
+    </p>
+    <p id="submit_button">{{ new_item_form.submit(class_="form_button") }}</p>
 
     {% with messages = get_flashed_messages() %}
     {% if messages %}

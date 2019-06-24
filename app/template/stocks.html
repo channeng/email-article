@@ -46,19 +46,19 @@
 <div class="form_div">
   <form action="" method="post">
     {{ form.hidden_tag() }}
-    <h4 class="notbold">
+    <p>
       {{ form.ticker_name.label }}<br><br>
       {{ form.ticker_name(size=32, class_="input_field") }}
       {% for error in form.ticker_name.errors %}
       <span style="color: red;">[{{ error }}]</span><br><br>
       {% endfor %}
-    </h4>
-    <h4 class="notbold button_h4">
+    </p>
+    <p id="submit_button">
       {{ form.submit(class_="form_button", onClick="return replace_with_loading_gif()") }}
       <div id="divMsg" style="display:none; padding-right: 5px; float: right;">
         <img src="{{url_for('static', filename='loading_icon.gif')}}" alt="Please wait.." />
       </div>
-    </h4>
+    </p>
 
     {% with messages = get_flashed_messages() %}
     {% if messages %}
