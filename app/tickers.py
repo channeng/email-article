@@ -90,8 +90,7 @@ class TickerItems(object):
     def get_models_by_user_id(self, user_id, num_results=100):
         return (
             self.model_user.query
-            .filter_by(user_id=user_id)
-            .filter_by(is_deleted=False)
+            .filter_by(user_id=user_id, is_deleted=False)
             .join(
                 self.model,
                 self.model_user.ticker_id == self.model.id,
@@ -121,8 +120,7 @@ class TickerItems(object):
         ticker_validated = validate_ticker(ticker)
         model_obj = (
             self.model.query
-            .filter_by(is_deleted=False)
-            .filter_by(name=ticker_validated)
+            .filter_by(is_deleted=False, name=ticker_validated)
             .order_by(self.model.id.desc())
             .first()
         )
@@ -228,8 +226,7 @@ class TickerItems(object):
     def delete_modeluser(self, db, model_id, user_id):
         model_users = (
             self.model_user.query
-            .filter_by(user_id=int(user_id))
-            .filter_by(ticker_id=int(model_id))
+            .filter_by(user_id=int(user_id), ticker_id=int(model_id))
             .all()
         )
         for model_user in model_users:
@@ -354,6 +351,8 @@ class TickerItems(object):
         return (
             self.model_recommendation.query
             .filter_by(ticker_id=model_id)
+            .filter(
+                self.model_recommendation.recommendation.in_(["buy", "sell"]))
             .with_entities(
                 self.model_recommendation.closing_date,
                 self.model_recommendation.recommendation,
