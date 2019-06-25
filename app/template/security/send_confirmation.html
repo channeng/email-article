@@ -2,7 +2,7 @@
 
 {% block content %}
   <h3>Resend Email Confirmation</h3>
-  <hr>
+  <hr><br>
   <div class="form_div">
   <form action="" method="post" name="send_confirmation_form">
     {{ send_confirmation_form.hidden_tag() }}
@@ -14,7 +14,7 @@
       <span style="color: red;">[{{ error }}]</span><br><br>
       {% endfor %}
     </p>
-    <p id="submit_button">{{ send_confirmation_form.submit(class_="form_button", value="Resend Email Confirmation") }}</p>
+    <p id="submit_button">{{ send_confirmation_form.submit(class_="form_button", value="Resend Email") }}</p>
 
     {% with messages = get_flashed_messages() %}
     {% if messages %}
