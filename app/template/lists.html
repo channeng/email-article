@@ -1,60 +1,65 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h3>My Lists</h3>
-  <hr><br>
-  <div>
-    <ul>
-    {% for list in lists %}
-      <li>
-        <div style="width:70%;float:left;">
-          <a class="bold" href="{{ url_for('list_items_page', list_id=list.id) }}">{{ list.name }}</a>
-        </div>
-        <div style="width:15%;float:right;">
-        <a style="font-size:200%; vertical-align: middle;" class="notbold right" href="{{ url_for('lists_page', rand=list.id) }}">&#9858;</a>
-        </div>
-        <br style="clear: left;" />
-      </li>
-      {% if rand_item is defined and rand_item.list_id == list.id %}
-      <div style="display:block;margin-left:20px;">
-        <li>
-          {{ rand_item.name }}
-          {% if rand_item.url != "" %}
-            <a target="_blank" href="{{ rand_item.url }}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#128279;&nbsp;</a>
-          {% endif %}
-        </li>
+<h3>
+  <div style="float; left; width: 60%; display:inline-block;">
+    My Lists
+  </div>
+</h3>
+<hr><br>
+<div>
+  <ul>
+  {% for list in lists %}
+    <li>
+      <div style="width:70%;float:left;">
+        <b><a href="{{ url_for('list_items_page', list_id=list.id) }}">{{ list.name }}</a></b>
       </div>
-      {% endif %}
 
+      <div style="width:15%;float:right;">
+        <a style="font-size:170%;" href="{{ url_for('lists_page', rand=list.id) }}">&#9858;</a>
+      </div>
+      <br style="clear: left;" />
+    </li>
+    {% if rand_item is defined and rand_item.list_id == list.id %}
+    <div style="display:block;margin-left:20px;">
+      <li>
+        {{ rand_item.name }}
+        {% if rand_item.url != "" %}
+          <a target="_blank" href="{{ rand_item.url }}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#128279;&nbsp;</a>
+        {% endif %}
+      </li>
+    </div>
+    {% endif %}
+
+  {% endfor %}
+  </ul>
+</div>
+<br>
+<h4>Create New List</h4>
+<div class="form_div">
+  <form action="" method="post">
+    {{ form.hidden_tag() }}
+    <p>
+      {{ form.list_name.label }}<br><br>
+      {{ form.list_name(size=32, class_="input_field") }}
+      {% for error in form.list_name.errors %}
+      <span style="color: red;">[{{ error }}]</span><br><br>
+      {% endfor %}
+    </p>
+    <p id="submit_button">{{ form.submit(class_="form_button") }}</p>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+    {% for message in messages %}
+    <li style="color: red;">- {{ message }}</li>
     {% endfor %}
     </ul>
-  </div>
-  <br>
-  <h4>Create New List</h4>
-  <div class="form_div">
-    <form action="" method="post">
-      {{ form.hidden_tag() }}
-      <p>
-        {{ form.list_name.label }}<br><br>
-        {{ form.list_name(size=32, class_="input_field") }}
-        {% for error in form.list_name.errors %}
-        <span style="color: red;">[{{ error }}]</span><br><br>
-        {% endfor %}
-      </p>
-      <p id="submit_button">{{ form.submit(class_="form_button") }}</p>
+    {% endif %}
+    {% endwith %}
 
-      {% with messages = get_flashed_messages() %}
-      {% if messages %}
-      <ul>
-      {% for message in messages %}
-      <li style="color: red;">- {{ message }}</li>
-      {% endfor %}
-      </ul>
-      {% endif %}
-      {% endwith %}
-
-    </form>
-  </div>
+  </form>
+</div>
 
 
 {% endblock %}

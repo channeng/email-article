@@ -7,7 +7,10 @@
     <ul>
     {% for chat in chats %}
       <li>
-        <a class="bold" href="{{ url_for('chat_room_page', chat_id=chat.id, chat_name=chat_names[loop.index0]) }}">{{ chat_names[loop.index0] }}</a>
+        <div style="width:70%;float:left;">
+          <b><a href="{{ url_for('chat_room_page', chat_id=chat.id, chat_name=chat_names[loop.index0]) }}">{{ chat_names[loop.index0] }}</a></b>
+        </div>
+        <br style="clear: left;" />
       </li>
     {% endfor %}
     </ul>
