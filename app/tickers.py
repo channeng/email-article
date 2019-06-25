@@ -98,7 +98,8 @@ class TickerItems(object):
                 isouter=True)
             .filter(self.model.is_deleted == 0)
             .with_entities(
-                self.model.id, self.model.name, self.model.full_name)
+                self.model.id, self.model.name, self.model.full_name,
+                self.model.latest_trading_day)
             .order_by(self.model_user.id.desc())
             .limit(num_results)
             .all()
@@ -304,12 +305,8 @@ class TickerItems(object):
     @handleError
     def get_modelrecommendations_by_user_id(
             self, db, user_id, num_results=100):
-        ticker_recommendation_query = """
-        SELECT
-            ticker_id,
-            MAX(recommendation) AS recommendation,
-            MAX(is_strong) AS is_strong
-        FROM (
+        latest_recommendations_query = """
+            -- all recommendations for user on the latest date
             SELECT *
             FROM ticker_recommendation
             INNER JOIN (
@@ -323,12 +320,32 @@ class TickerItems(object):
                 SELECT MAX(DATE(time_created))
                 FROM ticker_recommendation
             )
+        """.format(user_id=user_id)
+
+        ticker_recommendation_query = """
+        SELECT
+            ticker_id,
+            closing_date,
+            MAX(recommendation) AS recommendation,
+            MAX(is_strong) AS is_strong
+        FROM (
+            {latest_recommendations_query}
         )
-        GROUP BY ticker_id
-        LIMIT {limit};"""
+        INNER JOIN (
+            --latest closing_dates for each ticker
+            SELECT ticker_id, MAX(closing_date) AS closing_date
+            FROM (
+            {latest_recommendations_query}
+            )
+            GROUP BY 1
+        ) USING (ticker_id, closing_date)
+        GROUP BY 1,2
+        LIMIT {limit};
+        """
         result = db.engine.execute(
             ticker_recommendation_query.format(
-                user_id=user_id, limit=num_results))
+                latest_recommendations_query=latest_recommendations_query,
+                limit=num_results))
         result = list(result)
         return result
 

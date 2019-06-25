@@ -56,7 +56,7 @@
   }
 </style>
 <h3>
-  <div style="float; left; width: 70%; display:inline-block;">
+  <div style="float; left; width: 90%; display:inline-block;">
     <a href="{{ url_for('stocks_page') }}">My Stocks</a>&nbsp; > &nbsp; {{ ticker.name }}
   </div>
 </h3>
@@ -85,6 +85,12 @@
       <td class="col2"><b>{{ latest_recommendation['buy_or_sell'] }}<b></td>
       {% endif %}
     </tr>
+    {% if latest_recommendation['buy_or_sell'] == '-' %}
+    <tr>
+      <td class="col1" style="background-color: #FCFCFC;"> </td>
+      <td class="col2" style="text-align:center; font-size:12px; padding: 7px; line-height: 1.3">To be updated</td>
+    </tr>
+    {% endif %}
   </table>
 </div>
 <br>

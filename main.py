@@ -376,18 +376,21 @@ def stocks_page():
     tickers = get_tickers(current_user.id)
     results = get_ticker_recommendations_for_user(
         db, current_user.id, num_results=len(tickers))
+
     ticker_recommendations = {}
-    for row in results:
-        ticker_recommendations[row[0]] = {
-            "recommendation": row[1].title(),
-            "is_strong": row[2] == 1
-        }
     for ticker in tickers:
-        if ticker.id not in ticker_recommendations.keys():
-            ticker_recommendations[ticker.id] = {
-                "recommendation": "Hold",
-                "is_strong": False
-            }
+        ticker_recommendations[ticker.id] = {
+            "recommendation": None,
+            "is_strong": False,
+            "closing_date": ticker.latest_trading_day
+        }
+
+    for row in results:
+        ticker_id, closing_date, recommendation, is_strong = row
+        if closing_date == ticker_recommendations[ticker_id]["closing_date"]:
+            recommend = recommendation.title()
+            ticker_recommendations[ticker_id]["recommendation"] = recommend
+            ticker_recommendations[ticker_id]["is_strong"] = is_strong == 1
 
     form = NewTickerForm()
 
@@ -442,7 +445,7 @@ def stock_details_page(ticker_id):
 
     today_recommend = {
         "date": ticker.latest_trading_day,
-        "buy_or_sell": "Hold",
+        "buy_or_sell": "-",
     }
     if ticker.latest_trading_day == latest_recommend_date:
         today_recommend["buy_or_sell"] = buy_or_sell.title()
@@ -544,7 +547,7 @@ class AddTickerRecommendation(Resource):
             if (closing_date is None or closing_price is None or
                     model_version is None):
                 return jsonify(
-                    {"error": "Please provide closing date, closing, "
+                    {"error": "Please provide closing date, closing "
                               "price and model version."})
 
         is_strong = request.form.get("is_strong", False)
