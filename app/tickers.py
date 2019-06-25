@@ -319,10 +319,9 @@ class TickerItems(object):
                 AND is_deleted = 0
                 GROUP BY 1
             ) USING (ticker_id)
-            WHERE closing_date = (
-                SELECT MAX(latest_trading_day)
-                FROM ticker
-                WHERE time_updated IS NOT NULL
+            WHERE DATE(time_created) = (
+                SELECT MAX(DATE(time_created))
+                FROM ticker_recommendation
             )
         )
         GROUP BY ticker_id
