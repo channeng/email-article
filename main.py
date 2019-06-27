@@ -5,6 +5,7 @@ Usage:
 """
 import os
 import random
+from datetime import datetime, timedelta
 
 from flask import (
     render_template, flash, redirect, url_for, request, abort, jsonify)
@@ -382,12 +383,16 @@ def stocks_page():
         ticker_recommendations[ticker.id] = {
             "recommendation": None,
             "is_strong": False,
-            "closing_date": ticker.latest_trading_day
+            "closing_date": datetime.strptime(
+                ticker.latest_trading_day, "%Y-%m-%d")
         }
 
     for row in results:
         ticker_id, closing_date, recommendation, is_strong = row
-        if closing_date == ticker_recommendations[ticker_id]["closing_date"]:
+        closing_date = datetime.strptime(closing_date, "%Y-%m-%d")
+        timedelta_diff = (
+            closing_date - ticker_recommendations[ticker_id]["closing_date"])
+        if timedelta_diff <= timedelta(days=1.1):
             recommend = recommendation.title()
             ticker_recommendations[ticker_id]["recommendation"] = recommend
             ticker_recommendations[ticker_id]["is_strong"] = is_strong == 1
@@ -442,12 +447,18 @@ def stock_details_page(ticker_id):
         )
 
     _, latest_recommend_date, buy_or_sell, is_strong = latest_recommend
+    latest_recommend_date = datetime.strptime(
+        latest_recommend_date, "%Y-%m-%d")
 
     today_recommend = {
         "date": ticker.latest_trading_day,
         "buy_or_sell": "-",
     }
-    if ticker.latest_trading_day == latest_recommend_date:
+    ticker_latest_trading_date = datetime.strptime(
+        ticker.latest_trading_day, "%Y-%m-%d")
+    timedelta_diff = latest_recommend_date - ticker_latest_trading_date
+
+    if timedelta_diff <= timedelta(days=1.1):
         today_recommend["buy_or_sell"] = buy_or_sell.title()
         if is_strong:
             today_recommend["buy_or_sell"] = "Strong " + buy_or_sell

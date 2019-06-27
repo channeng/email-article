@@ -302,48 +302,45 @@ class TickerItems(object):
     @handleError
     def get_modelrecommendations_by_user_id(
             self, db, user_id, num_results=100):
-        latest_recommendations_query = """
+        ticker_recommendation_query = """
+        WITH ticker_region AS (
+            SELECT id AS ticker_id, region FROM ticker
+        ), ticker_recommendation_region AS (
+            SELECT * FROM ticker_recommendation
+            LEFT JOIN ticker_region USING(ticker_id)
+        ), closing_date_per_region AS (
+            SELECT region, MAX(closing_date) AS closing_date
+            FROM ticker_recommendation_region
+            GROUP BY 1
+        ), user_tickers AS (
+            SELECT ticker_id
+            FROM ticker_user
+            WHERE user_id = {user_id}
+            AND is_deleted = 0
+            GROUP BY 1
+        ), recommendations_for_user AS (
             -- all recommendations for user on the latest date
             SELECT *
-            FROM ticker_recommendation
-            INNER JOIN (
-                SELECT ticker_id
-                FROM ticker_user
-                WHERE user_id = {user_id}
-                AND is_deleted = 0
-                GROUP BY 1
-            ) USING (ticker_id)
-            WHERE DATE(time_created) = (
-                SELECT MAX(DATE(time_created))
-                FROM ticker_recommendation
-            )
-        """.format(user_id=user_id)
+            FROM ticker_recommendation_region
+            INNER JOIN user_tickers USING (ticker_id)
+            INNER JOIN closing_date_per_region USING (region, closing_date)
+        )
 
-        ticker_recommendation_query = """
         SELECT
             ticker_id,
             closing_date,
             MAX(recommendation) AS recommendation,
             MAX(is_strong) AS is_strong
-        FROM (
-            {latest_recommendations_query}
-        )
-        INNER JOIN (
-            --latest closing_dates for each ticker
-            SELECT ticker_id, MAX(closing_date) AS closing_date
-            FROM (
-            {latest_recommendations_query}
-            )
-            GROUP BY 1
-        ) USING (ticker_id, closing_date)
+        FROM recommendations_for_user
         GROUP BY 1,2
         LIMIT {limit};
         """
-        result = db.engine.execute(
-            ticker_recommendation_query.format(
-                latest_recommendations_query=latest_recommendations_query,
-                limit=num_results))
+
+        query = ticker_recommendation_query.format(
+            user_id=user_id, limit=num_results)
+        result = db.engine.execute(query)
         result = list(result)
+
         return result
 
     def get_modelrecommendations_for_model(self, model_id):
