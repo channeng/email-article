@@ -392,7 +392,7 @@ def stocks_page():
         closing_date = datetime.strptime(closing_date, "%Y-%m-%d")
         timedelta_diff = (
             closing_date - ticker_recommendations[ticker_id]["closing_date"])
-        if timedelta_diff <= timedelta(days=1.1):
+        if timedelta_diff >= timedelta(days=0):
             recommend = recommendation.title()
             ticker_recommendations[ticker_id]["recommendation"] = recommend
             ticker_recommendations[ticker_id]["is_strong"] = is_strong == 1
@@ -458,7 +458,7 @@ def stock_details_page(ticker_id):
         ticker.latest_trading_day, "%Y-%m-%d")
     timedelta_diff = latest_recommend_date - ticker_latest_trading_date
 
-    if timedelta_diff <= timedelta(days=1.1):
+    if timedelta_diff >= timedelta(days=0):
         today_recommend["buy_or_sell"] = buy_or_sell.title()
         if is_strong:
             today_recommend["buy_or_sell"] = "Strong " + buy_or_sell
