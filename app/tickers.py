@@ -374,6 +374,35 @@ class TickerItems(object):
             .first()
         )
 
+    def get_all_users_tickers(self, db, user_id=None):
+        query = """
+        WITH valid_tickers AS (
+            SELECT id AS ticker_id
+            FROM ticker
+            WHERE is_deleted = 0
+            GROUP BY 1
+        )
+
+        SELECT user_id, username, email, GROUP_CONCAT(ticker_id) AS ticker_ids
+        FROM ticker_user
+        LEFT JOIN user ON ticker_user.user_id = user.id
+        INNER JOIN valid_tickers USING(ticker_id)
+        WHERE is_deleted = 0
+        {}
+        GROUP BY 1,2,3;
+        """
+
+        filter_user = ""
+        if user_id is not None:
+            user_id = int(user_id)
+            filter_user = "AND user_id = {}".format(user_id)
+
+        result = db.engine.execute(query.format(filter_user))
+        result = list(result)
+
+        return result
+
+
 model_template = TickerItems(Ticker, TickerUser, TickerRecommendation)
 
 
@@ -467,4 +496,10 @@ def get_ticker_latest_recommendation(ticker_id):
 def get_ticker_recommendations_for_user(db, user_id, num_results=100):
     results = model_template.get_modelrecommendations_by_user_id(
         db, user_id, num_results=100)
+    return results
+
+
+def get_all_users_tickers(db, user_id=None):
+    results = model_template.get_all_users_tickers(
+        db, user_id=user_id)
     return results

@@ -35,7 +35,7 @@ from app.tickers import (
     get_ticker, get_ticker_name, get_ticker_emails, validate_ticker,
     update_ticker_data, get_all_tickers, create_ticker_recommendation,
     delete_ticker, get_ticker_latest_recommendation,
-    get_ticker_recommendations_for_user)
+    get_ticker_recommendations_for_user, get_all_users_tickers)
 from app.tickers_plot import plot_ticker_df
 
 from app.models import User, ListUser, Chat
@@ -371,12 +371,10 @@ def broadcast_chat_message(event):
     return event["msg_id"]
 
 
-@app.route('/stocks/', methods=['GET', 'POST'])
-@login_required
-def stocks_page():
-    tickers = get_tickers(current_user.id)
+def stocks_recommendations_for_user(user_id):
+    tickers = get_tickers(user_id)
     results = get_ticker_recommendations_for_user(
-        db, current_user.id, num_results=len(tickers))
+        db, user_id, num_results=len(tickers))
 
     ticker_recommendations = {}
     for ticker in tickers:
@@ -397,6 +395,14 @@ def stocks_page():
             ticker_recommendations[ticker_id]["recommendation"] = recommend
             ticker_recommendations[ticker_id]["is_strong"] = is_strong == 1
 
+    return tickers, ticker_recommendations
+
+
+@app.route('/stocks/', methods=['GET', 'POST'])
+@login_required
+def stocks_page():
+    tickers, ticker_recommendations = stocks_recommendations_for_user(
+        current_user.id)
     form = NewTickerForm()
 
     form_params = request.form.to_dict(flat=True)
@@ -593,6 +599,49 @@ class PlotTickerRecommendations(Resource):
         })
 
 api.add_resource(PlotTickerRecommendations, '/plot_ticker_recommendations')
+
+
+class GetAllUsersTickers(Resource):
+    @basic_auth.required
+    def get(self):
+        user_id = request.form.get("user_id", None)
+        results = get_all_users_tickers(db, user_id=user_id)
+        response = {}
+        for row in results:
+            user_id, username, email, ticker_ids = row
+            response[email] = {
+                "user_id": user_id,
+                "username": username,
+                "ticker_ids": [
+                    int(ticker_id) for ticker_id in ticker_ids.split(",")]
+            }
+        return jsonify(response)
+
+api.add_resource(GetAllUsersTickers, '/all_users_tickers')
+
+
+class GetTickersForUser(Resource):
+    @basic_auth.required
+    def get(self):
+        user_id = request.form.get("user_id", None)
+        if user_id is None:
+            return
+
+        user_id = int(user_id)
+        tickers, ticker_recommendations = (
+            stocks_recommendations_for_user(user_id))
+
+        recommendations = {}
+        for row in tickers:
+            ticker_id, ticker, full_name, last_updated = row
+            recommendations[ticker] = ticker_recommendations[ticker_id]
+            recommendations[ticker]["full_name"] = full_name
+            recommendations[ticker]["ticker_id"] = ticker_id
+            recommendations[ticker]["last_updated"] = last_updated
+
+        return jsonify(recommendations)
+
+api.add_resource(GetTickersForUser, '/ticker_recommendation_for_user')
 
 
 if __name__ == '__main__':
