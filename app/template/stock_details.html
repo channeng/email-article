@@ -77,9 +77,9 @@
     </tr>
     <tr>
       <td class="col1" style="background-color:#616161; color:#FCFCFC;">Recommend</td>
-      {% if latest_recommendation['buy_or_sell'] == 'Sell' %}
+      {% if 'sell' in latest_recommendation['buy_or_sell'].lower() %}
       <td class="col2" style="background-color:#fff0f0; color:#AE0D16;"><b>{{ latest_recommendation['buy_or_sell'] }}<b></td>
-      {% elif latest_recommendation['buy_or_sell'] == 'Buy' %}
+      {% elif 'buy' in latest_recommendation['buy_or_sell'].lower() %}
       <td class="col2" style="background-color:#e5efe5; color:#006600;"><b>{{ latest_recommendation['buy_or_sell'] }}<b></td>
       {% else %}
       <td class="col2"><b>{{ latest_recommendation['buy_or_sell'] }}<b></td>
@@ -108,6 +108,7 @@
 <br>
 <hr>
 {% endif %}
+
 <h3 class="secondary headers">Stats</h3>
 <div>
   <table class="tg">

@@ -11,31 +11,34 @@
   <ul>
   {% for ticker in tickers %}
     <li>
-      <div style="width:15%;float:left;">
+      <div style="width:15%;min-width:45px;float:left;">
         <b><a href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">{{ ticker.name }}</a></b>
       </div>
 
       {% if ticker.full_name != None %}
-      <div style="width:60%;float:left;">
+      <div style="width:53%;float:left;">
         <a href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">{{ ticker.full_name }}</a>
       </div>
 
-      <div style="width:10%; float:right;">
-        {% if ticker_recommendations[ticker.id]["recommendation"] == 'Sell' %}
+      <div style="width:14%;min-width:45px;float:right;text-align:center;">
+
+        {% if 'sell' in ticker_recommendations[ticker.id]["recommendation"].lower() %}
         <a href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}" style="color:#d22630;">
             <b>{{ ticker_recommendations[ticker.id]["recommendation"] }}</b>
         </a>
-        {% elif ticker_recommendations[ticker.id]["recommendation"] == 'Buy' %}
+        {% elif 'buy' in ticker_recommendations[ticker.id]["recommendation"].lower() %}
         <a href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}" style="color:#006600;">
             <b>{{ ticker_recommendations[ticker.id]["recommendation"] }}</b>
         </a>
-        {% elif ticker_recommendations[ticker.id]["recommendation"] == 'Hold' %}
+        {% elif 'hold' in ticker_recommendations[ticker.id]["recommendation"].lower() %}
         <a href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">
             {{ ticker_recommendations[ticker.id]["recommendation"] }}
         </a>
         {% endif %}
+
       </div>
       {% endif %}
+
       <br style="clear: left;" />
     </li>
   {% endfor %}
