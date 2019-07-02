@@ -10,11 +10,15 @@
 </style>
 <h3>
   {% if owner_username == current_user.username %}
+  <div id="page_header">
     <a href="{{ url_for('lists_page') }}">My Lists</a>&nbsp; > &nbsp; <a href="{{ url_for('list_edit_page', list_id=list_id) }}">{{ list_name }}</a>
-    <button class="delete list_del" type="button" onClick="window.location.href='{{ url_for('list_edit_page', list_id=list_id) }}';">Edit List</button>
+  </div>
+  <button class="delete list_del" type="button" onClick="window.location.href='{{ url_for('list_edit_page', list_id=list_id) }}';">Edit List</button>
   {% else %}
+  <div id="page_header">
     <a href="{{ url_for('lists_page') }}">My Lists</a>&nbsp; > &nbsp; {{ list_name }}
-    <p class="notbold small right shared">Shared by {{ owner_username }}</p>
+  </div>
+  <p class="notbold small right shared">Shared by {{ owner_username }}</p>
   {% endif %}
 </h3>
 <hr>
