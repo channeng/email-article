@@ -11,12 +11,12 @@
   <ul>
   {% for ticker in tickers %}
     <li>
-      <div style="width:15%;min-width:45px;float:left;">
+      <div style="width:15%;min-width:45px;float:left;padding-left:1%; padding-right:2.5%;">
         <b><a href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">{{ ticker.name }}</a></b>
       </div>
 
       {% if ticker.full_name != None %}
-      <div style="width:53%;float:left;">
+      <div style="width:60%;float:left;">
         <a href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">{{ ticker.full_name }}</a>
       </div>
 
@@ -45,7 +45,10 @@
   </ul>
 </div>
 <br>
-<h4>Create New Ticker</h4>
+
+<div id="page_header">
+  <h4>Create New Ticker</h4>
+</div>
 <div class="form_div">
   <form action="" method="post">
     {{ form.hidden_tag() }}
