@@ -98,7 +98,7 @@ class TickerItems(object):
             .filter(self.model.is_deleted == 0)
             .with_entities(
                 self.model.id, self.model.name, self.model.full_name,
-                self.model.latest_trading_day)
+                self.model.latest_trading_day, self.model.currency)
             .order_by(self.model_user.id.desc())
             .limit(num_results)
             .all()
