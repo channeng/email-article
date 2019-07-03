@@ -160,12 +160,13 @@ class GetAllUsersTickers(Resource):
         results = get_all_users_tickers(db, user_id=user_id)
         response = {}
         for row in results:
-            user_id, username, email, ticker_ids = row
+            user_id, username, email, ticker_ids, currencies = row
             response[email] = {
                 "user_id": user_id,
                 "username": username,
                 "ticker_ids": [
-                    int(ticker_id) for ticker_id in ticker_ids.split(",")]
+                    int(ticker_id) for ticker_id in ticker_ids.split(",")],
+                "currencies": currencies.split(",")
             }
         return jsonify(response)
 

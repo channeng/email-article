@@ -377,13 +377,18 @@ class TickerItems(object):
     def get_all_users_tickers(self, db, user_id=None):
         query = """
         WITH valid_tickers AS (
-            SELECT id AS ticker_id
+            SELECT id AS ticker_id, currency
             FROM ticker
             WHERE is_deleted = 0
-            GROUP BY 1
+            GROUP BY 1,2
         )
 
-        SELECT user_id, username, email, GROUP_CONCAT(ticker_id) AS ticker_ids
+        SELECT
+            user_id,
+            username,
+            email,
+            GROUP_CONCAT(ticker_id) AS ticker_ids,
+            GROUP_CONCAT(DISTINCT currency) AS currencies
         FROM ticker_user
         LEFT JOIN user ON ticker_user.user_id = user.id
         INNER JOIN valid_tickers USING(ticker_id)
