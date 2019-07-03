@@ -21,16 +21,17 @@
       </div>
 
       <div style="width:14%;min-width:45px;float:right;text-align:center;">
+        {% if ticker_recommendations[ticker.id]["recommendation"] == None %}
 
-        {% if 'Sell' in ticker_recommendations[ticker.id]["recommendation"] %}
+        {% elif 'sell' in ticker_recommendations[ticker.id]["recommendation"].lower() %}
         <a href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}" style="color:#d22630;">
             <b>{{ ticker_recommendations[ticker.id]["recommendation"] }}</b>
         </a>
-        {% elif 'Buy' in ticker_recommendations[ticker.id]["recommendation"] %}
+        {% elif 'buy' in ticker_recommendations[ticker.id]["recommendation"].lower() %}
         <a href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}" style="color:#006600;">
             <b>{{ ticker_recommendations[ticker.id]["recommendation"] }}</b>
         </a>
-        {% elif 'Hold' in ticker_recommendations[ticker.id]["recommendation"] %}
+        {% elif 'hold' in ticker_recommendations[ticker.id]["recommendation"].lower() %}
         <a href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">
             {{ ticker_recommendations[ticker.id]["recommendation"] }}
         </a>

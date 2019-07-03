@@ -452,7 +452,8 @@ def stock_details_page(ticker_id):
     if timedelta_diff >= timedelta(days=0):
         today_recommend["buy_or_sell"] = buy_or_sell.title()
         if is_strong:
-            today_recommend["buy_or_sell"] = "Strong " + buy_or_sell
+            today_recommend["buy_or_sell"] = (
+                "Strong " + today_recommend["buy_or_sell"])
 
     return render_template(
         "stock_details.html",
