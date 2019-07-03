@@ -304,7 +304,9 @@ class TickerItems(object):
             self, db, user_id, num_results=100):
         ticker_recommendation_query = """
         WITH ticker_region AS (
-            SELECT id AS ticker_id, region FROM ticker
+            SELECT id AS ticker_id, region
+            FROM ticker
+            WHERE is_deleted = 0
         ), ticker_recommendation_region AS (
             SELECT * FROM ticker_recommendation
             LEFT JOIN ticker_region USING(ticker_id)
