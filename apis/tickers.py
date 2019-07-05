@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import json
 
 from flask import jsonify, request
 from flask_basicauth import BasicAuth
@@ -9,7 +10,7 @@ from app.tickers_plot import plot_ticker_df
 from app.tickers import (
     get_ticker_emails, update_ticker_data, delete_ticker,
     get_tickers, get_ticker_recommendations_for_user,
-    get_all_users_tickers, get_all_tickers, create_ticker_recommendation)
+    get_all_users_tickers, get_all_tickers, create_ticker_recommendations)
 
 basic_auth = BasicAuth()
 
@@ -104,29 +105,40 @@ class GetAllTickers(Resource):
         }))
 
 
-class AddTickerRecommendation(Resource):
+class AddTickerRecommendations(Resource):
     @basic_auth.required
     def post(self):
-        ticker = str(request.form.get("ticker", None))
-        if ticker is None:
-            return jsonify({"error": "Ticker must be provided."})
-        buy_or_sell = request.form.get("buy_or_sell", None)
-        if buy_or_sell is None:
-            return jsonify({"error": "Buy/sell not provided. No updates."})
-        else:
-            closing_date = request.form.get("closing_date", None)
-            closing_price = request.form.get("closing_price", None)
-            model_version = request.form.get("model_version", None)
-            if (closing_date is None or closing_price is None or
-                    model_version is None):
-                return jsonify(
-                    {"error": "Please provide closing date, closing "
-                              "price and model version."})
+        """Batch endpoint for creating recommendations for given ticker."""
 
-        is_strong = request.form.get("is_strong", False)
-        result = create_ticker_recommendation(
-            db, ticker, buy_or_sell, is_strong,
-            closing_date, closing_price, model_version)
+        ticker = request.form.get("ticker", None)
+        model_version = request.form.get("model_version", None)
+        data_str = request.form.get("recommendations", None)
+        if ticker is None or model_version is None or data_str is None:
+            return jsonify({
+                "error": (
+                    "Ticker, model_version and recommendations "
+                    "must be provided.")
+            })
+
+        # Validate recommendations data structure
+        recommendations = json.loads(data_str)
+        for closing_date, recommendation in recommendations.items():
+            keys = list(recommendation.keys())
+            validate_keys = (
+                "buy_or_sell" in keys and
+                "closing_price" in keys and
+                "is_strong" in keys
+            )
+            if not validate_keys:
+                return jsonify({
+                    "error": (
+                        "Recommendation keys does not consist of "
+                        "'buy_or_sell', 'closing_price' or 'is_strong' for "
+                        "the closing date {}.".format(closing_date))
+                })
+
+        result = create_ticker_recommendations(
+            db, ticker, model_version, recommendations)
 
         if not result:
             return jsonify(

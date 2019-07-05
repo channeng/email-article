@@ -280,23 +280,33 @@ class TickerItems(object):
         result = list(result)
         return result
 
-    def create_modelrecommendation(
-            self, db, model_id, buy_or_sell, is_strong,
-            closing_date, closing_price, model_version):
+    def create_modelrecommendations(self, db, model_id, model_version, data):
         """Add a recommendation for given ticker."""
-        new_recommendation = self.model_recommendation(
-            ticker_id=int(model_id),
-            recommendation=buy_or_sell,
-            is_strong=is_strong,
-            closing_date=closing_date,
-            closing_price=closing_price,
-            model_version=model_version
-        )
-        db.session.add(new_recommendation)
+        ticker_id = int(model_id)
+        new_recommendations = []
+        for closing_date, recommendation in data.items():
+            is_strong = recommendation["is_strong"]
+            if not isinstance(is_strong, bool):
+                is_strong = is_strong.lower() == "true"
+
+            new_recommendations.append(
+                self.model_recommendation(
+                    ticker_id=ticker_id,
+                    model_version=model_version,
+                    closing_date=closing_date,
+                    recommendation=recommendation["buy_or_sell"],
+                    is_strong=is_strong,
+                    closing_price=recommendation["closing_price"],
+                )
+            )
+
+        db.session.add_all(new_recommendations)
         db.session.commit()
+
         return {
             "ticker": model_id,
-            "updated": True
+            "updated": True,
+            "num_recommendations": len(new_recommendations)
         }
 
     @handleError
@@ -461,19 +471,30 @@ def get_all_tickers(num_results=100):
     return model_template.get_models(num_results=num_results)
 
 
-def create_ticker_recommendation(
-        db, ticker, buy_or_sell, is_strong,
-        closing_date, closing_price, model_version):
-    if not isinstance(is_strong, bool):
-        is_strong = is_strong.lower() == "true"
+def create_ticker_recommendations(db, ticker, model_version, data):
+    """Create batch of recommendations for a ticker by a given model.
 
+    Args:
+        db
+        ticker (String): Ticker name.
+        model_version (String): Model name.
+        data (Dict): Dictionary with closing_date as keys, and values of Dict
+                     containing "buy_or_sell", "is_strong", "closing_price".
+                     Example:
+                     {
+                        "2019-07-02": {
+                            "buy_or_sell": "Sell",
+                            "is_strong": True,
+                            "closing_price": 97.9
+                        }
+                      }
+    """
     model_obj = model_template.get_model_by_name(ticker)
     if model_obj is None:
         return False
 
-    return model_template.create_modelrecommendation(
-        db, model_obj.id, buy_or_sell, is_strong,
-        closing_date, closing_price, model_version)
+    return model_template.create_modelrecommendations(
+        db, model_obj.id, model_version, data)
 
 
 def delete_ticker(db, ticker, set_active=False):

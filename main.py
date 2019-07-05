@@ -37,7 +37,7 @@ from app.models import User, ListUser, Chat
 
 from apis.tickers import (
     TickerEmails, UpdateTicker, DeleteTicker, GetAllTickers,
-    AddTickerRecommendation, PlotTickerRecommendations,
+    AddTickerRecommendations, PlotTickerRecommendations,
     GetAllUsersTickers, GetTickersForUser, stocks_recommendations_for_user)
 from post_init import user_datastore
 
@@ -53,7 +53,7 @@ api.add_resource(TickerEmails, '/ticker_emails')
 api.add_resource(UpdateTicker, '/update_ticker')
 api.add_resource(DeleteTicker, '/delete_ticker')
 api.add_resource(GetAllTickers, '/all_tickers')
-api.add_resource(AddTickerRecommendation, '/ticker_recommendation')
+api.add_resource(AddTickerRecommendations, '/create_ticker_recommendations')
 api.add_resource(PlotTickerRecommendations, '/plot_ticker_recommendations')
 api.add_resource(GetAllUsersTickers, '/all_users_tickers')
 api.add_resource(GetTickersForUser, '/ticker_recommendation_for_user')
