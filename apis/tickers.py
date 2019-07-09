@@ -196,11 +196,15 @@ class GetTickersForUser(Resource):
 
         recommendations = {}
         for row in tickers:
-            ticker_id, ticker, full_name, last_updated, currency = row
+            (ticker_id, ticker, full_name, last_updated, currency, price,
+                change, change_percent) = row
             recommendations[ticker] = ticker_recommendations[ticker_id]
             recommendations[ticker]["full_name"] = full_name
             recommendations[ticker]["ticker_id"] = ticker_id
             recommendations[ticker]["last_updated"] = last_updated
             recommendations[ticker]["currency"] = currency
+            recommendations[ticker]["price"] = price
+            recommendations[ticker]["change"] = change
+            recommendations[ticker]["change_percent"] = change_percent
 
         return jsonify(recommendations)
