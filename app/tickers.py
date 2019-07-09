@@ -99,8 +99,7 @@ class TickerItems(object):
             .with_entities(
                 self.model.id, self.model.name, self.model.full_name,
                 self.model.latest_trading_day, self.model.currency,
-                self.model.currency, self.model.price,
-                self.model.change, self.model.change_percent)
+                self.model.price, self.model.change, self.model.change_percent)
             .order_by(self.model_user.id.desc())
             .limit(num_results)
             .all()
