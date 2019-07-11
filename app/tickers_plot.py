@@ -135,6 +135,7 @@ def plot_ticker_df(ticker):
         return False, False
 
     ticker_df = get_ticker_df(ticker, df_start_date=datetime_one_year_ago)
+    ticker_df = ticker_df[ticker_df["close"] > 0]
     ticker_df = ticker_df.merge(recommendations_df, how="left", on="date")
     for buy_or_sell in ["buy", "sell"]:
         to_buy_or_sell = (
