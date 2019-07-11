@@ -5,7 +5,7 @@
   .stampbox {
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 10px;
-    line-height: 15px;
+    line-height: 17px;
   }
   td {
     line-height: 13px;
@@ -17,8 +17,11 @@
     display: -webkit-box;
     -webkit-box-orient: vertical;
   }
-  a {
-    font-size: 14px;
+  #page a.font-normal,#page p.font-normal {
+    font-size: 15px;
+  }
+  #page a.font-small,#page p.font-small {
+    font-size: 12.5px;
   }
   #page li {
     padding-left: unset;
@@ -40,7 +43,7 @@
           <tr>
             <td class="info" style="width:100%;min-width:45px;float:left;padding-left:1%; padding-right:2.5%;">
               <div>
-                <b><a style="color:#424242;" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">{{ ticker.name }}</a></b>
+                <b><a class="font-normal" style="color:#424242;" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">{{ ticker.name }}</a></b>
               </div>
             </td>
 
@@ -49,19 +52,19 @@
 
               {% elif 'sell' in ticker_recommendations[ticker.id]["recommendation"].lower() %}
               <div class="stampbox" style="background-color: #FFDBDA; border-color: #7d1128;">
-                <a href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}" style="color:#7d1128;font-size: 85%;">
+                <a class="font-small" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}" style="color:#7d1128;">
                     <b>{{ ticker_recommendations[ticker.id]["recommendation"] }}</b>
                 </a>
               </div>
               {% elif 'buy' in ticker_recommendations[ticker.id]["recommendation"].lower() %}
               <div class="stampbox" style="background-color: #e5efe5; border-color: #006600;">
-                <a href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}" style="color:#006600;font-size: 85%;">
+                <a class="font-small" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}" style="color:#006600;">
                     <b>{{ ticker_recommendations[ticker.id]["recommendation"] }}</b>
                 </a>
               </div>
               {% elif 'hold' in ticker_recommendations[ticker.id]["recommendation"].lower() %}
               <div class="stampbox" style="background-color: #efefef;">
-                <a href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}" style="color:#424242;font-size: 85%;">
+                <a class="font-small" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}" style="color:#424242;">
                     {{ ticker_recommendations[ticker.id]["recommendation"] }}
                 </a>
               </div>
@@ -69,7 +72,7 @@
             </td>
 
             <td style="width:20%;min-width:60px;text-align:center;">
-              <a style="color:#424242; font-size:95%;" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">
+              <a class="font-normal" style="color:#424242;" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">
                 {{ '{:,.2f}'.format(ticker.price) }}
               </a>
             </td>
@@ -79,7 +82,7 @@
             <td class="info" style="width:100%;min-width:45px;padding-left:1%; padding-right:2.5%;">
               {% if ticker.full_name != None %}
               <div>
-                <a style="color:#7a7a7a;font-size:85%;" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">{{ ticker.full_name }}</a>
+                <a class="font-small" style="color:#7a7a7a;" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">{{ ticker.full_name }}</a>
               </div>
               {% endif %}
             </td>
@@ -88,9 +91,9 @@
               <div>
                 <a href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">
                 {% if ticker.change_percent > 0 %}
-                <p style="color:#005100; font-size:85%;">&#9650;{{'{:0.1f}%'.format(ticker.change_percent * 100).replace("-","")}}</p>
+                <p class="font-small" style="color:#005100;">&#9650;{{'{:0.1f}%'.format(ticker.change_percent * 100).replace("-","")}}</p>
                 {% else %}
-                <p style="color:#a81e26; font-size:85%;">&#9660;{{'{:0.1f}%'.format(ticker.change_percent * 100).replace("-","")}}</p>
+                <p class="font-small" style="color:#a81e26;">&#9660;{{'{:0.1f}%'.format(ticker.change_percent * 100).replace("-","")}}</p>
                 {% endif %}
 
                 </a>
