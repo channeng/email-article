@@ -117,7 +117,7 @@
 <br>
 
 <div id="page_header">
-  <h4>Add Ticker</h4>
+  <h4>New Ticker</h4>
 </div>
 <div class="form_div">
   <form action="" method="post">
@@ -126,9 +126,17 @@
       {{ form.ticker_name.label }}<br><br>
       {{ form.ticker_name(size=32, class_="input_field") }}
       {% for error in form.ticker_name.errors %}
-      <span style="color: red;">[{{ error }}]</span><br><br>
+      <span class="flash_message">[{{ error }}]</span><br><br>
       {% endfor %}
     </p>
+    <div>
+      <p style="font-size:12px;color:rgba(0,0,0,0.5);">
+        Popular tickers: 
+        {% for popular_ticker in popular_tickers %}
+        <a onclick="set_ticker_input('{{ popular_ticker }}')">{{ popular_ticker }}</a>{% if not loop.last %},{% endif %}
+        {% endfor %}
+      </p>
+    </div>
     <p id="submit_button">
       {{ form.submit(class_="form_button", onClick="return replace_with_loading_gif()") }}
       <div id="divMsg" style="display:none; padding-right: 5px; float: right;">
@@ -140,7 +148,7 @@
     {% if messages %}
     <ul>
     {% for message in messages %}
-    <li style="color: red;">- {{ message }}</li>
+    <li class="flash_message">- {{ message }}</li>
     {% endfor %}
     </ul>
     {% endif %}
@@ -154,5 +162,9 @@
     document.getElementById('submit').style.display="none";
     document.getElementById('divMsg').style.display="block";
   };
+
+  function set_ticker_input(ticker) {
+    document.getElementById("ticker_name").value=ticker;
+  }
 </script>
 {% endblock %}

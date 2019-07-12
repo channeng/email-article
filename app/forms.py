@@ -119,7 +119,7 @@ class NewChatForm(FlaskForm):
 class NewTickerForm(FlaskForm):
     length_message = "{} cannot be more than {} characters."
 
-    ticker_name_fieldname = "Enter Ticker (eg. MSFT):"
+    ticker_name_fieldname = "Enter ticker:"
     ticker_name_limit = 10
     ticker_name = StringField(
         ticker_name_fieldname,

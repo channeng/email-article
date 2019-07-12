@@ -32,7 +32,7 @@ from app.chats import (
 from app.tickers import (
     create_tickeruser, delete_tickeruser,
     get_ticker, get_ticker_name, validate_ticker,
-    get_ticker_latest_recommendation)
+    get_ticker_latest_recommendation, get_popular_tickers)
 from app.models import User, ListUser, Chat
 
 from apis.tickers import (
@@ -411,11 +411,14 @@ def stocks_page():
 
             return redirect(url_for('stocks_page'))
 
+    popular_tickers, _ = zip(*get_popular_tickers(3))
+
     return render_template(
         "stocks.html",
         form=form,
         tickers=tickers,
-        ticker_recommendations=ticker_recommendations)
+        ticker_recommendations=ticker_recommendations,
+        popular_tickers=popular_tickers)
 
 
 @app.route('/stocks/<int:ticker_id>',

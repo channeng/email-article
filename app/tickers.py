@@ -3,11 +3,12 @@ import requests
 import json
 
 import pandas as pd
+from sqlalchemy import func
 
 from app.models import Ticker, TickerUser, TickerRecommendation, get_columns
 from app.models_items import handleError
 from config import Config
-
+from IPython import embed
 
 _TICKER_COLUMNS = get_columns(Ticker)
 _ENDPOINT = (
@@ -113,6 +114,25 @@ class TickerItems(object):
             .filter_by(is_deleted=False)
             .order_by(self.model.id.desc())
             .limit(num_results)
+            .all()
+        )
+
+    @handleError
+    def get_popular_models(self, top_k):
+        return (
+            self.model_user.query
+            .filter_by(is_deleted=False)
+            .join(
+                self.model,
+                self.model_user.ticker_id == self.model.id,
+                isouter=True)
+            .filter(self.model.is_deleted == 0)
+            .with_entities(
+                self.model.name,
+                func.count(self.model_user.ticker_id))
+            .group_by(self.model.name)
+            .order_by(func.count(self.model_user.ticker_id).desc())
+            .limit(top_k)
             .all()
         )
 
@@ -532,3 +552,7 @@ def get_all_users_tickers(db, user_id=None):
     results = model_template.get_all_users_tickers(
         db, user_id=user_id)
     return results
+
+
+def get_popular_tickers(top_n_tickers):
+    return model_template.get_popular_models(top_n_tickers)
