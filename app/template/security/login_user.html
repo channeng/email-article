@@ -20,17 +20,21 @@
       <span class="flash_message">[{{ error }}]</span><br><br>
       {% endfor %}
     </p>
-    <div style="display: inline-block; padding-right: 5px;">{{ login_user_form.remember() }}</div>
-    <div style="display: inline-block;"><p class="small">{{ login_user_form.remember.label }}</p></div>
-    <p id="submit_button">{{ login_user_form.submit(class_="form_button") }}</p>
+    <div style="display: block;">
+      <div style="display: inline-block; float:left; padding-right: 10px;">{{ login_user_form.remember() }}</div>
+      <div><p class="small">{{ login_user_form.remember.label }}</p></div>
+    </div>
+    <div id="submit_button">{{ login_user_form.submit(class_="form_button") }}</div>
 
     {% with messages = get_flashed_messages() %}
     {% if messages %}
-    <ul>
-    {% for message in messages %}
-    <li class="flash_message">- {{ message }}</li>
-    {% endfor %}
-    </ul>
+    <div class="flash_message_div">
+      <ul>
+        {% for message in messages %}
+        <li class="flash_message">- {{ message }}</li>
+        {% endfor %}
+      </ul>
+    </div>
     {% endif %}
     {% endwith %}
 

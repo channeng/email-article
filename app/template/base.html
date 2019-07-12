@@ -48,7 +48,7 @@
         text-decoration: none;
       }
       #page p.small {
-        font-size: 70%;
+        font-size: 12px;
       }
       #page div {
         max-width: 600px;
@@ -121,6 +121,7 @@
         padding: 0px 5%;
         margin-left: auto;
         margin-right: auto;
+        overflow: auto;
       }
       input, textarea {
         width: 100%;
@@ -135,8 +136,8 @@
         width: -webkit-fill-available;
       }
       #page .form_button {
-        width: 40%;
         float: right;
+        margin-bottom: 0;
       }
       ul {
         list-style: none;
@@ -197,9 +198,9 @@
         font-weight:normal;
         width:70px;
       }
-      p#submit_button {
-        height: 15px;
-        display: block;
+      div#submit_button {
+        display: inline-block;
+        float: right;
       }
       #page form[type=hidden] {
         display: none;
@@ -274,7 +275,10 @@
         -ms-transform: rotate(45deg);
         transform: rotate(45deg);
       }
-
+      div.flash_message_div {
+        display: inline-block;
+        width: 100%;
+      }
       .flash_message {
         font-size: 13px !important;
         font-style: oblique;
