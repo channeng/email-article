@@ -10,14 +10,14 @@
       {{ login_user_form.email.label }}<br><br>
       {{ login_user_form.email(size=32, class_="input_field lower_input") }}
       {% for error in login_user_form.email.errors %}
-      <span style="color: red;">[{{ error }}]</span><br><br>
+      <span class="flash_message">[{{ error }}]</span><br><br>
       {% endfor %}
     </p>
     <p>
       {{ login_user_form.password.label }}<br><br>
       {{ login_user_form.password(size=32, class_="input_field") }}
       {% for error in login_user_form.password.errors %}
-      <span style="color: red;">[{{ error }}]</span><br><br>
+      <span class="flash_message">[{{ error }}]</span><br><br>
       {% endfor %}
     </p>
     <div style="display: inline-block; padding-right: 5px;">{{ login_user_form.remember() }}</div>
@@ -28,7 +28,7 @@
     {% if messages %}
     <ul>
     {% for message in messages %}
-    <li style="color: red;">- {{ message }}</li>
+    <li class="flash_message">- {{ message }}</li>
     {% endfor %}
     </ul>
     {% endif %}

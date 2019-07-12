@@ -10,28 +10,28 @@
       {{ register_user_form.username.label }}<br><br>
       {{ register_user_form.username(size=32, class_="lower_input input_field") }}
       {% for error in register_user_form.username.errors %}
-      <span style="color: red;">[{{ error }}]</span><br><br>
+      <span class="flash_message">[{{ error }}]</span><br><br>
       {% endfor %}
     </p>
     <p>
       {{ register_user_form.email.label }}<br><br>
       {{ register_user_form.email(size=64, class_="lower_input input_field") }}
       {% for error in register_user_form.email.errors %}
-      <span style="color: red;">[{{ error }}]</span><br><br>
+      <span class="flash_message">[{{ error }}]</span><br><br>
       {% endfor %}
     </p>
     <p>
       {{ register_user_form.password.label }}<br><br>
       {{ register_user_form.password(size=32, class_="input_field") }}
       {% for error in register_user_form.password.errors %}
-      <span style="color: red;">[{{ error }}]</span><br><br>
+      <span class="flash_message">[{{ error }}]</span><br><br>
       {% endfor %}
     </p>
     <p>
       {{ register_user_form.password_confirm.label }}<br><br>
       {{ register_user_form.password_confirm(size=32, class_="input_field") }}
       {% for error in register_user_form.password_confirm.errors %}
-      <span style="color: red;">[{{ error }}]</span><br><br>
+      <span class="flash_message">[{{ error }}]</span><br><br>
       {% endfor %}
     </p>
     <p id="submit_button">{{ register_user_form.submit(class_="form_button", value="Sign Up") }}</p>
@@ -40,7 +40,7 @@
     {% if messages %}
     <ul>
     {% for message in messages %}
-    <li style="color: red;">- {{ message }}</li>
+    <li class="flash_message">- {{ message }}</li>
     {% endfor %}
     </ul>
     {% endif %}

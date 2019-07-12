@@ -74,7 +74,7 @@
 
       {% for field in new_item_form.errors %}
       {% for error in new_item_form.errors[field] %}
-      <span style="color: red;">[{{ error }}]</span><br><br>
+      <span class="flash_message">[{{ error }}]</span><br><br>
       {% endfor %}
       {% endfor %}
 
@@ -85,7 +85,7 @@
     {% if messages %}
     <ul>
     {% for message in messages %}
-    <li style="color: red;">- {{ message }}</li>
+    <li class="flash_message">- {{ message }}</li>
     {% endfor %}
     </ul>
     {% endif %}

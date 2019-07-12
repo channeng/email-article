@@ -31,7 +31,7 @@
         {{ form.chat_with_username.label }}<br><br>
         {{ form.chat_with_username(size=32, class_="input_field lower_input") }}
         {% for error in form.chat_with_username.errors %}
-        <span style="color: red;">[{{ error }}]</span><br><br>
+        <span class="flash_message">[{{ error }}]</span><br><br>
         {% endfor %}
       </p>
       <p id="submit_button">
@@ -42,7 +42,7 @@
       {% if messages %}
       <ul>
       {% for message in messages %}
-      <li style="color: red;">- {{ message }}</li>
+      <li class="flash_message">- {{ message }}</li>
       {% endfor %}
       </ul>
       {% endif %}

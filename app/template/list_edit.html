@@ -25,7 +25,7 @@
       {{ edit_list_form.invite_username.label }}<br><br>
       {{ edit_list_form.invite_username(size=32, class_="input_field lower_input") }}
       {% for error in edit_list_form.list_name.errors %}
-      <span style="color: red;">[{{ error }}]</span><br><br>
+      <span class="flash_message">[{{ error }}]</span><br><br>
       {% endfor %}
     </p>
     <p id="submit_button">{{ edit_list_form.submit(class_="form_button") }}</p>
@@ -34,7 +34,7 @@
     {% if messages %}
     <ul>
     {% for message in messages %}
-    <li style="color: red;">- {{ message }}</li>
+    <li class="flash_message">- {{ message }}</li>
     {% endfor %}
     </ul>
     {% endif %}
