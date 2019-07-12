@@ -11,8 +11,9 @@
   .tg  {
     border-collapse:collapse;
     border-spacing:0;
-    margin:0px;
-    width:100%;
+    margin: 0 auto;
+    width: 60%;
+    min-width: 270px;
   }
   .tg tbody {
     display: block;
@@ -62,102 +63,108 @@
 </h3>
 <hr>
 
-<h3 class="headers" style="margin-block-end: 0.5em;line-height: 1.3">{{ ticker.full_name }}</h3>
-{% if latest_recommendation != None %}
-<br>
-<div>
-  <table class="tg">
-    <tr>
-      <td class="col1">Last trading day</td>
-      <td class="col2">{{ ticker.latest_trading_day }}</td>
-    </tr>
-    <tr>
-      <td class="col1">Latest price</td>
-      <td class="col2">{{ '{} $ {:.2f}'.format(ticker.currency, ticker.price) }}</td>
-    </tr>
-    <tr>
-      <td class="col1" style="background-color:#616161; color:#FCFCFC;">Recommend</td>
-      {% if 'sell' in latest_recommendation['buy_or_sell'].lower() %}
-      <td class="col2" style="background-color:#fff0f0; color:#AE0D16;"><b>{{ latest_recommendation['buy_or_sell'] }}<b></td>
-      {% elif 'buy' in latest_recommendation['buy_or_sell'].lower() %}
-      <td class="col2" style="background-color:#e5efe5; color:#006600;"><b>{{ latest_recommendation['buy_or_sell'] }}<b></td>
-      {% else %}
-      <td class="col2"><b>{{ latest_recommendation['buy_or_sell'] }}<b></td>
+<div style="margin: 0 10px;">
+  <h3 class="headers" style="margin-block-end: 0.5em;line-height: 1.3">{{ ticker.full_name }}</h3>
+  {% if latest_recommendation != None %}
+  <br>
+  <div style="width:100%;">
+    <table class="tg">
+      <tr>
+        <td class="col1">Last trading day</td>
+        <td class="col2">{{ ticker.latest_trading_day }}</td>
+      </tr>
+      <tr>
+        <td class="col1">Latest price</td>
+        <td class="col2">{{ '{} $ {:.2f}'.format(ticker.currency, ticker.price) }}</td>
+      </tr>
+      <tr>
+        <td class="col1" style="background-color:#616161; color:#FCFCFC;">Recommend</td>
+        {% if 'sell' in latest_recommendation['buy_or_sell'].lower() %}
+        <td class="col2" style="background-color:#fff0f0; color:#AE0D16;"><b>{{ latest_recommendation['buy_or_sell'] }}<b></td>
+        {% elif 'buy' in latest_recommendation['buy_or_sell'].lower() %}
+        <td class="col2" style="background-color:#e5efe5; color:#006600;"><b>{{ latest_recommendation['buy_or_sell'] }}<b></td>
+        {% else %}
+        <td class="col2"><b>{{ latest_recommendation['buy_or_sell'] }}<b></td>
+        {% endif %}
+      </tr>
+      {% if latest_recommendation['buy_or_sell'] == '-' %}
+      <tr>
+        <td class="col1" style="background-color: #FCFCFC;"> </td>
+        <td class="col2" style="text-align:center; font-size:12px; padding: 7px; line-height: 1.3">To be updated</td>
+      </tr>
       {% endif %}
-    </tr>
-    {% if latest_recommendation['buy_or_sell'] == '-' %}
-    <tr>
-      <td class="col1" style="background-color: #FCFCFC;"> </td>
-      <td class="col2" style="text-align:center; font-size:12px; padding: 7px; line-height: 1.3">To be updated</td>
-    </tr>
-    {% endif %}
-  </table>
-</div>
-<br>
-<hr>
-{% endif %}
+    </table>
+  </div>
+  <br>
+  <hr>
+  {% endif %}
 
-{% if plot_exists %}
-<h3 class="secondary headers">Past year recommendations</h3>
-<br>
-<div>
-  <a href="{{url_for('static', filename='ticker_plots/' + ticker['name'].lower().replace('.', '') + '.png')}}">
-    <img src="{{url_for('static', filename='ticker_plots/' + ticker['name'].lower().replace('.', '') + '.png')}}" alt="Please wait.." style="width:100%;"/>
-  </a>
-</div>
-<br>
-<hr>
-{% endif %}
+  {% if plot_exists %}
+  <div>
+    <h3 class="secondary headers">Past year recommendations</h3>
+    <br>
+    <div>
+      <a href="{{url_for('static', filename='ticker_plots/' + ticker['name'].lower().replace('.', '') + '.png')}}">
+        <img src="{{url_for('static', filename='ticker_plots/' + ticker['name'].lower().replace('.', '') + '.png')}}" alt="Please wait.." style="width:100%;"/>
+      </a>
+    </div>
+  </div>
+  <br>
+  <hr>
+  {% endif %}
 
-<h3 class="secondary headers">Stats</h3>
-<div>
-  <table class="tg">
-    <tr>
-      <td class="col1">Type</td>
-      <td class="col2">{{ ticker.type }}</td>
-    </tr>
-    <tr>
-      <td class="col1">Region</td>
-      <td class="col2">{{ ticker.region }}</td>
-    </tr>
-    <tr>
-      <td class="col1">Last trading day</td>
-      <td class="col2">{{ ticker.latest_trading_day }}</td>
-    </tr>
-    <tr>
-      <td class="col1">Latest price</td>
-      <td class="col2">{{ '{} $ {:,.2f}'.format(ticker.currency, ticker.price) }}</td>
-    </tr>
-    <tr>
-      <td class="col1">Previous close</td>
-      <td class="col2">{{ '{} $ {:.2f}'.format(ticker.currency, ticker.previous_close) }}</td>
-    </tr>
-    <tr>
-      <td class="col1">Absolute change</td>
-      <td class="col2">{{ '{} $ {:.2f}'.format(ticker.currency, ticker.change) }}</td>
-    </tr>
-    <tr>
-      <td class="col1">% change</td>
-      <td class="col2">{{'{:0.2f} %'.format(ticker.change_percent * 100)}}</td>
-    </tr>
-    <tr>
-      <td class="col1">Open</td>
-      <td class="col2">{{ '{} $ {:.2f}'.format(ticker.currency, ticker.open) }}</td>
-    </tr>
-    <tr>
-      <td class="col1">High</td>
-      <td class="col2">{{ '{} $ {:.2f}'.format(ticker.currency, ticker.high) }}</td>
-    </tr>
-    <tr>
-      <td class="col1">Low</td>
-      <td class="col2">{{ '{} $ {:.2f}'.format(ticker.currency, ticker.low) }}</td>
-    </tr>
-    <tr>
-      <td class="col1">Volume</td>
-      <td class="col2">{{ '{:,}'.format(ticker.volume) }}</td>
-    </tr>
-  </table>
-<div>
+  <div>
+    <h3 class="secondary headers">Stats</h3>
+    <div>
+      <table class="tg">
+        <tr>
+          <td class="col1">Type</td>
+          <td class="col2">{{ ticker.type }}</td>
+        </tr>
+        <tr>
+          <td class="col1">Region</td>
+          <td class="col2">{{ ticker.region }}</td>
+        </tr>
+        <tr>
+          <td class="col1">Last trading day</td>
+          <td class="col2">{{ ticker.latest_trading_day }}</td>
+        </tr>
+        <tr>
+          <td class="col1">Latest price</td>
+          <td class="col2">{{ '{} $ {:,.2f}'.format(ticker.currency, ticker.price) }}</td>
+        </tr>
+        <tr>
+          <td class="col1">Previous close</td>
+          <td class="col2">{{ '{} $ {:.2f}'.format(ticker.currency, ticker.previous_close) }}</td>
+        </tr>
+        <tr>
+          <td class="col1">Absolute change</td>
+          <td class="col2">{{ '{} $ {:.2f}'.format(ticker.currency, ticker.change) }}</td>
+        </tr>
+        <tr>
+          <td class="col1">% change</td>
+          <td class="col2">{{'{:0.2f} %'.format(ticker.change_percent * 100)}}</td>
+        </tr>
+        <tr>
+          <td class="col1">Open</td>
+          <td class="col2">{{ '{} $ {:.2f}'.format(ticker.currency, ticker.open) }}</td>
+        </tr>
+        <tr>
+          <td class="col1">High</td>
+          <td class="col2">{{ '{} $ {:.2f}'.format(ticker.currency, ticker.high) }}</td>
+        </tr>
+        <tr>
+          <td class="col1">Low</td>
+          <td class="col2">{{ '{} $ {:.2f}'.format(ticker.currency, ticker.low) }}</td>
+        </tr>
+        <tr>
+          <td class="col1">Volume</td>
+          <td class="col2">{{ '{:,}'.format(ticker.volume) }}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
 <br>
 <div style="float: right; display:block; width: 100%">
   <button class="delete list_del" style="font-size:80%; width:40%" type="submit" value="{{ ticker.id }}" form="delete_ticker_form_{{ ticker.id }}" onClick="return confirm('Are you sure you want to delete {{ ticker.name }}: {{ ticker.full_name }} ?')">Remove Stock</button>
