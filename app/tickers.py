@@ -8,7 +8,7 @@ from sqlalchemy import func
 from app.models import Ticker, TickerUser, TickerRecommendation, get_columns
 from app.models_items import handleError
 from config import Config
-from IPython import embed
+
 
 _TICKER_COLUMNS = get_columns(Ticker)
 _ENDPOINT = (
