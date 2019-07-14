@@ -233,6 +233,11 @@
   function sortBy(sort_type) {
     if (sort_type == "recent") {
       var sort_index = 0;
+      return function sortByIndex(a, b) {
+        a_data = parseInt(a.getAttribute("name").split("_")[sort_index]);
+        b_data = parseInt(b.getAttribute("name").split("_")[sort_index]);
+        return a_data - b_data;
+      }
     } else if (sort_type == "name") {
       var sort_index = 1;
     } else if (sort_type == "buy") {
