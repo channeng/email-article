@@ -2,14 +2,6 @@
 
 {% block content %}
 <style>
-  .stampbox {
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    line-height: 17px;
-  }
-  .stampbox.strong {
-    border: 2px solid rgba(0, 0, 0, 0.1);
-  }
   table {
     border-spacing: 3px;
   }
@@ -23,15 +15,80 @@
     display: -webkit-box;
     -webkit-box-orient: vertical;
   }
+  td.col1 {
+    width:100%;
+    min-width:45px;
+    float:left;
+    padding-left:1%;
+    padding-right:2.5%;
+  }
+  td.col2 {
+    width:10%;
+    min-width:50px;
+    vertical-align:top;
+  }
+  td.col3 {
+    width:20%;
+    min-width:70px;
+    text-align:center;
+  }
   #page a.font-normal,#page p.font-normal {
     font-size: 15px;
+    color:#424242;
   }
   #page a.font-small,#page p.font-small {
     font-size: 12px;
+    color:#424242;
+  }
+  #page a.font-light,#page p.font-light {
+    color:#7a7a7a;
   }
   #page li {
     padding-left: unset;
     margin: 22px 0 22px 0;
+  }
+  #sort_by div.stampbox {
+    display: inline-block;
+    width: calc(100% / 5);
+    min-width: unset;
+    line-height: 20px;
+  }
+  .stampbox {
+    border: 1px solid #FCFCFC;
+    border-radius: 10px;
+    line-height: 17px;
+    text-align:center;
+    min-width:50px;
+    background-color: #FCFCFC;
+  }
+/*  .stampbox.light {
+    background-color: #fbfbfb;
+    border-color: rgba(0, 0, 0, 0.2);
+    font-weight: normal !important;
+    color: unset;
+  }
+*/  .stampbox.strong {
+    border: 2px solid rgba(0, 0, 0, 0.1);
+  }
+  .stampbox.buy {
+    background-color: #e5efe5;
+    border-color: #006600;
+  }
+  .stampbox.sell {
+    background-color: #FFDBDA;
+    border-color: #974052;
+  }
+  .stampbox.hold {
+    background-color: #efefef;
+    border-color: rgba(0, 0, 0, 0.5);
+  }
+  #page a.sell {
+    color:#974052;
+    font-weight: bold;
+  }
+  #page a.buy {
+    color:#006600;
+    font-weight: bold;
   }
 </style>
 <h3>
@@ -40,61 +97,66 @@
   </div>
 </h3>
 <hr>
+
+<div id="sort_by" style="display: inline-block; min-width:240px; width:95%;text-align:center;">
+  <div id="sort_by_recent" class="stampbox hold" onClick="sort_tickers('sort_by_recent')">
+    <a class="font-small">Recent</a>
+  </div>
+  <div id="sort_by_name" class="stampbox" onClick="sort_tickers('sort_by_name')">
+    <a class="font-small font-light">Name</a>
+  </div>
+  <div id="sort_by_buy" class="stampbox" onClick="sort_tickers('sort_by_buy')">
+    <a class="font-small font-light">Buy</a>
+  </div>
+  <div id="sort_by_sell" class="stampbox" onClick="sort_tickers('sort_by_sell')">
+    <a class="font-small font-light">Sell</a>
+  </div>
+</div>
+<hr>
+
 <div>
-  <ul>
+  <ul id="ticker_list">
   {% for ticker in tickers %}
-    <li>
+    <li name="{{loop.index}}_{{ticker.name.lower().replace('.', '')}}_{{ticker_recommendations[ticker.id]['recommendation']}}">
       <table style="width:100%;">
         <tbody>
           <tr>
-            <td class="info" style="width:100%;min-width:45px;float:left;padding-left:1%; padding-right:2.5%;">
+            <td class="info col1">
               <div>
-                <b><a class="font-normal" style="color:#424242;" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">{{ ticker.name }}</a></b>
+                <b><a class="font-normal" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">{{ ticker.name }}</a></b>
               </div>
             </td>
 
-            <td style="width:10%;min-width:50px;text-align:center;vertical-align:top;" rowspan="2">
+            <td class="col2" rowspan="2">
               {% if ticker_recommendations[ticker.id]["recommendation"] == None %}
 
-              {% elif 'sell' in ticker_recommendations[ticker.id]["recommendation"].lower() %}
-              <div class="stampbox {{'strong' if 'strong' in ticker_recommendations[ticker.id]["recommendation"].lower() }}" style="background-color: #FFDBDA; border-color: #974052;">
-                <a class="font-small" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}" style="color:#974052;">
-                    <b>{{ ticker_recommendations[ticker.id]["recommendation"].replace("Strong ", "").upper() if 'strong' in ticker_recommendations[ticker.id]["recommendation"].lower() else ticker_recommendations[ticker.id]["recommendation"] }}</b>
-                </a>
-              </div>
-              {% elif 'buy' in ticker_recommendations[ticker.id]["recommendation"].lower() %}
-              <div class="stampbox {{'strong' if 'strong' in ticker_recommendations[ticker.id]["recommendation"].lower() }}" style="background-color: #e5efe5; border-color: #006600;">
-                <a class="font-small" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}" style="color:#006600;">
-                    <b>{{ ticker_recommendations[ticker.id]["recommendation"].replace("Strong ", "").upper() if 'strong' in ticker_recommendations[ticker.id]["recommendation"].lower() else ticker_recommendations[ticker.id]["recommendation"] }}</b>
-                </a>
-              </div>
-              {% elif 'hold' in ticker_recommendations[ticker.id]["recommendation"].lower() %}
-              <div class="stampbox" style="background-color: #efefef;">
-                <a class="font-small" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}" style="color:#424242;">
-                    {{ ticker_recommendations[ticker.id]["recommendation"] }}
+              {% else %}
+              <div class="stampbox {{ ticker_recommendations[ticker.id]["recommendation"].replace("Strong ", "").lower() }} {{'strong' if 'strong' in ticker_recommendations[ticker.id]["recommendation"].lower() }}">
+                <a class="font-small {{ ticker_recommendations[ticker.id]["recommendation"].replace("Strong ", "").lower() }}" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">
+                    {{ ticker_recommendations[ticker.id]["recommendation"].replace("Strong ", "").upper() if 'strong' in ticker_recommendations[ticker.id]["recommendation"].lower() else ticker_recommendations[ticker.id]["recommendation"] }}
                 </a>
               </div>
               {% endif %}
 
             </td>
 
-            <td style="width:20%;min-width:70px;text-align:center;">
-              <a class="font-normal" style="color:#424242;" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">
+            <td class="col3">
+              <a class="font-normal" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">
                 {{ '{:,.2f}'.format(ticker.price) }}
               </a>
             </td>
           </tr>
 
           <tr>
-            <td class="info" style="width:100%;min-width:45px;padding-left:1%; padding-right:2.5%;">
+            <td class="info col1">
               {% if ticker.full_name != None %}
               <div>
-                <a class="font-small" style="color:#7a7a7a;" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">{{ ticker.full_name }}</a>
+                <a class="font-small font-light" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">{{ ticker.full_name }}</a>
               </div>
               {% endif %}
             </td>
             <!-- <td style="width:10%;min-width:45px;text-align:center;"></td> -->
-            <td style="width:20%;min-width:70px;text-align:center;">
+            <td class="col3">
               <div>
                 <a href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">
                 {% if ticker.change_percent > 0 %}
@@ -102,7 +164,6 @@
                 {% else %}
                 <p class="font-small" style="color:#a81e26;">&#9660;{{'{:0.1f}%'.format(ticker.change_percent * 100).replace("-","")}}</p>
                 {% endif %}
-
                 </a>
               </div>
             </td>
@@ -129,7 +190,7 @@
       {% endfor %}
     </p>
     <div>
-      <p style="font-size:12px;color:rgba(0,0,0,0.5);">
+      <p class="font-small font-light">
         Popular tickers: 
         {% for popular_ticker in popular_tickers %}
         <a onclick="set_ticker_input('{{ popular_ticker }}')">{{ popular_ticker }}</a>{% if not loop.last %},{% endif %}
@@ -159,6 +220,77 @@
 </div>
 
 <script type="text/javascript">
+  function clear_sort_selections() {
+    sort_div = document.getElementById("sort_by");
+    sorts_array = sort_div.getElementsByClassName("stampbox");
+    for (var i = sorts_array.length - 1; i >= 0; i--) {
+      sorts_array[i].className = "stampbox";
+      div_a = sorts_array[i].getElementsByClassName("font-small")[0];
+      div_a.className = "font-small font-light";
+    };
+  };
+
+  function sortBy(sort_type) {
+    if (sort_type == "recent") {
+      var sort_index = 0;
+    } else if (sort_type == "name") {
+      var sort_index = 1;
+    } else if (sort_type == "buy") {
+      var sort_index = 2;
+    } else if (sort_type == "sell") {
+      var sort_index = 2;
+      return function sortByName(a, b) {
+        a_data = a.getAttribute("name").split("_")[sort_index].toLowerCase().replace("Strong ", "");
+        b_data = b.getAttribute("name").split("_")[sort_index].toLowerCase().replace("Strong ", "");
+        return b_data.localeCompare(a_data);
+      }
+    }
+    return function sortByName(a, b) {
+      a_data = a.getAttribute("name").split("_")[sort_index].toLowerCase().replace("Strong ", "");
+      b_data = b.getAttribute("name").split("_")[sort_index].toLowerCase().replace("Strong ", "");
+      return a_data.localeCompare(b_data);
+    }
+  }
+
+  function sort_ticker_list(sort_type) {
+    var ticker_ul = document.getElementById("ticker_list");
+    var ticker_li_array = ticker_ul.getElementsByTagName("li");
+    ticker_li_array = Array.prototype.slice.call(ticker_li_array)
+    ticker_li_array.sort(sortBy(sort_type));
+    // reatach the sorted elements
+    for(var i = 0, len = ticker_li_array.length; i < len; i++) {
+        // store the parent node so we can reatach the item
+        var parent = ticker_li_array[i].parentNode;
+        // detach it from wherever it is in the DOM
+        var detatchedItem = parent.removeChild(ticker_li_array[i]);
+        // reatach it.  This works because we are itterating
+        // over the items in the same order as they were re-
+        // turned from being sorted.
+        parent.appendChild(detatchedItem);
+    }
+  };
+
+  function sort_tickers(selected_div_id) {
+    clear_sort_selections()
+    var selected_div = document.getElementById(selected_div_id);
+    var selected_div_a = selected_div.getElementsByClassName("font-small")[0];
+
+    if (selected_div_id.includes("buy")) {
+      selected_div.classList.add("buy")
+      selected_div_a.className = "font-small buy"
+    } else if (selected_div_id.includes("sell")) {
+      selected_div.classList.add("sell")
+      selected_div_a.className = "font-small sell"
+    } else {
+      selected_div.classList.add("hold")
+      selected_div_a.className = "font-small"
+    };
+
+    var sort_type = selected_div_id.replace("sort_by_", "");
+    sort_ticker_list(sort_type);
+
+  };
+
   function replace_with_loading_gif() {
     document.getElementById('submit').style.display="none";
     document.getElementById('divMsg').style.display="block";
