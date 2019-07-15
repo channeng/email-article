@@ -16,6 +16,7 @@
     <title>Pocket Internet</title>
     <link rel="shortcut icon" type="image/png" href="{{url_for('static', filename='favicon.png')}}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="template" content="{{ self._TemplateReference__context.name }}">
     <style type="text/css">
       html, body, div, h1, h2, p, a, ul, li, form, label, button:not(.nostyle) {
         margin: 0;
@@ -47,8 +48,24 @@
         font: FaktProSoft,Helvetica Neue,helvetica,arial,sans-serif;
         text-decoration: none;
       }
-      #page p.small {
+      #page a.font-normal,#page p.font-normal {
+        font-size: 15px;
+        color:#424242;
+      }
+      #page a.font-small,#page p.font-small {
         font-size: 12px;
+        color:#424242;
+      }
+      #page a.font-small,#page p.font-small {
+        font-size: 12px;
+        color:#424242;
+      }
+      #page a.font-light,#page p.font-light {
+        color:#7a7a7a;
+      }
+      #page a.font-credits,#page p.font-credits {
+        font-size: 11px;
+        color:#7a7a7a;
       }
       #page div {
         max-width: 600px;
@@ -291,8 +308,11 @@
     <div id="page">
       <h1>Pocket Internet</h1>
       <h2><div>
-      <div class="left"><a href="{{ url_for('index') }}">Apps</a></div>
+      <div class="left"><a href="{{ url_for('index') }}">Home</a></div>
+      {% if not current_user.is_anonymous %}
       <div class="left"><a href="{{ url_for('contact_us') }}">Contact</a></div>
+      {% endif %}
+
       {% if current_user.is_anonymous %}
 
         {% if (title != "Register") %}
@@ -310,6 +330,18 @@
       <br style="clear: left;" />
       </h2>
       {% block content %}{% endblock %}
+    </div>
+    <div id="page" style="background-color: unset;">
+      {% if 'stock' in self._TemplateReference__context.name %}
+      <p class="font-credits">DISCLAIMER:</p>
+      <p class="font-credits">Be advised that investments may go up as well as down for any reason, and past performance of a stock is no guarantee of future performance. All investors are advised to conduct their own independent research before making an investment decision. Investors should consider the source and suitability of any investment advice for their needs.
+      </p>
+      <p class="font-credits">
+      This website makes no representation as to the timeliness, accuracy or suitability of any content within, and cannot be held liable for any irregularity or inaccuracy. Stock recommendations on this website do not represent the opinions of Pocket.sg on whether to buy, sell or hold shares of any particular stock. Your use of this website, and its content, is at your own risk.
+      </p>
+      <br>
+      {% endif %}
+      <p class="font-credits" style="text-align:right;">© 2019 Pocket, SG. All rights reserved.</p>
     </div>
   </body>
 </html>

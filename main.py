@@ -91,6 +91,7 @@ def send_email_article():
 
 
 @app.route("/contact", methods=['GET', 'POST'], strict_slashes=False)
+@login_required
 def contact_us():
     form_params = request.form.to_dict(flat=True)
     form = ContactForm()
