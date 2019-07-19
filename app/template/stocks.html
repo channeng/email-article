@@ -234,14 +234,14 @@
     } else if (sort_type == "sell") {
       var sort_index = 2;
       return function sortByName(a, b) {
-        a_data = a.getAttribute("name").split("_")[sort_index].toLowerCase().replace("Strong ", "");
-        b_data = b.getAttribute("name").split("_")[sort_index].toLowerCase().replace("Strong ", "");
+        a_data = a.getAttribute("name").split("_")[sort_index].toLowerCase().replace("strong ", "");
+        b_data = b.getAttribute("name").split("_")[sort_index].toLowerCase().replace("strong ", "");
         return b_data.localeCompare(a_data);
       }
     }
     return function sortByName(a, b) {
-      a_data = a.getAttribute("name").split("_")[sort_index].toLowerCase().replace("Strong ", "");
-      b_data = b.getAttribute("name").split("_")[sort_index].toLowerCase().replace("Strong ", "");
+      a_data = a.getAttribute("name").split("_")[sort_index].toLowerCase().replace("strong ", "");
+      b_data = b.getAttribute("name").split("_")[sort_index].toLowerCase().replace("strong ", "");
       return a_data.localeCompare(b_data);
     }
   }
