@@ -79,6 +79,9 @@
     color:#006600;
     font-weight: bold;
   }
+  #page a.hold {
+    color: #424242;
+  }
 </style>
 <h3>
   <div id="page_header">
@@ -277,7 +280,7 @@
       selected_div_a.className = "font-small sell"
     } else {
       selected_div.classList.add("hold")
-      selected_div_a.className = "font-small"
+      selected_div_a.className = "font-small hold"
     };
 
     var sort_type = selected_div_id.replace("sort_by_", "");
