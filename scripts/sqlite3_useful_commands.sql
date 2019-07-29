@@ -60,3 +60,30 @@ AND ticker.is_deleted=0;
 
 # Quit SQLite3
 .quit
+
+# Get ticker recommendations
+WITH live_tickers AS (
+    SELECT ticker.id AS ticker_id, ticker.name AS ticker_name
+    FROM ticker_user
+    LEFT JOIN ticker
+    ON ticker_user.ticker_id = ticker.id
+    WHERE ticker_user.is_deleted = 0
+    AND ticker.is_deleted = 0
+    GROUP BY 1,2
+)
+, latest_updated AS (
+    SELECT MAX(DATE(time_created)) last_updated
+    FROM ticker_recommendation
+)
+, latest_recommendations AS (
+    SELECT ticker_id, recommendation
+    FROM ticker_recommendation
+    WHERE DATE(time_created) = (SELECT last_updated FROM latest_updated)
+)
+
+SELECT ticker_id, ticker_name, recommendation
+FROM live_tickers
+LEFT JOIN latest_recommendations USING(ticker_id)
+-- Exclude non-US stocks
+WHERE ticker_name NOT LIKE '%.%'
+ORDER BY ticker_name;
