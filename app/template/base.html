@@ -309,6 +309,7 @@
       <h1>Pocket Internet</h1>
       <h2><div>
       <div class="left"><a href="{{ url_for('index') }}">Home</a></div>
+      <div class="left"><a href="{{ url_for('explore_other_apps') }}">Explore</a></div>
       {% if not current_user.is_anonymous %}
       <div class="left"><a href="{{ url_for('contact_us') }}">Contact</a></div>
       {% endif %}

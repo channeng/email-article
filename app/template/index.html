@@ -1,27 +1,239 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style>
+  table {
+    border-spacing: 3px;
+  }
+  td {
+    line-height: 10px;
+  }
+  td.info {
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+  }
+  td.col1 {
+    width:100%;
+    min-width:45px;
+    float:left;
+    padding-left:1%;
+    padding-right:2.5%;
+  }
+  td.col2 {
+    width:10%;
+    min-width:50px;
+    vertical-align:top;
+  }
+  td.col3 {
+    width:20%;
+    min-width:70px;
+    text-align:center;
+  }
+  #page li {
+    padding-left: unset;
+    margin: 22px 0 22px 0;
+  }
+  #sort_by div.stampbox {
+    display: inline-block;
+    width: calc(100% / 5);
+    min-width: unset;
+    line-height: 20px;
+  }
+  .stampbox {
+    border: 1px solid #FCFCFC;
+    border-radius: 10px;
+    line-height: 17px;
+    text-align:center;
+    min-width:50px;
+    background-color: #FCFCFC;
+  }
+  .stampbox.strong {
+    border: 2px solid rgba(0, 0, 0, 0.1);
+  }
+  .stampbox.buy {
+    background-color: #e5efe5;
+    border-color: #006600;
+  }
+  .stampbox.sell {
+    background-color: #FFDBDA;
+    border-color: #974052;
+  }
+  .stampbox.hold {
+    background-color: #efefef;
+    border-color: rgba(0, 0, 0, 0.5);
+  }
+  #page a.sell {
+    color:#974052;
+    font-weight: bold;
+  }
+  #page a.buy {
+    color:#006600;
+    font-weight: bold;
+  }
+  #page a.hold {
+    color: #424242;
+  }
+</style>
+
   <h3>
     <div id="page_header">
-      Apps
+      Welcome to Pocket.sg!
     </div>
   </h3>
-  <hr><br>
+  <hr>
   <div style="padding: 0px 3%;">
-    <p>Welcome to Pocket.sg! </p>
-    <p>A suite of apps all within your pocket.</p>
+    <h4>Stock monitoring service for savvy investors</h4>
+    <div class="subtext">
+      <p>PocketSG is an intelligent stock monitoring platform designed to identify trading opportunities.</p>
+      <br>
+      <p>Backed by data-driven, machine learning algorithms, PocketSG provides timely and objective recommendations for each stock.</p>
+    </div>
 
-    <h4><a href="{{ url_for('stocks_page') }}">(1) My Stocks</a></h4>
-    <div class="subtext"><p>Get buy / sell recommendations daily for any stock of your choice.</p></div>
+    <h4>Maximise gains, minimise risk</h4>
+    <div class="subtext">
+      <p>Through predicting local peaks & troughs, PocketSG helps to identify buy and sell opportunities daily, allowing investors to capture gains while minimising capital exposure to the market.</p>
+    </div>
+    <br>
+    <div class="subtext" style="padding-right: 20px;">
+    <ul id="ticker_list">
+      <hr>
+      <li name="3_fb_Hold">
+        <table style="width:100%;">
+          <tbody>
+            <tr>
+              <td class="info col1">
+                <div>
+                  <b><a class="font-normal" href="{{ url_for('security.register') }}">FB</a></b>
+                </div>
+              </td>
+              <td class="col2" rowspan="2">
+                <div class="stampbox sell ">
+                  <a class="font-small sell" href="{{ url_for('security.register') }}">Sell</a>
+                </div>
+              </td>
+              <td class="col3">
+                <a class="font-normal" href="{{ url_for('security.register') }}">199.75</a>
+              </td>
+            </tr>
 
-    <h4><a href="{{ url_for('email_article_page') }}">(2) News article to Email</a></h4>
-    <div class="subtext"><p>Send news articles to your email so you can read them later, or forward articles to your friends.</p></div>
+            <tr>
+              <td class="info col1">
+                <div>
+                  <a class="font-small font-light" href="{{ url_for('security.register') }}">Facebook Inc.</a>
+                </div>
+              </td>
+              <td class="col3">
+                <div>
+                  <a href="{{ url_for('security.register') }}">
+                    <p class="font-small" style="color:#a81e26;">▼0.5%</p>
+                  </a>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <hr style="border-color: rgba(0, 0, 0, 0.075); border-width: 0.5px;">
+      </li>
 
-    <h4><a href="{{ url_for('lists_page') }}">(3) My Lists</a></h4>
-    <div class="subtext"><p>Save your to-do list, grocery list, restaurants to vist, or activities you want to do. For a surprise, you may also generate random items off your list.</p></div>
+      <li name="1_goog_Hold">
+        <table style="width:100%;">
+          <tbody>
+            <tr>
+              <td class="info col1">
+                <div>
+                  <b><a class="font-normal" href="{{ url_for('security.register') }}">GOOG</a></b>
+                </div>
+              </td>
+              <td class="col2" rowspan="2">
+                <div class="stampbox hold ">
+                  <a class="font-small hold" href="{{ url_for('security.register') }}">Hold</a>
+                </div>
+              </td>
+              <td class="col3">
+                <a class="font-normal" href="{{ url_for('security.register') }}">1,250.41</a>
+              </td>
+            </tr>
+            <tr>
+              <td class="info col1">
+                <div>
+                  <a class="font-small font-light" href="{{ url_for('security.register') }}">Alphabet Inc.</a>
+                </div>
+              </td>
+              <td class="col3">
+                <div>
+                  <a href="{{ url_for('security.register') }}">
+                    <p class="font-small" style="color:#005100;">▲10.4%</p>
+                  </a>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <hr style="border-color: rgba(0, 0, 0, 0.075); border-width: 0.5px;">
+      </li>
 
-    <h4><a href="{{ url_for('chats_page') }}">(4) Chat</a></h4>
-    <div class="subtext"><p>Chat with a friend! Works on your mobile and computer.</p></div>
+      <li name="2_msft_Hold">
+        <table style="width:100%;">
+          <tbody>
+            <tr>
+              <td class="info col1">
+                <div>
+                  <b><a class="font-normal" href="{{ url_for('security.register') }}">MSFT</a></b>
+                </div>
+              </td>
+              <td class="col2" rowspan="2">
+                <div class="stampbox buy ">
+                  <a class="font-small buy" href="{{ url_for('security.register') }}">Buy</a>
+                </div>
+              </td>
+              <td class="col3">
+                <a class="font-normal" href="{{ url_for('security.register') }}">141.34</a>
+              </td>
+            </tr>
+            <tr>
+              <td class="info col1">
+                <div>
+                  <a class="font-small font-light" href="{{ url_for('security.register') }}">Microsoft Corporation</a>
+                </div>
+              </td>
+              <td class="col3">
+                <div>
+                  <a href="{{ url_for('security.register') }}">
+                    <p class="font-small" style="color:#005100;">▲0.8%</p>
+                  </a>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <hr style="border-color: rgba(0, 0, 0, 0.075); border-width: 0.5px;">
+      </li>
+    </ul>
+    <p style="text-align: right;" class="font-credits">* Recommendations above are for illustration purposes only.</p>
+    </div>
+
+    <div class="subtext">
+      <br>
+      <p>Buy and sell recommendations are delivered to your email daily, before the start of each trading day.</p>
+    </div>
+
+    <h4>Keep track of past recommendations</h4>
+    <div class="subtext">
+      <p>Past recommendations are recorded and displayed transparently, providing a clear view of any gains or losses from pursuing trading opportunities as recommended.</p>
+      <br>
+      <a href="{{ url_for('security.register') }}">
+        <img src="{{url_for('static', filename='sample_plot.png')}}" alt="Sample plot" style="width:90%; text-align:center;">
+      </a>
+    </div>
+    <br>
+    <h4>Take control of your portfolio today</h4>
+
+    <div class="subtext">
+      <h4 style="text-align:center;"><a href="{{ url_for('security.register') }}">Sign up with PocketSG</a></h4>
+    </div>
 
   <br>
   <hr>

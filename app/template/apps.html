@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h3>
+    <div id="page_header">
+      Apps
+    </div>
+  </h3>
+  <hr>
+  <div style="padding: 0px 3%;">
+    <h4><a href="{{ url_for('stocks_page') }}">(1) My Stocks</a></h4>
+    <div class="subtext"><p>Get buy / sell recommendations daily for any stock of your choice.</p></div>
+
+    <h4><a href="{{ url_for('email_article_page') }}">(2) News article to Email</a></h4>
+    <div class="subtext"><p>Send news articles to your email so you can read them later, or forward articles to your friends.</p></div>
+
+    <h4><a href="{{ url_for('lists_page') }}">(3) My Lists</a></h4>
+    <div class="subtext"><p>Save your to-do list, grocery list, restaurants to vist, or activities you want to do. For a surprise, you may also generate random items off your list.</p></div>
+
+    <h4><a href="{{ url_for('chats_page') }}">(4) Chat</a></h4>
+    <div class="subtext"><p>Chat with a friend! Works on your mobile and computer.</p></div>
+
+  <br>
+  <hr>
+  {% if not current_user.is_anonymous %}
+  &nbsp; &nbsp;<a class="right" href="{{ url_for('logout') }}" style="font-size: 80%">Logout</a>
+  {% endif %}
+  </div>
+
+{% endblock %}
