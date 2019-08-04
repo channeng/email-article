@@ -430,6 +430,15 @@ def stocks_page():
         popular_tickers=popular_tickers)
 
 
+def no_cache_headers():
+    headers = {}
+    headers["Cache-Control"] = (
+        "no-cache, no-store, must-revalidate, public, max-age=0")
+    headers["Expires"] = 0
+    headers["Pragma"] = "no-cache"
+    return headers
+
+
 @app.route('/stocks/<int:ticker_id>',
            methods=['GET', 'POST'], strict_slashes=False)
 @login_required
@@ -447,7 +456,7 @@ def stock_details_page(ticker_id):
             ticker=ticker,
             plot_exists=plot_exists,
             latest_recommendation=None
-        )
+        ), 200, no_cache_headers()
 
     _, latest_recommend_date, buy_or_sell, is_strong = latest_recommend
     latest_recommend_date = datetime.strptime(
@@ -472,7 +481,7 @@ def stock_details_page(ticker_id):
         ticker=ticker,
         plot_exists=plot_exists,
         latest_recommendation=today_recommend
-    )
+    ), 200, no_cache_headers()
 
 
 if __name__ == '__main__':
