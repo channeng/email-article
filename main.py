@@ -62,7 +62,15 @@ api.add_resource(GetTickersForUser, '/ticker_recommendation_for_user')
 @app.route('/')
 @app.route('/index', strict_slashes=False)
 def index():
-    return render_template("index.html")
+    if current_user.is_anonymous:
+        return render_template("index.html")
+    else:
+        return redirect(url_for('stocks_page'))
+
+
+@app.route('/explore')
+def explore_other_apps():
+    return render_template("apps.html")
 
 
 @app.route('/about', strict_slashes=False)
