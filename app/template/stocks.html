@@ -110,7 +110,7 @@
             <tr>
               <td class="info col1">
                 <div>
-                  <b><a class="font-normal" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">{{ ticker.name }}</a></b>
+                  <b><a name="ticker_names" class="font-normal" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">{{ ticker.name }}</a></b>
                 </div>
               </td>
 
@@ -296,6 +296,7 @@
   };
 
   function undo_loading_gif() {
+    document.getElementById("ticker_name").value="";
     document.getElementById('submit_pseudo').style.display="unset";
     document.getElementById('divMsg').style.display="none";
   };
@@ -328,6 +329,15 @@
       document.cookie = name+'=; Max-Age=-99999999;';
   }
 
+  function getExistingTickers() {
+    var ticker_names = Array();
+    ticker_elements = document.getElementsByName("ticker_names")
+    for(var i=0;i < ticker_elements.length;i++) {
+      ticker_names.push(ticker_elements[i].innerText)
+    };
+    return ticker_names
+  };
+
   eraseCookie('user_sort_type')
   var user_sort_type = getCookie('user_sort_type')
   sort_tickers(user_sort_type)
@@ -335,7 +345,14 @@
   function getTickerDetails() {
     // Confirmation box for ticker name before adding
     var input_ticker = document.getElementById("ticker_name").value;
-    if (input_ticker != "") {
+    input_ticker = input_ticker.trim().toUpperCase();
+    var existing_tickers = getExistingTickers();
+    if (input_ticker == "") {
+      return
+    } else if (existing_tickers.includes(input_ticker)) {
+      alert(input_ticker + " already exists. Please try a different ticker.")
+      document.getElementById("ticker_name").value="";
+    } else {
       replace_with_loading_gif();
       var xhttp = new XMLHttpRequest();
       var params = "ticker=" + encodeURIComponent(input_ticker);
@@ -346,15 +363,24 @@
       xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
           response = JSON.parse(xhttp.responseText);
-          confirmation = confirm("Would you like to add '" + response["full_name"] + "' ?");
-          if (confirmation == true) {
-            document.getElementById('submit').click();
-          } else {
-            console.log("Ticker not added.");
-            document.getElementById("ticker_name").value="";
+          if (response == null) {
+            alert(input_ticker + " is not a valid ticker. Please try a different ticker.");
             undo_loading_gif();
+          } else {
+            confirmation = confirm(
+              "Would you like to add the following ticker" +
+              "?\n\nName: " + response["full_name"] + "\n" +
+              "Ticker: " + input_ticker + "\n" +
+              "Type: " + response["type"] + "\n" +
+              "Region: " + response["region"] + "\n");
+            if (confirmation == true) {
+              document.getElementById('submit').click();
+            } else {
+              console.log("Ticker not added.");
+              undo_loading_gif();
+            };
           };
-        }
+        };
       };
 
       console.log(params)
