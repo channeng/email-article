@@ -330,9 +330,7 @@
       {% endif %}
       <br style="clear: left;" />
       </h2>
-      <div>
-        {% block content %}{% endblock %}
-      </div>
+      {% block content %}{% endblock %}
     </div>
     <div id="page" style="background-color: unset;">
       {% if 'stock' in self._TemplateReference__context.name %}

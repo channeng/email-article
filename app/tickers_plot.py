@@ -7,6 +7,7 @@ from io import StringIO
 import time
 from datetime import date, datetime, timedelta
 
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
@@ -14,7 +15,7 @@ import seaborn as sns
 
 from app.tickers import get_ticker_recommendations_df
 from config import Config
-
+from IPython import embed
 
 sns.set()
 
@@ -76,6 +77,30 @@ def get_ticker_df(
     return df
 
 
+def merge_ticker_df(ticker):
+    # Construct ticker and recommendations df
+    datetime_one_year_ago = datetime.combine(
+        datetime.today(), datetime.min.time()) - timedelta(days=365)
+
+    recommendations_df, currency = get_ticker_recommendations_df(ticker)
+    if recommendations_df is None:  # noqa
+        return None, currency
+
+    ticker_df = get_ticker_df(ticker, df_start_date=datetime_one_year_ago)
+    ticker_df = ticker_df[ticker_df["close"] > 0]
+    ticker_df = ticker_df.merge(recommendations_df, how="left", on="date")
+    for buy_or_sell in ["buy", "sell"]:
+        to_buy_or_sell = (
+            ticker_df["recommendation"].shift(1) == buy_or_sell)
+        ticker_df[buy_or_sell] = ticker_df[to_buy_or_sell]["close"]
+        to_double = (
+            to_buy_or_sell & ticker_df["is_strong"].shift(1))
+        ticker_df["{}_double".format(buy_or_sell)] = (
+            ticker_df[to_double]["close"])
+
+    return ticker_df, currency
+
+
 def _plot_x_df(x_df, ax, buy_color="green", sell_color="red"):
     has_grouped = False
     if "to_double_buy" in x_df.columns:
@@ -89,6 +114,37 @@ def _plot_x_df(x_df, ax, buy_color="green", sell_color="red"):
             ax=ax, y="sell_double", color=sell_color, marker="x", ms=15)
         x_df.plot(
             ax=ax, y="buy_double", color=buy_color, marker="x", ms=15)
+
+
+def simulate(ticker_df):
+    buy_sell_df = ticker_df[
+        ~np.isnan(ticker_df["buy"]) | ~np.isnan(ticker_df["sell"])
+    ][["close", "buy", "sell"]].fillna(0)
+    buy_sell_list = []
+    for row in buy_sell_df.values:
+        _, buy, sell = row
+        buy_sell_list.append(sell - buy)
+
+    stocks_inventory = []
+    purchase_list = []
+    num_stocks_list = []
+    max_num_stocks = 3
+    for val in buy_sell_list:
+        if val >= 0 and len(stocks_inventory) == 0:
+            purchase_list.append(0)
+        elif val < 0 and len(stocks_inventory) < max_num_stocks:
+            stocks_inventory.append(val)
+            purchase_list.append(val)
+        elif val < 0:
+            purchase_list.append(0)
+        elif val >= 0:
+            stocks_inventory = stocks_inventory[1:]
+            purchase_list.append(val)
+        num_stocks_list.append(len(stocks_inventory))
+
+    buy_sell_df["simulated_purchases"] = purchase_list
+    buy_sell_df["num_stocks_held"] = num_stocks_list
+    return buy_sell_df
 
 
 def create_directory(dir):
@@ -126,25 +182,15 @@ def plot_ticker_df(ticker):
     create_directory(temp_dir)
     temp_ticker_plot_filepath = os.path.join(temp_dir, ticker_plot_filename)
 
-    # Construct ticker and recommendations df
-    datetime_one_year_ago = datetime.combine(
-        datetime.today(), datetime.min.time()) - timedelta(days=365)
-
-    recommendations_df, currency = get_ticker_recommendations_df(ticker)
-    if recommendations_df is None:  # noqa
+    ticker_df, currency = merge_ticker_df(ticker)
+    if ticker_df is None:
         return False, False
 
-    ticker_df = get_ticker_df(ticker, df_start_date=datetime_one_year_ago)
-    ticker_df = ticker_df[ticker_df["close"] > 0]
-    ticker_df = ticker_df.merge(recommendations_df, how="left", on="date")
-    for buy_or_sell in ["buy", "sell"]:
-        to_buy_or_sell = (
-            ticker_df["recommendation"].shift(1) == buy_or_sell)
-        ticker_df[buy_or_sell] = ticker_df[to_buy_or_sell]["close"]
-        to_double = (
-            to_buy_or_sell & ticker_df["is_strong"].shift(1))
-        ticker_df["{}_double".format(buy_or_sell)] = (
-            ticker_df[to_double]["close"])
+    buy_sell_df = simulate(ticker_df)
+    last_row = buy_sell_df.tail(1)
+    total_profit = buy_sell_df["simulated_purchases"].sum() + (
+        last_row["close"] * last_row["num_stocks_held"]).values[0]
+    embed()
 
     # save_ensemble_test_plot
     plot_colors = {
