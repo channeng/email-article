@@ -32,7 +32,8 @@ from app.chats import (
 from app.tickers import (
     create_tickeruser, delete_tickeruser,
     get_ticker, get_ticker_name, validate_ticker,
-    get_ticker_latest_recommendation, get_popular_tickers)
+    get_ticker_latest_recommendation, get_popular_tickers,
+    get_ticker_auth_users)
 from app.models import User, ListUser, Chat
 
 from apis.tickers import (
@@ -445,6 +446,11 @@ def no_cache_headers():
            methods=['GET', 'POST'], strict_slashes=False)
 @login_required
 def stock_details_page(ticker_id):
+    auth_user_ids = get_ticker_auth_users(ticker_id)
+    auth_user_ids = [user[0] for user in auth_user_ids]
+    if current_user.id not in auth_user_ids:
+        return abort(401)
+
     ticker = get_ticker(ticker_id)
     plot_exists = False
     plots = os.listdir("app/static/ticker_plots")

@@ -440,6 +440,15 @@ class TickerItems(object):
 
         return result
 
+    def get_auth_users(self, ticker_id):
+        return (
+            self.model_user.query
+            .filter_by(ticker_id=int(ticker_id), is_deleted=False)
+            .with_entities(self.model_user.user_id)
+            .group_by(self.model_user.user_id)
+            .all()
+        )
+
 
 model_template = TickerItems(Ticker, TickerUser, TickerRecommendation)
 
@@ -560,3 +569,7 @@ def get_popular_tickers(top_n_tickers):
 
 def get_ticker_by_name(ticker):
     return model_template.get_model_by_name(ticker)
+
+
+def get_ticker_auth_users(ticker_id):
+    return model_template.get_auth_users(ticker_id)
