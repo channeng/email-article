@@ -76,6 +76,11 @@
       #page div.subtext {
         padding: 0px 0px 0px 20px;
       }
+      #page div.center_div {
+        padding: unset;
+        margin: 0 auto;
+        max-width: 820px;
+      }
       #page a {
         color: #550000;
         font: FaktProSoft,Helvetica Neue,helvetica,arial,sans-serif;
@@ -330,7 +335,10 @@
       {% endif %}
       <br style="clear: left;" />
       </h2>
-      {% block content %}{% endblock %}
+      <div class="center_div">
+        {% block content %}
+        {% endblock %}
+      </div>
     </div>
     <div id="page" style="background-color: unset;">
       {% if 'stock' in self._TemplateReference__context.name %}
