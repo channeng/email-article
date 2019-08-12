@@ -36,6 +36,7 @@ class User(db.Model, UserMixin):
         return value.lower()
 
     password = db.Column(db.String(255))
+    time_created = db.Column(db.DateTime, default=func.now())
     active = db.Column(db.Boolean(), default=True)
     confirmed_at = db.Column(db.DateTime())
 
@@ -187,6 +188,7 @@ class TickerUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     ticker_id = db.Column(db.Integer, db.ForeignKey('ticker.id'))
+    time_created = db.Column(db.DateTime, default=func.now())
     is_deleted = db.Column(db.Boolean, default=False)
 
     def __repr__(self):

@@ -50,6 +50,7 @@ FROM (
     )
 )
 GROUP BY ticker_id;
+
 # Get users -> ticker signups
 SELECT user.username, ticker.id, ticker.name
 FROM ticker_user
