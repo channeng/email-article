@@ -4,12 +4,14 @@ import json
 from flask import jsonify, request
 from flask_basicauth import BasicAuth
 from flask_restful import Resource
+from flask_security import login_required
 
 from app import db
 from app.tickers_plot import plot_ticker_df
 from app.tickers import (
     get_ticker_emails, update_ticker_data, delete_ticker,
     get_tickers, get_ticker_recommendations_for_user,
+    validate_ticker, get_ticker_details, clean_ticker_stats,
     get_all_users_tickers, get_all_tickers, create_ticker_recommendations)
 
 basic_auth = BasicAuth()
@@ -208,3 +210,18 @@ class GetTickersForUser(Resource):
             recommendations[ticker]["change_percent"] = change_percent
 
         return jsonify(recommendations)
+
+
+class GetTickerDetails(Resource):
+    @login_required
+    def post(self):
+        ticker = request.form.get("ticker", None)
+        if ticker is None:
+            return
+
+        ticker_validated = validate_ticker(ticker)
+        ticker_details = get_ticker_details(ticker_validated)
+        if ticker_details is None or not ticker_details:
+            return
+
+        return jsonify(clean_ticker_stats(ticker_details))

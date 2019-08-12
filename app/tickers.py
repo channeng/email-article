@@ -52,7 +52,7 @@ def get_ticker_details(ticker_validated):
         return results
 
 
-def _clean_ticker_stats(ticker_stats):
+def clean_ticker_stats(ticker_stats):
     ticker_data = {}
     for metric, val in ticker_stats.items():
         metric_name = metric.split(". ")[1]
@@ -76,7 +76,7 @@ def get_ticker_data(ticker_validated, update_details=False):
         if ticker_details:
             ticker_stats.update(ticker_details)
 
-    ticker_data = _clean_ticker_stats(ticker_stats)
+    ticker_data = clean_ticker_stats(ticker_stats)
 
     return ticker_data
 

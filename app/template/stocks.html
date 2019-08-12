@@ -186,7 +186,10 @@
       </p>
     </div>
     <div id="submit_button">
-      {{ form.submit(class_="form_button", onClick="return replace_with_loading_gif()") }}
+      <input class="form_button" id="submit_pseudo" name="submit" onclick="return getTickerDetails()" type="button" value="Add Ticker">
+      <div style="display: none;">
+        {{ form.submit(class_="form_button") }}
+      </div>
       <div id="divMsg" style="display:none; padding-right: 5px; float: right;">
         <img src="{{url_for('static', filename='loading_icon.gif')}}" alt="Please wait.." />
       </div>
@@ -288,8 +291,13 @@
   };
 
   function replace_with_loading_gif() {
-    document.getElementById('submit').style.display="none";
+    document.getElementById('submit_pseudo').style.display="none";
     document.getElementById('divMsg').style.display="block";
+  };
+
+  function undo_loading_gif() {
+    document.getElementById('submit_pseudo').style.display="unset";
+    document.getElementById('divMsg').style.display="none";
   };
 
   function set_ticker_input(ticker) {
@@ -323,5 +331,36 @@
   eraseCookie('user_sort_type')
   var user_sort_type = getCookie('user_sort_type')
   sort_tickers(user_sort_type)
+
+  function getTickerDetails() {
+    // Confirmation box for ticker name before adding
+    var input_ticker = document.getElementById("ticker_name").value;
+    if (input_ticker != "") {
+      replace_with_loading_gif();
+      var xhttp = new XMLHttpRequest();
+      var params = "ticker=" + encodeURIComponent(input_ticker);
+      xhttp.open("POST", "/get_ticker_details", true);
+      xhttp.setRequestHeader(
+        "Content-Type", "application/x-www-form-urlencoded");
+
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          response = JSON.parse(xhttp.responseText);
+          confirmation = confirm("Would you like to add '" + response["full_name"] + "' ?");
+          if (confirmation == true) {
+            document.getElementById('submit').click();
+          } else {
+            console.log("Ticker not added.");
+            document.getElementById("ticker_name").value="";
+            undo_loading_gif();
+          };
+        }
+      };
+
+      console.log(params)
+      xhttp.send(params);
+    };
+  };
+
 </script>
 {% endblock %}
