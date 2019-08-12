@@ -85,6 +85,8 @@
 
 <div style="max-width: 750px;">
   <hr>
+  {% if tickers|length < 1 %}
+  {% else %}
   <div id="sort_by" style="display: inline-block; min-width:240px; width:95%;text-align:center;">
     <div id="sort_by_recent" class="stampbox hold" onClick="sort_tickers('sort_by_recent')">
       <a class="font-small">Recent</a>
@@ -100,6 +102,7 @@
     </div>
   </div>
   <hr>
+  {% endif %}
 
   <div>
     <ul id="ticker_list">
