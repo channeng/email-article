@@ -51,12 +51,13 @@ FROM (
 )
 GROUP BY ticker_id;
 # Get users -> ticker signups
-SELECT user.username, ticker.name
+SELECT user.username, ticker.id, ticker.name
 FROM ticker_user
 LEFT JOIN user ON user.id = ticker_user.user_id
 LEFT JOIN ticker on ticker.id = ticker_user.ticker_id
 WHERE ticker_user.is_deleted=0
-AND ticker.is_deleted=0;
+AND ticker.is_deleted=0
+ORDER BY ticker_user.id;
 
 # Quit SQLite3
 .quit
