@@ -33,7 +33,7 @@
       }
       #page {
         background: #FCFCFC;
-        max-width: 600px;
+        max-width: 850px;
         width: 90%;
         margin-left: auto;
         margin-right: auto;
@@ -68,7 +68,7 @@
         color:#7a7a7a;
       }
       #page div {
-        max-width: 600px;
+        max-width: calc(650px + 20%);
         margin-left: auto;
         margin-right: auto;
         padding: 0px 1% 0px 1%;
@@ -330,7 +330,9 @@
       {% endif %}
       <br style="clear: left;" />
       </h2>
-      {% block content %}{% endblock %}
+      <div>
+        {% block content %}{% endblock %}
+      </div>
     </div>
     <div id="page" style="background-color: unset;">
       {% if 'stock' in self._TemplateReference__context.name %}

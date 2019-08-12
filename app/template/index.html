@@ -84,13 +84,13 @@
     </div>
   </h3>
   <hr>
-  <div style="padding: 0px 3%;">
+  <div style="padding: 0px calc(3px + 4%);">
     <h4>Stock monitoring for savvy investors</h4>
     <div class="subtext">
       <p>PocketSG is an intelligent stock monitoring platform designed to identify trading opportunities.</p>
     </div>
     <br>
-    <div class="subtext" style="padding-right: 20px;">
+    <div class="subtext" style="padding-right: 20px; max-width: 550px;">
     <ul id="ticker_list">
       <hr>
       <li name="3_fb_Hold">
@@ -220,10 +220,12 @@
     <div class="subtext">
       <p>Past recommendations are recorded and displayed transparently, providing a clear view of any gains or losses from pursuing trading opportunities as recommended.</p>
       <br>
-      <a href="{{ url_for('security.register') }}">
-        <img src="{{url_for('static', filename='sample_plot.png')}}" alt="Sample plot" style="width:90%; text-align:center;">
-      </a>
-      <p style="text-align: right; padding-right:30px;" class="font-credits">* For illustration purposes only</p>
+      <div style="max-width: 650px;">
+        <a href="{{ url_for('security.register') }}">
+          <img src="{{url_for('static', filename='sample_plot.png')}}" alt="Sample plot" style="width:90%; text-align:center;">
+        </a>
+        <p style="text-align: right; padding-right:30px;" class="font-credits">* For illustration purposes only</p>
+      </div>
     </div>
     <br>
 

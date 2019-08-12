@@ -82,84 +82,86 @@
     My Stocks
   </div>
 </h3>
-<hr>
 
-<div id="sort_by" style="display: inline-block; min-width:240px; width:95%;text-align:center;">
-  <div id="sort_by_recent" class="stampbox hold" onClick="sort_tickers('sort_by_recent')">
-    <a class="font-small">Recent</a>
+<div style="max-width: 750px;">
+  <hr>
+  <div id="sort_by" style="display: inline-block; min-width:240px; width:95%;text-align:center;">
+    <div id="sort_by_recent" class="stampbox hold" onClick="sort_tickers('sort_by_recent')">
+      <a class="font-small">Recent</a>
+    </div>
+    <div id="sort_by_name" class="stampbox" onClick="sort_tickers('sort_by_name')">
+      <a class="font-small font-light">Name</a>
+    </div>
+    <div id="sort_by_buy" class="stampbox" onClick="sort_tickers('sort_by_buy')">
+      <a class="font-small font-light">Buy</a>
+    </div>
+    <div id="sort_by_sell" class="stampbox" onClick="sort_tickers('sort_by_sell')">
+      <a class="font-small font-light">Sell</a>
+    </div>
   </div>
-  <div id="sort_by_name" class="stampbox" onClick="sort_tickers('sort_by_name')">
-    <a class="font-small font-light">Name</a>
-  </div>
-  <div id="sort_by_buy" class="stampbox" onClick="sort_tickers('sort_by_buy')">
-    <a class="font-small font-light">Buy</a>
-  </div>
-  <div id="sort_by_sell" class="stampbox" onClick="sort_tickers('sort_by_sell')">
-    <a class="font-small font-light">Sell</a>
-  </div>
-</div>
-<hr>
+  <hr>
 
-<div>
-  <ul id="ticker_list">
-  {% for ticker in tickers %}
-    <li name="{{loop.index}}_{{ticker.name.lower().replace('.', '')}}_{{ticker_recommendations[ticker.id]['recommendation']}}">
-      <table style="width:100%;">
-        <tbody>
-          <tr>
-            <td class="info col1">
-              <div>
-                <b><a class="font-normal" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">{{ ticker.name }}</a></b>
-              </div>
-            </td>
+  <div>
+    <ul id="ticker_list">
+    {% for ticker in tickers %}
+      <li name="{{loop.index}}_{{ticker.name.lower().replace('.', '')}}_{{ticker_recommendations[ticker.id]['recommendation']}}">
+        <table style="width:100%;">
+          <tbody>
+            <tr>
+              <td class="info col1">
+                <div>
+                  <b><a class="font-normal" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">{{ ticker.name }}</a></b>
+                </div>
+              </td>
 
-            <td class="col2" rowspan="2">
-              {% if ticker_recommendations[ticker.id]["recommendation"] == None %}
+              <td class="col2" rowspan="2">
+                {% if ticker_recommendations[ticker.id]["recommendation"] == None %}
 
-              {% else %}
-              <div class="stampbox {{ ticker_recommendations[ticker.id]["recommendation"].replace("Strong ", "").lower() }} {{'strong' if 'strong' in ticker_recommendations[ticker.id]["recommendation"].lower() }}">
-                <a class="font-small {{ ticker_recommendations[ticker.id]["recommendation"].replace("Strong ", "").lower() }}" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">
-                    {{ ticker_recommendations[ticker.id]["recommendation"].replace("Strong ", "").upper() if 'strong' in ticker_recommendations[ticker.id]["recommendation"].lower() else ticker_recommendations[ticker.id]["recommendation"] }}
-                </a>
-              </div>
-              {% endif %}
-
-            </td>
-
-            <td class="col3">
-              <a class="font-normal" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">
-                {{ '{:,.2f}'.format(ticker.price) }}
-              </a>
-            </td>
-          </tr>
-
-          <tr>
-            <td class="info col1">
-              {% if ticker.full_name != None %}
-              <div>
-                <a class="font-small font-light" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">{{ ticker.full_name }}</a>
-              </div>
-              {% endif %}
-            </td>
-            <!-- <td style="width:10%;min-width:45px;text-align:center;"></td> -->
-            <td class="col3">
-              <div>
-                <a href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">
-                {% if ticker.change_percent > 0 %}
-                <p class="font-small" style="color:#005100;">&#9650;{{'{:0.1f}%'.format(ticker.change_percent * 100).replace("-","")}}</p>
                 {% else %}
-                <p class="font-small" style="color:#a81e26;">&#9660;{{'{:0.1f}%'.format(ticker.change_percent * 100).replace("-","")}}</p>
+                <div class="stampbox {{ ticker_recommendations[ticker.id]["recommendation"].replace("Strong ", "").lower() }} {{'strong' if 'strong' in ticker_recommendations[ticker.id]["recommendation"].lower() }}">
+                  <a class="font-small {{ ticker_recommendations[ticker.id]["recommendation"].replace("Strong ", "").lower() }}" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">
+                      {{ ticker_recommendations[ticker.id]["recommendation"].replace("Strong ", "").upper() if 'strong' in ticker_recommendations[ticker.id]["recommendation"].lower() else ticker_recommendations[ticker.id]["recommendation"] }}
+                  </a>
+                </div>
                 {% endif %}
+
+              </td>
+
+              <td class="col3">
+                <a class="font-normal" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">
+                  {{ '{:,.2f}'.format(ticker.price) }}
                 </a>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <hr style="border-color: rgba(0, 0, 0, 0.075); border-width: 0.5px;">
-    </li>
-  {% endfor %}
-  </ul>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="info col1">
+                {% if ticker.full_name != None %}
+                <div>
+                  <a class="font-small font-light" href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">{{ ticker.full_name }}</a>
+                </div>
+                {% endif %}
+              </td>
+              <!-- <td style="width:10%;min-width:45px;text-align:center;"></td> -->
+              <td class="col3">
+                <div>
+                  <a href="{{ url_for('stock_details_page', ticker_id=ticker.id) }}">
+                  {% if ticker.change_percent > 0 %}
+                  <p class="font-small" style="color:#005100;">&#9650;{{'{:0.1f}%'.format(ticker.change_percent * 100).replace("-","")}}</p>
+                  {% else %}
+                  <p class="font-small" style="color:#a81e26;">&#9660;{{'{:0.1f}%'.format(ticker.change_percent * 100).replace("-","")}}</p>
+                  {% endif %}
+                  </a>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <hr style="border-color: rgba(0, 0, 0, 0.075); border-width: 0.5px;">
+      </li>
+    {% endfor %}
+    </ul>
+  </div>
 </div>
 
 <div id="page_header">
