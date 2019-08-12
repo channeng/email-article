@@ -162,54 +162,52 @@
     {% endfor %}
     </ul>
   </div>
-</div>
 
-<div id="page_header">
-  <h4>New Ticker</h4>
-</div>
-<div class="form_div">
-  <form action="" method="post">
-    {{ form.hidden_tag() }}
-    <p>
-      {{ form.ticker_name.label }}<br><br>
-      {{ form.ticker_name(size=32, class_="input_field", onkeypress="return getTickerDetailsOnEnter(event)") }}
-      {% for error in form.ticker_name.errors %}
-      <span class="flash_message">[{{ error }}]</span><br><br>
-      {% endfor %}
-    </p>
-    <div>
-      <p class="font-small font-light">
-        Popular tickers: 
-        {% for popular_ticker in popular_tickers %}
-        <a onclick="set_ticker_input('{{ popular_ticker }}')">{{ popular_ticker }}</a>{% if not loop.last %},{% endif %}
+  <div id="page_header">
+    <h4>New Ticker</h4>
+  </div>
+  <div class="form_div">
+    <form action="" method="post">
+      {{ form.hidden_tag() }}
+      <p>
+        {{ form.ticker_name.label }}<br><br>
+        {{ form.ticker_name(size=32, class_="input_field", onkeypress="return getTickerDetailsOnEnter(event)") }}
+        {% for error in form.ticker_name.errors %}
+        <span class="flash_message">[{{ error }}]</span><br><br>
         {% endfor %}
       </p>
-    </div>
-    <div id="submit_button">
-      <input class="form_button" id="submit_pseudo" name="submit" onclick="return getTickerDetails()" type="button" value="Add Ticker">
-      <div style="display: none;">
-        {{ form.submit(class_="form_button") }}
+      <div>
+        <p class="font-small font-light">
+          Popular tickers: {% for popular_ticker in popular_tickers %}
+          <a onclick="set_ticker_input('{{ popular_ticker }}')">{{ popular_ticker }}</a>{% if not loop.last %},{% endif %}
+          {% endfor %}
+        </p>
       </div>
-      <div id="divMsg" style="display:none; padding-right: 5px; float: right;">
-        <img src="{{url_for('static', filename='loading_icon.gif')}}" alt="Please wait.." />
+      <div id="submit_button">
+        <input class="form_button" id="submit_pseudo" name="submit" onclick="return getTickerDetails()" type="button" value="Add Ticker">
+        <div style="display: none;">
+          {{ form.submit(class_="form_button") }}
+        </div>
+        <div id="divMsg" style="display:none; padding-right: 5px; float: right;">
+          <img src="{{url_for('static', filename='loading_icon.gif')}}" alt="Please wait.." />
+        </div>
       </div>
-    </div>
 
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <div class="flash_message_div">
-      <ul>
-        {% for message in messages %}
-        <li class="flash_message">- {{ message }}</li>
-        {% endfor %}
-      </ul>
-    </div>
-    {% endif %}
-    {% endwith %}
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      <div class="flash_message_div">
+        <ul>
+          {% for message in messages %}
+          <li class="flash_message">- {{ message }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+      {% endwith %}
 
-  </form>
+    </form>
+  </div>
 </div>
-
 <script type="text/javascript">
   function clear_sort_selections() {
     sort_div = document.getElementById("sort_by");

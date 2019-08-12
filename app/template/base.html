@@ -71,7 +71,6 @@
         max-width: calc(650px + 20%);
         margin-left: auto;
         margin-right: auto;
-        padding: 0px 1% 0px 1%;
       }
       #page div.subtext {
         padding: 0px 0px 0px 20px;
@@ -312,11 +311,12 @@
   <body>
     <div id="page">
       <h1>Pocket Internet</h1>
-      <h2><div>
-      <div class="left"><a href="{{ url_for('index') }}">Home</a></div>
-      <div class="left"><a href="{{ url_for('explore_other_apps') }}">Explore</a></div>
-      {% if not current_user.is_anonymous %}
-      <div class="left"><a href="{{ url_for('contact_us') }}">Contact</a></div>
+      <h2><div style="padding: 0px 1% 0px 1%;">
+        <div class="left"><a href="{{ url_for('index') }}">Home</a></div>
+        <div class="left"><a href="{{ url_for('explore_other_apps') }}">Explore</a></div>
+        {% if not current_user.is_anonymous %}
+        <div class="left"><a href="{{ url_for('contact_us') }}">Contact</a>
+      </div>
       {% endif %}
 
       {% if current_user.is_anonymous %}
