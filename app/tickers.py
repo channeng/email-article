@@ -556,3 +556,7 @@ def get_all_users_tickers(db, user_id=None):
 
 def get_popular_tickers(top_n_tickers):
     return model_template.get_popular_models(top_n_tickers)
+
+
+def get_ticker_by_name(ticker):
+    return model_template.get_model_by_name(ticker)

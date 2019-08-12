@@ -172,7 +172,7 @@
     {{ form.hidden_tag() }}
     <p>
       {{ form.ticker_name.label }}<br><br>
-      {{ form.ticker_name(size=32, class_="input_field") }}
+      {{ form.ticker_name(size=32, class_="input_field", onkeypress="return getTickerDetailsOnEnter(event)") }}
       {% for error in form.ticker_name.errors %}
       <span class="flash_message">[{{ error }}]</span><br><br>
       {% endfor %}
@@ -385,6 +385,16 @@
 
       console.log(params)
       xhttp.send(params);
+    };
+  };
+
+  function getTickerDetailsOnEnter(event) {
+    if (event.keyCode == 13) {
+      event.preventDefault();
+      getTickerDetails()
+      return false
+    } else {
+      return true
     };
   };
 
