@@ -81,6 +81,12 @@ def about():
     return render_template("about.html")
 
 
+@app.route('/my_profile', strict_slashes=False)
+@login_required
+def my_profile():
+    return render_template("my_profile.html")
+
+
 @app.route('/email_article', strict_slashes=False)
 @login_required
 def email_article_page():

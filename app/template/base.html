@@ -98,7 +98,7 @@
           float: left;
           padding: 0px 15px 0px 0px;
       }
-      #page .login_name {
+      #page .profile {
         color: #000000;
         font-size: 100%;
         font: FaktProSoft,Helvetica Neue,helvetica,arial,sans-serif;
@@ -314,10 +314,6 @@
       <h2><div style="padding: 0px 1% 0px 1%;">
         <div class="left"><a href="{{ url_for('index') }}">Home</a></div>
         <div class="left"><a href="{{ url_for('explore_other_apps') }}">Explore</a></div>
-        {% if not current_user.is_anonymous %}
-        <div class="left"><a href="{{ url_for('contact_us') }}">Contact</a>
-      </div>
-      {% endif %}
 
       {% if current_user.is_anonymous %}
 
@@ -330,7 +326,7 @@
         {% endif %}
 
       {% else %}
-        <div class="right login_name">Hi, {{ current_user.username }}</div>
+        <div class="right profile"><a href="{{ url_for('my_profile')}}">My Profile &#9731;</a></div>
 
       {% endif %}
       <br style="clear: left;" />

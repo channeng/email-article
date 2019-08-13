@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h3>
+    <div id="page_header">
+      My Profile
+    </div>
+  </h3>
+  <hr>
+  <div style="padding: 0px 3%;">
+    <h4><a href="{{ url_for('security.change_password') }}">Change Password</a></h4>
+    <div class="subtext"><p>Change your password.</p></div>
+
+    <h4><a href="{{ url_for('contact_us') }}">Contact Us</a></h4>
+    <div class="subtext"><p>Reach out to us to provide feedback, request a new feature, partnership opportunities, or simply to thank us! Just about anything under the sun. We'll be happy to hear from you!</p></div>
+
+  <br>
+  <hr>
+  {% if not current_user.is_anonymous %}
+  &nbsp; &nbsp;<a class="right" href="{{ url_for('logout') }}" style="font-size: 80%">Logout</a>
+  {% endif %}
+  </div>
+
+{% endblock %}
