@@ -101,7 +101,7 @@ Given a link to the article and the email of the recipient, the app will scrape 
 		sqlite3 database/app.db < delete_alembic_version.sqlite
 
 		# Create migrations folder to prepare for migration script
-		flask db init 
+		flask db init
 
 		# Generate migration script
 		flask db migrate
