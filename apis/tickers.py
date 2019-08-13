@@ -37,7 +37,7 @@ def stocks_recommendations_for_user(user_id):
         closing_date = datetime.strptime(closing_date, "%Y-%m-%d")
         timedelta_diff = (
             closing_date - ticker_recommendations[ticker_id]["closing_date"])
-        if timedelta_diff >= timedelta(days=0):
+        if timedelta_diff >= timedelta(days=-1):
             recommend = recommendation.title()
             ticker_recommendations[ticker_id]["recommendation"] = recommend
             ticker_recommendations[ticker_id]["is_strong"] = is_strong == 1

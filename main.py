@@ -394,6 +394,7 @@ def broadcast_chat_message(event):
 def stocks_page():
     tickers, ticker_recommendations = stocks_recommendations_for_user(
         current_user.id)
+
     for ticker_id in ticker_recommendations:
         if ticker_recommendations[ticker_id]["is_strong"]:
             ticker_recommendations[ticker_id]["recommendation"] = (

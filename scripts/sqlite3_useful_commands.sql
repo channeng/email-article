@@ -52,7 +52,7 @@ FROM (
 GROUP BY ticker_id;
 
 # Get users -> ticker signups
-SELECT user.username, ticker.id, ticker.name
+SELECT user.username, ticker.id, ticker.name, ticker_user.time_created
 FROM ticker_user
 LEFT JOIN user ON user.id = ticker_user.user_id
 LEFT JOIN ticker on ticker.id = ticker_user.ticker_id
@@ -65,7 +65,9 @@ ORDER BY ticker_user.id;
 
 # Get ticker recommendations
 WITH live_tickers AS (
-    SELECT ticker.id AS ticker_id, ticker.name AS ticker_name
+    SELECT
+        ticker.id AS ticker_id,
+        ticker.name AS ticker_name
     FROM ticker_user
     LEFT JOIN ticker
     ON ticker_user.ticker_id = ticker.id
@@ -74,16 +76,22 @@ WITH live_tickers AS (
     GROUP BY 1,2
 )
 , latest_updated AS (
-    SELECT MAX(DATE(time_created)) last_updated
+    SELECT MAX(DATE(ticker_recommendation.time_created)) last_updated
     FROM ticker_recommendation
+    LEFT JOIN ticker ON ticker.id = ticker_recommendation.ticker_id
+    -- Exclude non-US stocks
+    WHERE ticker.name NOT LIKE '%.%'
 )
 , latest_recommendations AS (
-    SELECT ticker_id, recommendation
+    SELECT
+        ticker_id,
+        recommendation,
+        time_created AS time_recommended
     FROM ticker_recommendation
     WHERE DATE(time_created) = (SELECT last_updated FROM latest_updated)
 )
 
-SELECT ticker_id, ticker_name, recommendation
+SELECT ticker_id, ticker_name, recommendation, time_recommended
 FROM live_tickers
 LEFT JOIN latest_recommendations USING(ticker_id)
 -- Exclude non-US stocks
