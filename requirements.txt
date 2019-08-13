@@ -19,6 +19,7 @@ Flask-SQLAlchemy==2.4.0
 Flask-WTF==0.14.2
 google-api-python-client==1.7.9
 gunicorn==19.7.1
+hashids==0.8.4
 httplib2==0.10.3
 idna==2.6
 ipaddress==1.0.19
