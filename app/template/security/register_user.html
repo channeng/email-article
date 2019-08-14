@@ -5,7 +5,17 @@
   <hr><br>
   <div class="form_div">
   <form action="" method="post" name="register_user_form">
+    <h3 style="text-align:center;font-weight: 430;">Beta Sign-up</h3>
+    <p style="text-align:center;">Please provide a referral code to register for an account.</p>
+    <br>
     {{ register_user_form.hidden_tag() }}
+    <p>
+      {{ register_user_form.referrer_user_id.label }}<br><br>
+      {{ register_user_form.referrer_user_id(size=64, class_="lower_input input_field") }}
+      {% for error in register_user_form.referrer_user_id.errors %}
+      <span class="flash_message">[{{ error }}]</span><br><br>
+      {% endfor %}
+    </p>
     <p>
       {{ register_user_form.username.label }}<br><br>
       {{ register_user_form.username(size=32, class_="lower_input input_field") }}

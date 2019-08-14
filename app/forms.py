@@ -1,18 +1,34 @@
+from string import ascii_letters
+
 from flask_wtf import FlaskForm
 from wtforms import (
     StringField, TextAreaField, SubmitField, SelectField)
 from wtforms.validators import (
     DataRequired, Email, URL, Length, Optional, ValidationError)
 from flask_security.forms import RegisterForm, LoginForm
-from app.models import User
+
+from app.models import User, UserReferral
 
 
 class ExtendedRegisterForm(RegisterForm):
     username = StringField(
         'Username', [DataRequired(), Length(max=64)])
 
+    referrer_user_id = StringField(
+        'Referral Code', [DataRequired(), Length(max=64)])
+
+    def validate_referrer_user_id(self, referrer_user_id):
+        user_referral = (
+            UserReferral.query
+            .filter_by(code=referrer_user_id.data.lower())
+            .first())
+        if user_referral is None:
+            raise ValidationError('Referral code is invalid. Please try again')
+
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data.lower()).first()
+        if username.data[0] not in list(ascii_letters):
+            raise ValidationError('Username must start with a letter.')
         if user is not None:
             raise ValidationError('Please use a different username.')
 

@@ -34,9 +34,15 @@ class Role(db.Model, RoleMixin):
 
 
 class User(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer(), primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(255), index=True, unique=True)
+    referrer_user_id = db.Column(db.Integer())
+
+    @validates('referrer_user_id')
+    def decode_referral_code(self, key, value):
+        user_id, _ = hasher.decrypt(value)
+        return user_id
 
     @validates('username', 'email')
     def convert_lower(self, key, value):
