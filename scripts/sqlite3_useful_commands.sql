@@ -52,7 +52,12 @@ FROM (
 GROUP BY ticker_id;
 
 # Get users -> ticker signups
-SELECT user.username, ticker.id, ticker.name, ticker_user.time_created
+SELECT
+    user.username,
+    ticker.id,
+    ticker.name,
+    ticker.full_name,
+    ticker_user.time_created
 FROM ticker_user
 LEFT JOIN user ON user.id = ticker_user.user_id
 LEFT JOIN ticker on ticker.id = ticker_user.ticker_id
