@@ -86,12 +86,13 @@ WITH live_tickers AS (
     SELECT
         ticker_id,
         recommendation,
+        closing_date,
         time_created AS time_recommended
     FROM ticker_recommendation
     WHERE DATE(time_created) = (SELECT last_updated FROM latest_updated)
 )
 
-SELECT ticker_id, ticker_name, recommendation, time_recommended
+SELECT closing_date, ticker_id, ticker_name, recommendation, time_recommended
 FROM live_tickers
 LEFT JOIN latest_recommendations USING(ticker_id)
 -- Exclude non-US stocks
