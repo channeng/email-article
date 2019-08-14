@@ -1,11 +1,18 @@
 from datetime import datetime
 
+from hashids import Hashids
 from sqlalchemy.orm import validates
 from sqlalchemy.sql import functions as func
 from sqlalchemy import inspect
 
-from app import db
+from app import app, db
 from flask_security import UserMixin, RoleMixin
+
+
+hasher = Hashids(
+    salt=app.config["ADMIN_PASSWORD"],
+    # Only generate lowercase alpha-numeric IDs
+    alphabet='abcdefghijklmnopqrstuvwxyz1234567890')
 
 
 def get_columns(db_model):
@@ -56,6 +63,20 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return '<User {}: {}>'.format(self.id, self.username)
+
+
+class UserReferral(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    code = db.Column(db.String(64))  # Should be concat(user.id, user.username)
+
+    @validates('code')
+    def generate_referral_code(self, key, value):
+        return hasher.encrypt(self.user_id, ord(value[0]))
+
+    def __repr__(self):
+        return '<UserReferral {}: user_id {}, code {}>'.format(
+            self.id, self.user_id, self.code)
 
 
 class List(db.Model):

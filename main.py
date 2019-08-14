@@ -11,7 +11,8 @@ from flask import (
     render_template, flash, redirect, url_for, request, abort)
 from flask_socketio import SocketIO, emit
 from flask_security import (
-    Security, login_required, current_user, logout_user)
+    Security, login_required, current_user, logout_user,
+    user_registered)
 from flask_restful import Api
 import validators
 
@@ -35,7 +36,7 @@ from app.tickers import (
     get_ticker_latest_recommendation, get_popular_tickers,
     get_ticker_auth_users)
 from app.models import User, ListUser, Chat
-
+from app.user_referral import create_referral_code, get_referral_code
 from apis.tickers import (
     TickerEmails, UpdateTicker, DeleteTicker, GetAllTickers,
     AddTickerRecommendations, PlotTickerRecommendations,
@@ -62,6 +63,13 @@ api.add_resource(GetTickersForUser, '/ticker_recommendation_for_user')
 api.add_resource(GetTickerDetails, '/get_ticker_details')
 
 
+@user_registered.connect_via(app)
+def user_registered_sighandler(app, user, confirm_token):
+    if not confirm_token:
+        return
+    return create_referral_code(user.id, user.username)
+
+
 @app.route('/')
 @app.route('/index', strict_slashes=False)
 def index():
@@ -84,7 +92,8 @@ def about():
 @app.route('/my_profile', strict_slashes=False)
 @login_required
 def my_profile():
-    return render_template("my_profile.html")
+    referral_code = get_referral_code(current_user.id)
+    return render_template("my_profile.html", referral_code=referral_code)
 
 
 @app.route('/email_article', strict_slashes=False)

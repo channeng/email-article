@@ -1,13 +1,37 @@
 {% extends "base.html" %}
 
 {% block content %}
+  <style>
+  code {
+    background: #eeeeee;
+    padding: 6px 18px;
+    border-radius: 4px;
+    font-size: 150%;
+  }
+  h5.referral {
+    margin-block-start:0.8em;
+    margin-block-end:0.8em;
+  }
+  </style>
+
   <h3>
     <div id="page_header">
       My Profile
     </div>
   </h3>
   <hr>
+  <br>
+
   <div style="padding: 0px 3%;">
+    <h3 style="padding: unset; margin: unset; font-weight: unset; font-size: 90%;">Hi {{ current_user.username }}, how can we help you today?</h3>
+    {% if referral_code != None %}
+    <h4><a>Refer Friends</a></h4>
+    <div class="subtext">
+      <p>Refer friends to PocketSG. Good things must share!</p>
+      <h5 class="referral">Referral code: <code>{{ referral_code }}</code></h5>
+    </div>
+    {% endif %}
+
     <h4><a href="{{ url_for('security.change_password') }}">Change Password</a></h4>
     <div class="subtext"><p>Change your password.</p></div>
 
@@ -19,6 +43,5 @@
   {% if not current_user.is_anonymous %}
   &nbsp; &nbsp;<a class="right" href="{{ url_for('logout') }}" style="font-size: 80%">Logout</a>
   {% endif %}
-  </div>
-
+</div>
 {% endblock %}
