@@ -6,7 +6,7 @@
   <div class="form_div">
   <form action="" method="post" name="register_user_form">
     <h3 style="text-align:center;font-weight: 430;">Beta Sign-up</h3>
-    <p style="text-align:center;">Please provide a referral code to register for an account.</p>
+    <p style="text-align:center;">Pocket.Sg is currently in Beta phase. Please provide a referral code from an existing user to register for an account.</p>
     <br>
     {{ register_user_form.hidden_tag() }}
     <p>
@@ -16,6 +16,8 @@
       <span class="flash_message">[{{ error }}]</span><br><br>
       {% endfor %}
     </p>
+    <p style="text-align:center;">If you don't have one, you may join our mailing list and request for a referral code <a href="{{ url_for('request_sign_up') }}">here</a>.</p>
+    <br><hr><br>
     <p>
       {{ register_user_form.username.label }}<br><br>
       {{ register_user_form.username(size=32, class_="lower_input input_field") }}

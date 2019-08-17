@@ -79,6 +79,14 @@ def index():
         return redirect(url_for('stocks_page'))
 
 
+@app.route('/request_sign_up', strict_slashes=False)
+def request_sign_up():
+    if current_user.is_anonymous:
+        return render_template("request_sign_up.html")
+    else:
+        return redirect(url_for('stocks_page'))
+
+
 @app.route('/explore')
 def explore_other_apps():
     return render_template("apps.html")
