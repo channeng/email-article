@@ -1,5 +1,6 @@
 # Pull base image.
 FROM ubuntu:16.04
+LABEL maintainer="Shannon Chan <channeng@hotmail.com>"
 
 RUN apt-get update && \
     apt-get install -y software-properties-common vim build-essential && \
