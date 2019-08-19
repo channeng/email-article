@@ -79,6 +79,11 @@ def index():
         return redirect(url_for('stocks_page'))
 
 
+@app.route('/faq', strict_slashes=False)
+def faq():
+    return render_template("faq.html")
+
+
 @app.route('/request_sign_up', strict_slashes=False)
 def request_sign_up():
     if current_user.is_anonymous:

@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+  table {
+    border-spacing: 3px;
+  }
+  td {
+    line-height: 10px;
+  }
+  td.info {
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+  }
+  td.col1 {
+    width:100%;
+    min-width:45px;
+    float:left;
+    padding-left:1%;
+    padding-right:2.5%;
+  }
+  td.col2 {
+    width:10%;
+    min-width:50px;
+    vertical-align:top;
+  }
+  td.col3 {
+    width:20%;
+    min-width:70px;
+    text-align:center;
+  }
+  #page li {
+    padding-left: unset;
+    margin: 22px 0 22px 0;
+  }
+  #sort_by div.stampbox {
+    display: inline-block;
+    width: calc(100% / 5);
+    min-width: unset;
+    line-height: 20px;
+  }
+  .stampbox {
+    border: 1px solid #FCFCFC;
+    border-radius: 10px;
+    line-height: 17px;
+    text-align:center;
+    min-width:50px;
+    background-color: #FCFCFC;
+  }
+  .stampbox.strong {
+    border: 2px solid rgba(0, 0, 0, 0.1);
+  }
+  .stampbox.buy {
+    background-color: #e5efe5;
+    border-color: #006600;
+  }
+  .stampbox.sell {
+    background-color: #FFDBDA;
+    border-color: #974052;
+  }
+  .stampbox.hold {
+    background-color: #efefef;
+    border-color: rgba(0, 0, 0, 0.5);
+  }
+  #page a.sell {
+    color:#974052;
+    font-weight: bold;
+  }
+  #page a.buy {
+    color:#006600;
+    font-weight: bold;
+  }
+  #page a.hold {
+    color: #424242;
+  }
+  .question {
+    margin: 10px 0 !important;
+    padding-left: 5px !important;
+    font-size: 100%;
+  }
+</style>
+
+  <h3>
+    <div id="page_header">
+      Frequently Asked Questions
+    </div>
+  </h3>
+  <hr>
+  <div style="padding: 0px calc(3px + 4%);">
+    <ol>
+      <li class="question"><a href="#q1">What is Pocket.SG?</a></li>
+      <li class="question"><a href="#q2">Is Pocket.SG suitable for me?</a></li>
+      <li class="question"><a href="#q3">Is Pocket.SG a robo-advisor?</a></li>
+      <li class="question"><a href="#q4">How can I get started?</a></li>
+      <li class="question"><a href="#q5">How does Pocket.SG predict buy or sell?</a></li>
+      <li class="question"><a href="#q6">What is Pocket.SG not?</a></li>
+    </ol>
+    <br>
+
+    <h4 id="q1">What is Pocket.SG?</h4>
+    <div class="subtext">
+      <p>Pocket.SG is an intelligent stock monitoring platform.</p>
+      <br>
+      <p>It is designed to identify trading opportunities by predicting peaks and troughs. This allows you to capture gains while minimising downside risks.</p>
+    </div><br>
+
+    <h4 id="q2">Is Pocket.SG suitable for me?</h4>
+    <div class="subtext">
+      <p>Pocket.SG is built to help any investor with direct investments in equities. As long as you are invested in a stock, Pocket.SG provides a useful monitoring service that recommends great entry and exit points into the stock.</p>
+      <br>
+      <p>As the recommendations are delivered on a daily basis, it is most useful for investors who trade on a daily/weekly basis, and least useful for high frequency traders engaged in intra-day trading.</p>
+    </div><br>
+
+    <h4 id="q3">Is Pocket.SG a robo-advisor?</h4>
+    <div class="subtext">
+      <p>Pocket.SG is not a robo-advisor. It is not licensed under any Securities Act in any Jurisdiction. This also means you should not consider Pocket.SG as a certified financial advisor as it is currently unregulated.</p>
+      <br>
+      <p>Pocket.SG does not take into account your personal circumstances, e.g. investment objectives, financial situation or particular needs. You should consult your own independent financial, accounting, tax, legal or other competent professional advisors.</p>
+      <br>
+      <p>Please see our Disclaimer here.</p>
+    </div><br>
+    
+    <h4 id="q4">How can I get started?</h4>
+    <div class="subtext">
+      <p>You will need to find the ticker symbol for the stock you would like to track (Eg. The ticker for Facebook stock is “FB”, or Singapore DBS Group is “D05.SI”). You may find the ticker through the search bar on Yahoo Finance.</p>
+      <br>
+      <p>Once you have added a ticker, the stock will appear on your stocks page, and you will automatically receive buy/sell/hold recommendations delivered to your email before the start of each trading day.</p>
+      <br>
+      <p>Opening hours is 09:30 GMT-0400 for the US market, and 09:00 GMT+0800 for the Singapore market.</p>
+    </div><br>
+
+    <h4 id="q5">How does Pocket.SG predict buy or sell?</h4>
+    <div class="subtext">
+      <p>Pocket.SG relies on a data-driven approach for generating its recommendations. Buy/Sell/Hold Recommendations are based on trading patterns from the historical trading data of the stock.</p>
+      <br>
+      <p>Through analyzing data such as price of a given stock, Pocket.SG is able to identify useful indicators to uncover trends that may be used to predict future price movements. This approach is commonly referred to as `Technical Analysis` in finance.</p>
+      <br>
+      <p>It further uses machine learning techniques to train models that would predict a peak or a trough for any given stock. The models are then used to serve the recommendations for each stock the following trading day.</p>
+    </div><br>
+
+    <h4 id="q6">What is Pocket.SG not?</h4>
+    <div class="subtext">
+      <p>Pocket.SG is NOT to be used as the only indicator for trading. It is NOT the be-all-end-all solution for making money in the stock market.</p>
+      <br>
+      <p>Given that recommendations are generated solely from history trading data, Pocket.SG does not account for, and is unable to predict, changes in external drivers such as news events and shifts in political or economic climates. This includes stock-specific news and announcements, as well as changes in broader market movements arising from shifting investor sentiments.</p>
+      <br>
+      <p>However, while Pocket.SG cannot predict the future (no one can!), it can potentially identify trading opportunities and minimise risk in identifying price action patterns arising from the collective behavior of investors.</p>
+    </div><br>
+
+    {% if current_user.is_anonymous %}
+    <div>
+      <h4 style="text-align:center;"><a href="{{ url_for('security.register') }}">Sign up with PocketSG</a></h4>
+    </div>
+    {% endif %}
+
+  <br>
+  <hr>
+  <br>
+  </div>
+
+{% endblock %}
