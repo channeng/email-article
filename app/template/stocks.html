@@ -169,6 +169,7 @@
   <div id="page_header">
     <h4>New Ticker</h4>
   </div>
+  {% if is_admin or tickers|length < max_tickers_per_user %}
   <div class="form_div">
     <form action="" method="post">
       {{ form.hidden_tag() }}
@@ -210,6 +211,12 @@
 
     </form>
   </div>
+  {% else %}
+  <div style="text-align: center;">
+    <p>You may only hold up to {{max_tickers_per_user}} tickers.</p>
+    <p>Please delete an existing ticker to add a new one.</p>
+  </div>
+  {% endif %}
 </div>
 <script type="text/javascript">
   function clear_sort_selections() {

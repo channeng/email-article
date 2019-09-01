@@ -458,6 +458,8 @@ def stocks_page():
         "stocks.html",
         form=form,
         tickers=tickers,
+        max_tickers_per_user=5,
+        is_admin="admin" in [role.name for role in current_user.roles],
         ticker_recommendations=ticker_recommendations,
         popular_tickers=popular_tickers)
 

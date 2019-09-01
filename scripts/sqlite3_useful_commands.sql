@@ -103,3 +103,32 @@ LEFT JOIN latest_recommendations USING(ticker_id)
 -- Exclude non-US stocks
 WHERE ticker_name NOT LIKE '%.%'
 ORDER BY ticker_name;
+
+# Update user_role to 'admin'
+WITH user_condition AS (
+    SELECT id
+    FROM user
+    WHERE username IN ("channeng", "v.s", "hanivy@gmail.com", "stocks")
+)
+UPDATE roles_users SET role_id = 1
+WHERE user_id IN (SELECT id FROM user_condition);
+
+# Get user roles
+SELECT username, role_id
+FROM roles_users
+LEFT JOIN (SELECT id AS user_id, username FROM user) USING(user_id);
+
+# Count tickers per user
+WITH valid_tickers AS (
+    SELECT id AS ticker_id
+    FROM ticker
+    WHERE is_deleted = 0
+    GROUP BY 1
+)
+
+SELECT user_id, COUNT(DISTINCT ticker_id) count_tickers
+FROM ticker_user
+INNER JOIN valid_tickers USING(ticker_id)
+WHERE is_deleted = 0
+{}
+GROUP BY 1;
