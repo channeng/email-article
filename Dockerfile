@@ -1,18 +1,9 @@
 # Pull base image.
-FROM ubuntu:16.04
+FROM python:3-stretch
 LABEL maintainer="Shannon Chan <channeng@hotmail.com>"
 
-RUN apt-get update && \
-    apt-get install -y software-properties-common vim build-essential && \
-    add-apt-repository ppa:jonathonf/python-3.6
-
-RUN apt-get update && \
-    apt-get install -y python3.6 python3.6-dev python3-pip python3.6-venv && \
-    apt-get install -y git tmux
-
-# update pip
-RUN python3.6 -m pip install pip --upgrade && \
-        python3.6 -m pip install wheel
+RUN apt-get update||exit 0
+RUN apt-get install python3-pip wget vim sudo dbus curl bc git tmux supervisor -y
 
 # Install Supervisor.
 RUN \
@@ -20,7 +11,7 @@ RUN \
   mkdir /home/ubuntu && \
   mkdir /home/ubuntu/email-article && \
   apt-get update && \
-  apt-get install -y supervisor wget vim git lsb-release curl libxml2-dev libxslt1-dev zlib1g-dev sqlite3 libsqlite3-dev sqlite3 && \
+  apt-get install -y lsb-release curl libxml2-dev libxslt1-dev zlib1g-dev sqlite3 libsqlite3-dev sqlite3 && \
   rm -rf /var/lib/apt/lists/* && \
   sed -i 's/^\(\[supervisord\]\)$/\1\nnodaemon=true/' /etc/supervisor/supervisord.conf
 
@@ -29,9 +20,9 @@ EXPOSE 5000
 
 # Create virtualenv.
 RUN \
-  python3.6 -m pip install --upgrade pip && \
-  python3.6 -m pip install --upgrade virtualenv && \
-  virtualenv -p /usr/bin/python3.6 /home/ubuntu/.virtualenvs/env
+  pip3 install --upgrade pip && \
+  pip3 install --upgrade virtualenv && \
+  virtualenv -p /usr/bin/python3 /home/ubuntu/.virtualenvs/env
 
 # Setup for ssh onto github, clone and define working directory
 ADD credentials/ /home/ubuntu/.credentials/
@@ -40,7 +31,7 @@ RUN \
   echo "IdentityFile /home/ubuntu/.credentials/repo-key" >> /etc/ssh/ssh_config && \
   echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
 
-RUN date > last_updated_0.txt
+RUN date > last_updated_2.txt
 RUN git clone git@github.com:channeng/email-article.git /home/ubuntu/email-article
 
 WORKDIR /home/ubuntu/email-article
@@ -48,7 +39,8 @@ WORKDIR /home/ubuntu/email-article
 # Install app requirements
 RUN \
   . /home/ubuntu/.virtualenvs/env/bin/activate && \
-  python3.6 -m pip install -r requirements.txt
+  pip3 install --upgrade matplotlib && \
+  pip3 install -r requirements.txt
 
 ADD config.py /home/ubuntu/email-article
 
