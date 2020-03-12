@@ -20,9 +20,9 @@ EXPOSE 5000
 
 # Create virtualenv.
 RUN \
-  pip3 install --upgrade pip && \
-  pip3 install --upgrade virtualenv && \
-  virtualenv -p /usr/bin/python3 /home/ubuntu/.virtualenvs/env
+  pip install --upgrade pip && \
+  pip install --upgrade virtualenv && \
+  virtualenv -p /usr/local/bin/python /home/ubuntu/.virtualenvs/env
 
 # Setup for ssh onto github, clone and define working directory
 ADD credentials/ /home/ubuntu/.credentials/
@@ -39,8 +39,7 @@ WORKDIR /home/ubuntu/email-article
 # Install app requirements
 RUN \
   . /home/ubuntu/.virtualenvs/env/bin/activate && \
-  pip3 install --upgrade matplotlib && \
-  pip3 install -r requirements.txt
+  pip install -r requirements.txt
 
 ADD config.py /home/ubuntu/email-article
 
