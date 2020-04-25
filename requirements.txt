@@ -7,7 +7,6 @@ click==6.7
 cryptography==2.7
 decorator==4.2.1
 enum34==1.1.6
-eventlet==0.25.1
 Flask==1.0.3
 Flask-BasicAuth==0.2.0
 Flask-HTTPAuth==3.2.3
@@ -17,6 +16,7 @@ Flask-RESTful==0.3.7
 Flask-SocketIO==4.0.0
 Flask-SQLAlchemy==2.4.0
 Flask-WTF==0.14.2
+gevent==20.4.0
 google-api-python-client==1.7.9
 gunicorn==20.0.4
 hashids==0.8.4
@@ -42,7 +42,7 @@ pyasn1==0.4.2
 pyasn1-modules==0.2.1
 pycparser==2.18
 Pygments==2.2.0
-pyOpenSSL==17.5.0
+pyOpenSSL==19.1.0
 python-dateutil==2.6.1
 python-editor==1.0.3
 python-engineio==3.11.2

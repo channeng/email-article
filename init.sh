@@ -27,5 +27,5 @@ else
 	/home/ubuntu/.virtualenvs/env/bin/python $PROJECT_DIR/scripts/sqlite3_migration_fix_alter_table.py && \
 	/home/ubuntu/.virtualenvs/env/bin/flask db migrate && \
 	/home/ubuntu/.virtualenvs/env/bin/flask db upgrade
-	/home/ubuntu/.virtualenvs/env/bin/gunicorn --bind 0.0.0.0:5000 --worker-class eventlet --workers 1 main:app
+	/home/ubuntu/.virtualenvs/env/bin/gunicorn --bind 0.0.0.0:5000 --worker-class gevent --workers 1 main:app
 fi
