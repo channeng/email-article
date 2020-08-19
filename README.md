@@ -31,15 +31,17 @@ Given a link to the article and the email of the recipient, the app will scrape 
 	```bash
 	sudo bash scripts/debian_jessy_docker_setup.sh
 	```
+	- To obtain SuperUser access for Docker command, run: `sudo usermod -aG docker $USER`
+	- Exit server and ssh back in
 
 4. (Optional) Stop any containers running on existing docker image
 	```bash
-	sudo docker stop $(sudo docker ps -f ancestor=email-article --format "{{.ID}}")
+	docker container stop email-article
 	```
 
 5. Build docker image
 	```bash
-	sudo docker build -t email-article .
+	docker build -t email-article .
 	```
 
 	Note: If memory error on installing lxml, run the following and try building docker image again.
@@ -48,7 +50,7 @@ Given a link to the article and the email of the recipient, the app will scrape 
 	sudo chmod 600 /swapfile
 	sudo mkswap /swapfile
 	sudo swapon /swapfile
-	sudo docker build -t email-article .
+	docker build -t email-article .
 	```
 
 	after you're done: 
@@ -56,39 +58,36 @@ Given a link to the article and the email of the recipient, the app will scrape 
 	sudo swapoff /swapfile
 	```
 
-6. (First-time) Create docker volume for database
-	```bash
-	sudo docker volume create email-article-db
-	```
-
-	Check that volume exists:
-	```bash
-	sudo docker volume ls | grep email-article-db
-	```
-
 7. Run docker container
 	```bash
-	sudo docker run -v email-article-db:/home/ubuntu/email-article/database -p 80:5000 -d email-article /usr/bin/supervisord --nodaemon
-
 	# To mount docker volume using local dir
 	# Changes will be reflected on local dir db
-	docker run -v /path/to/database:/home/ubuntu/email-article/database -p 80:5000 -d email-article /usr/bin/supervisord --nodaemon
+	docker run -d --name email-article -p 80:5000 -v /path/to/database:/home/ubuntu/email-article/database -v /path/to/ticker_plots:/home/ubuntu/email-article/app/static/ticker_plots email-article /usr/bin/supervisord --nodaemon
+	```
+	(Optional, if running with Docker volume)
+	```bash
+	# Create docker volume for database
+	docker volume create email-article-db
+	# Check that volume exists:
+	docker volume ls | grep email-article-db
+	# Run container with docker volume
+	docker run -v email-article-db:/home/ubuntu/email-article/database -p 80:5000 -d email-article /usr/bin/supervisord --nodaemon
 	```
 
 8. Enter bash terminal
 	```bash
-	sudo docker exec -it $(sudo docker ps -f ancestor=email-article --format "{{.ID}}") /bin/bash
+	docker exec -it email-article /bin/bash
 	```
 
 ## Other commands:
 - To save a backup of the database:
 	```bash
-	sudo docker cp $(sudo docker ps -f ancestor=email-article --format "{{.ID}}"):/home/ubuntu/email-article/database/ database_copy/app.db
+	docker cp email-article:/home/ubuntu/email-article/database/ database_copy/app.db
 	```
 
 - To copy an updated config into Docker container:
 	```bash
-	sudo docker cp email-article/config.py $(sudo docker ps -f ancestor=email-article --format "{{.ID}}"):/home/ubuntu/email-article
+	docker cp email-article/config.py email-article:/home/ubuntu/email-article
 	```
 
 - To test DB migration:
