@@ -1,9 +1,9 @@
 # Pull base image.
-FROM python:3-stretch
+FROM python:3.7-buster
 LABEL maintainer="Shannon Chan <channeng@hotmail.com>"
 
 RUN apt-get update||exit 0
-RUN apt-get install python3-pip wget vim sudo dbus curl bc git tmux supervisor -y
+RUN apt-get install python3-pip vim sudo dbus curl bc supervisor -y
 
 # Install Supervisor.
 RUN \
