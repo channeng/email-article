@@ -49,7 +49,7 @@ python-engineio==3.11.2
 python-socketio==4.4.0
 pytz==2017.2
 PyYAML==5.1.1
-rsa==3.4.2
+rsa==4.7
 seaborn==0.9.0
 simplegeneric==0.8.1
 six==1.11.0
